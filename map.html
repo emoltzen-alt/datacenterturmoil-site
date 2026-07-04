@@ -3,39 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<title>Data Center Community Response — Map, July 4, 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
+  :root{--bg:#0f1419;--ink:#e6edf3;--muted:#9aa7b4;--line:#2a333d;--accent:#4ea1ff;--current:#2ea043;--older:#b08800;--card:#1a2129}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+  .app{display:flex;height:100%}
+  #map{flex:1 1 auto;min-width:0;height:100%}
+
+  .sidebar{flex:0 0 340px;display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--bg)}
+  .sidebar header{flex:0 0 auto;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .sidebar h1{font-size:15px;margin:0 0 4px}
+  .sidebar .sub{color:var(--muted);font-size:12px}
+  .legend{display:flex;gap:14px;margin-top:10px;font-size:12px;color:var(--muted)}
+  .legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+  .dot.cur{background:var(--current)}
+  .dot.old{background:var(--older)}
+
+  .list{flex:1 1 auto;overflow-y:auto;padding:10px 12px}
+  .group-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin:14px 4px 8px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .group-title:first-child{margin-top:2px}
+  .row{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:7px;padding:9px 11px;margin-bottom:8px;cursor:pointer;transition:background .12s}
+  .row:hover{background:#212a33}
+  .row.cur{border-left-color:var(--current)}
+  .row.old{border-left-color:var(--older)}
+  .row .place{font-weight:700;font-size:13.5px}
+  .row .headline{font-size:12.5px;color:var(--ink);margin-top:2px}
+  .row .meta{font-size:11px;color:var(--muted);margin-top:3px}
+
   .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
   .leaflet-popup-content b{font-size:15px}
+  .leaflet-popup-content .badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;padding:1px 7px;border-radius:20px;margin-bottom:5px}
+  .badge.cur{background:var(--current);color:#02160a}
+  .badge.old{background:var(--older);color:#1a1400}
+  .tt{font:13px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:230px}
+  .tt .badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    padding:1px 7px;border-radius:20px;margin-bottom:4px}
+  .tt b{display:block;font-size:13.5px;margin-bottom:2px}
+  .tt .d{color:#cfd7de;margin:3px 0}
+  .tt .s{color:#93a1ad;font-size:11.5px}
+
+  @media (max-width:760px){
+    .app{flex-direction:column}
+    #map{flex:0 0 55vh}
+    .sidebar{flex:1 1 auto;border-left:0;border-top:1px solid var(--line)}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div class="app">
+  <div id="map"></div>
+  <div class="sidebar">
+    <header>
+      <h1>Data Center Community Response</h1>
+      <div class="sub">July 4, 2026 · click a location to fly to its pin</div>
+      <div class="legend">
+        <span><span class="dot cur"></span>Past 24 h (Current)</span>
+        <span><span class="dot old"></span>Older / Background</span>
+      </div>
+    </header>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+var sites = [
+  {place:"Prince William County, VA", lat:38.8113, lon:-77.5219, status:"current",
+   headline:"World's Largest Data Center Plan Collapses",
+   desc:"QTS withdrew its Supreme Court appeal, officially killing the 2,100-acre \"PW Digital Gateway\" next to Manassas National Battlefield after years of resident and preservationist litigation.",
+   source:"Potomac Local", date:"July 3, 2026",
+   url:"https://www.potomaclocal.com/2026/07/03/qts-withdraws-supreme-court-appeal-ending-proposed-digital-gateway-data-center-project/"},
+  {place:"Nottingham, NH", lat:43.1287, lon:-71.1128, status:"current",
+   headline:"Planning Board Backs 12-Month Moratorium",
+   desc:"After a 15,000-signature petition, the planning board voted unanimously for a data-center construction moratorium, sending it to a special town meeting.",
+   source:"New Hampshire Public Radio", date:"July 3, 2026",
+   url:"https://www.nhpr.org/environment/2026-07-03/nottingham-data-center-moratorium-town-meeting-nh"},
+  {place:"East Fishkill / Hudson Highlands, NY", lat:41.5090, lon:-73.8087, status:"current",
+   headline:"Backlash Coverage & Political Reactions",
+   desc:"State legislators voiced support for East Fishkill's 3-year data-center moratorium as part of a fast-spreading Hudson Valley and national backlash.",
+   source:"The Highlands Current", date:"July 3, 2026",
+   url:"https://highlandscurrent.org/2026/07/03/data-centers-face-backlash/"},
+  {place:"Hoffman Estates, IL", lat:42.0708, lon:-88.1535, status:"current",
+   headline:"Developer Withdraws Rezoning Request",
+   desc:"After weeks of resident organizing and a Plan Commission vote against it, the developer pulled its rezoning request for a contested data center site.",
+   source:"NPR Illinois", date:"July 1–2, 2026",
+   url:"https://www.nprillinois.org/economy-business/2026-07-02/developer-withdraws-rezoning-request-for-controversial-data-center-in-hoffman-estates"},
+  {place:"Rockford, IL", lat:42.2711, lon:-89.0940, status:"current",
+   headline:"Aldermen Delay Vote After Protests",
+   desc:"Residents rallied outside City Hall over a TIF district tied to a Monarch Energy data center; aldermen delayed the vote to study protections.",
+   source:"St. Louis Public Radio", date:"June 29 (reported July 2, 2026)",
+   url:"https://www.stlpr.org/government-politics-issues/2026-07-02/aldermen-delay-data-center-zoning-before-recess"},
+  {place:"Union County, AR", lat:33.2085, lon:-92.6663, status:"current",
+   headline:"Emergency One-Year Pause Approved",
+   desc:"Quorum Court approved a unanimous one-year data-center development pause before the largest crowd the court has ever hosted.",
+   source:"Data Centers Weekly Briefing", date:"~July 1, 2026",
+   url:"https://writing.strisker.com/data-centers-weekly-briefing-june-30-july-3-2026/"},
+  {place:"Festus, MO", lat:38.2225, lon:-90.3987, status:"current",
+   headline:"Developer Scales Back $6B Design",
+   desc:"CRG cut its data center from 12 buildings to 4 after sustained opposition that already ousted three council members; residents remain skeptical.",
+   source:"First Alert 4", date:"July 1, 2026",
+   url:"https://www.firstalert4.com/2026/07/01/festus-data-center-developer-scales-back-project-after-public-opposition/?outputType=amp"},
+  {place:"Nashville, TN", lat:36.0989, lon:-86.7716, status:"current",
+   headline:"Mayor Files Eminent Domain vs. Data Center",
+   desc:"Mayor O'Connell moved to seize ~23.5 acres near the Nashville Zoo via eminent domain to block a DC Blox data center; 500,000+ signed in opposition.",
+   source:"Axios Nashville", date:"June 29, 2026 (hearing July 7)",
+   url:"https://www.axios.com/local/nashville/2026/06/29/mayor-occonnell-eminent-domain-nashville-zoo-data-center"},
+
+  {place:"DeSoto County, MS", lat:34.8340, lon:-89.9970, status:"older",
+   headline:"Moratorium Moves Forward After Outcry",
+   desc:"Not one resident spoke in favor of the pending project or against a proposed moratorium at a packed county board meeting.",
+   source:"WUSF", date:"June 25, 2026",
+   url:"https://www.wusf.org/politics-issues/2026-06-25/after-public-outcry-desoto-county-moves-forward-on-data-center-moratorium"},
+  {place:"Montgomery County, MD", lat:39.0840, lon:-77.1528, status:"older",
+   headline:"Packed Hearing Backs 2-Year Moratorium",
+   desc:"Advocates and residents packed a hearing supporting a 2-year data center moratorium over energy, water, and grid-cost concerns.",
+   source:"Food & Water Watch", date:"June 16, 2026",
+   url:"https://www.foodandwaterwatch.org/2026/06/16/advocates-residents-packed-hearing-to-support-2-year-data-center-moratorium-in-montgomery-county-md/"},
+  {place:"Frederick County, MD", lat:39.4143, lon:-77.4105, status:"older",
+   headline:"Residents Fear 'Data Center Alley'",
+   desc:"Residents say rapid buildout along the I-270/I-70 corridor could turn the county into the next data-center alley.",
+   source:"Maryland Matters", date:"June 9–12, 2026",
+   url:"https://marylandmatters.org/2026/06/12/residents-fear-frederick-county-will-be-the-new-data-center-alley/"},
+  {place:"Emporia, KS", lat:38.4039, lon:-96.1817, status:"older",
+   headline:"400+ Pack Six-Hour Rezoning Hearing",
+   desc:"Roughly 100 activists rallied outside before a six-hour planning commission hearing on the 'Flint Hills Digital Campus'; opinion ran 5-to-1 against it.",
+   source:"Kansas Reflector", date:"June 23–30, 2026",
+   url:"https://kansasreflector.com/2026/06/28/an-unexpected-coalition-has-emerged-to-fight-data-centers-in-rural-america-politicians-take-heed/"},
+  {place:"Stokes County, NC", lat:36.4110, lon:-80.2081, status:"older",
+   headline:"Lawsuit Over 'Project Delta' Rezoning",
+   desc:"Community groups and residents sued the county board, alleging its data-center rezoning lacked required procedural safeguards.",
+   source:"Southern Environmental Law Center", date:"Spring 2026",
+   url:"https://www.selc.org/press-release/community-groups-residents-file-lawsuit-over-stokes-county-data-center-rezoning/"},
+  {place:"Saline Township, MI", lat:42.1665, lon:-83.7827, status:"older",
+   headline:"Rezoning Denial, Then Lawsuit",
+   desc:"Township denied rezoning for a large OpenAI-Oracle-linked data center on farmland; the developer sued days later alleging exclusionary zoning.",
+   source:"Fortune", date:"May 2026",
+   url:"https://fortune.com/2026/05/06/ai-data-center-michigan-saline-politics-farmland/"},
+  {place:"Box Elder County, UT", lat:41.7127, lon:-112.1666, status:"older",
+   headline:"Approval Amid 'Shame!' Chants",
+   desc:"Commissioners unanimously approved a large AI data center near Tremonton as crowds chanted over feared energy-price and water-access impacts.",
+   source:"Common Dreams", date:"May 4, 2026",
+   url:"https://www.commondreams.org/news/utah-mr-wonderful-data-center-protest"},
+  {place:"Conway, AR", lat:35.0887, lon:-92.4421, status:"older",
+   headline:"Residents Protest $1B Campus",
+   desc:"Residents protested a ~300,000 sq ft, billion-dollar data center campus over unclear tax incentives and water/power usage.",
+   source:"KATV", date:"background, 2026",
+   url:"https://katv.com/news/local/conway-residents-protest-proposed-1b-data-center-citing-tax-water-and-power-concerns-ai-lollie-road-city-citizens-fortune-100-investment-drain-resources"}
+];
+
+var map = L.map('map', {scrollWheelZoom:true}).setView([39.2, -94.0], 4.4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+}).addTo(map);
+
+var colors = {current:'#2ea043', older:'#b08800'};
+var markers = [];
+
+sites.forEach(function(s, i){
+  var m = L.circleMarker([s.lat, s.lon], {
+    radius: s.status === 'current' ? 9 : 7.5,
+    color: colors[s.status], fillColor: colors[s.status],
+    fillOpacity: 0.85, weight: 2
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var badgeClass = s.status === 'current' ? 'cur' : 'old';
+  var badgeText = s.status === 'current' ? 'Current' : 'Older';
+
+  m.bindTooltip(
+    '<div class="tt"><span class="badge '+badgeClass+'">'+badgeText+'</span>' +
+    '<b>'+s.place+'</b>' +
+    '<div class="d">'+s.headline+'</div>' +
+    '<div class="d">'+s.desc+'</div>' +
+    '<div class="s">'+s.source+' · '+s.date+'</div></div>',
+    {direction:'top', offset:[0,-6], opacity:0.97}
+  );
+
+  m.bindPopup(
+    '<span class="badge '+badgeClass+'">'+badgeText+'</span><br>' +
+    '<b>'+s.place+'</b><br>' + s.headline + '<br>' +
+    '<a href="'+s.url+'" target="_blank" rel="noopener">'+s.source+' · '+s.date+'</a>'
+  );
+
+  markers.push(m);
+});
+
+function renderList(){
+  var list = document.getElementById('list');
+  list.innerHTML = '';
+  var groups = [
+    {key:'current', title:'Past 24 Hours (Current)'},
+    {key:'older', title:'Older / Background'}
+  ];
+  groups.forEach(function(g){
+    var h = document.createElement('div');
+    h.className = 'group-title';
+    h.textContent = g.title;
+    list.appendChild(h);
+    sites.forEach(function(s, i){
+      if (s.status !== g.key) return;
+      var row = document.createElement('div');
+      row.className = 'row ' + (g.key === 'current' ? 'cur' : 'old');
+      row.innerHTML = '<div class="place">'+s.place+'</div>' +
+        '<div class="headline">'+s.headline+'</div>' +
+        '<div class="meta">'+s.source+' · '+s.date+'</div>';
+      row.addEventListener('click', function(){
+        map.flyTo([s.lat, s.lon], 9, {duration: 0.8});
+        markers[i].openPopup();
+      });
+      list.appendChild(row);
+    });
   });
+}
+renderList();
 </script>
 </body>
 </html>
