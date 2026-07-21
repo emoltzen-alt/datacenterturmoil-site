@@ -6,36 +6,251 @@
 <title>Data Center Community Response — Map (last 24 hours)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
+  :root{
+    --bg:#0f1419; --card:#1a2129; --ink:#e6edf3; --muted:#9aa7b4;
+    --accent:#4ea1ff; --current:#2ea043; --older:#b08800; --line:#2a333d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);}
+  #app{display:flex;height:100%;width:100%}
+  #sidebar{width:340px;min-width:340px;height:100%;overflow-y:auto;background:var(--bg);
+    border-right:1px solid var(--line);padding:16px;box-sizing:border-box}
+  #sidebar h1{font-size:16px;margin:0 0 4px}
+  #sidebar .sub{color:var(--muted);font-size:12px;margin:0 0 14px}
+  #map-wrap{flex:1;position:relative;height:100%}
   #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  .legend{position:absolute;bottom:16px;right:16px;z-index:500;background:rgba(26,33,41,.92);
+    border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink)}
+  .legend .row{display:flex;align-items:center;gap:8px;margin:4px 0}
+  .legend .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+  .dot.cur{background:var(--current)}
+  .dot.old{background:var(--older)}
+  h2.grp{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  h2.grp:first-of-type{margin-top:0}
+  .row-item{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:6px;padding:8px 10px;margin:0 0 8px;cursor:pointer;transition:background .15s}
+  .row-item:hover{background:#212a33}
+  .row-item.cur{border-left-color:var(--current)}
+  .row-item.old{border-left-color:var(--older)}
+  .row-item .loc{font-weight:700;font-size:13px}
+  .row-item .headline{font-size:12px;margin:2px 0 4px;color:var(--ink)}
+  .row-item .meta{font-size:11px;color:var(--muted)}
+  .badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
+    padding:1px 6px;border-radius:20px;color:#06120a;margin-right:6px;display:inline-block}
+  .badge.cur{background:var(--current);color:#02160a}
+  .badge.old{background:var(--older);color:#1a1400}
+  .note{color:var(--muted);font-size:11px;font-style:italic;background:var(--card);
+    border:1px dashed var(--line);border-radius:6px;padding:8px 10px;margin:8px 0 14px}
+  a{color:var(--accent)}
+  .leaflet-popup-content{font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#111}
+  .leaflet-popup-content b{font-size:14px}
+  .tt{font:12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#111;max-width:220px}
+  .tt b{font-size:13px;display:block;margin-bottom:2px}
+  .tt .tbadge{font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:10px;color:#06120a;display:inline-block;margin-bottom:3px}
+  .tt .tbadge.cur{background:#2ea043;color:#02160a}
+  .tt .tbadge.old{background:#b08800;color:#1a1400}
+  @media (max-width:720px){
+    #app{flex-direction:column}
+    #sidebar{width:100%;min-width:0;height:40%;border-right:none;border-bottom:1px solid var(--line)}
+    #map-wrap{height:60%}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="sidebar">
+    <h1>Data Center Community Response</h1>
+    <div class="sub">Generated Tuesday, July 21, 2026 &middot; window: prior 24 hours (&approx; July 20&ndash;21, 2026), with older context. Click a row to fly to its pin. <a href="report.html">Full report &rarr;</a></div>
+    <div id="list-cur"></div>
+    <div id="list-old"></div>
+  </div>
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="legend">
+      <div class="row"><span class="dot cur"></span> Current (past 24h)</div>
+      <div class="row"><span class="dot old"></span> Older / background</div>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
   var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
+    // CURRENT — past 24 hours (~July 20-21, 2026)
+    {loc:"Spartanburg County, SC", lat:34.9496, lng:-81.9320, status:"current",
+     headline:"County Council advances one-year data-center moratorium (2nd reading)",
+     desc:"A standing-room-only crowd watched council pass second reading of a one-year pause on new data-center applications; a third/final vote could come as soon as August.",
+     source:"FOX Carolina", date:"July 21, 2026",
+     url:"https://www.foxcarolina.com/2026/07/21/spartanburg-co-council-advances-data-center-moratorium-discusses-flock-cameras/"},
+    {loc:"Augusta-Richmond County, GA", lat:33.4735, lng:-82.0105, status:"current",
+     headline:"Commission faces vote on county's first data-center ordinance",
+     desc:"Commissioners weighed a first-ever zoning ordinance (500-ft residential buffers) vs. extending the moratorium; 11 residents signed up to oppose a rushed process, utility costs, and water quality.",
+     source:"WRDW", date:"July 20, 2026",
+     url:"https://www.wrdw.com/2026/07/20/augusta-commission-faces-data-center-vote-amid-growing-community-pushback/"},
+    {loc:"Milton, GA", lat:34.1319, lng:-84.3038, status:"current",
+     headline:"City Council extends data-center application moratorium",
+     desc:"After a public hearing, council voted to extend the temporary halt on data-center applications up to 180 days to draft permanent rules and gather stakeholder input.",
+     source:"City of Milton, GA", date:"July 20, 2026",
+     url:"https://www.miltonga.gov/Home/Components/News/News/3639/1351"},
+    {loc:"McCormick County, SC", lat:33.9107, lng:-82.2932, status:"current",
+     headline:"Residents rally over federal data-center lease ahead of commission meeting",
+     desc:"Neighbors held a community meeting opposing a data center tied to a DOE/NNSA lease with Amentum, citing noise, heavy water use, and strain on local resources, ahead of Tuesday's commission meeting.",
+     source:"WRDW", date:"July 20, 2026",
+     url:"https://www.wrdw.com/2026/07/20/mccormick-county-residents-discuss-proposed-data-center/"},
+    {loc:"Gallatin, TN", lat:36.3884, lng:-86.4458, status:"current",
+     headline:"City Council weighs blocking further data-center development",
+     desc:"Council took up measures to halt new data-center construction in a city already home to a 900+ acre Meta campus; nearby residents describe ongoing noise impacts.",
+     source:"WSMV", date:"July 20, 2026",
+     url:"https://www.wsmv.com/2026/07/20/gallatin-city-council-consider-blocking-data-center-development/"},
+    {loc:"Boulder City, NV", lat:35.9786, lng:-114.8339, status:"current",
+     headline:"“Expletives, fear and anger” as data-center fight turns nasty",
+     desc:"The fight over a BLM-approved AI data center on federal land escalated further; a 6,000+ signature petition and a city council vote to appeal the federal approval.",
+     source:"The Nevada Independent / Mesa Valleys Progress", date:"July 20, 2026",
+     url:"https://mvprogress.com/2026/07/20/expletives-fear-and-anger-a-data-center-fight-turns-nasty-in-boulder-city/"},
+    {loc:"Tulare County, CA", lat:36.2077, lng:-119.3473, status:"current",
+     headline:"Fair board to vote on fairgrounds land lease for edge data centers",
+     desc:"Tuesday's agenda includes leasing 2–5 acres to Global Stack LLC for 8–10 MW edge-computing data centers; no organized opposition reported yet.",
+     source:"The Business Journal", date:"July 21, 2026",
+     url:"https://thebusinessjournal.com/tulare-fair-board-data-center-lease-vote/"},
+
+    // OLDER / background
+    {loc:"Paulding County, GA", lat:33.9218, lng:-84.8408, status:"older",
+     headline:"Overflow crowds demand moratorium amid rezoning fight",
+     desc:"Residents packed two standing-room-only commission meetings, accusing the county of using text amendments to sidestep public-hearing requirements.",
+     source:"FOX 5 Atlanta", date:"background",
+     url:"https://www.fox5atlanta.com/news/paulding-public-meetings-overflow-residents-fight-data-centers"},
+    {loc:"Colleton County, SC", lat:32.9048, lng:-80.6598, status:"older",
+     headline:"County adopts six-month moratorium after months of outcry",
+     desc:"After hundreds of residents opposed an 800+ acre, 1,000 MW data center in the ACE Basin watershed, council passed a moratorium; a related lawsuit was paused.",
+     source:"Live 5 News", date:"July 8, 2026",
+     url:"https://www.live5news.com/2026/07/08/6-month-pause-data-center-developments-colleton-county-lawsuit-paused/"},
+    {loc:"Douglas County, GA", lat:33.7515, lng:-84.7477, status:"older",
+     headline:"700-acre data-center proposal draws resident pushback",
+     desc:"A five-building campus south of I-20 faces opposition over noise, water use, and utility rates ahead of a pivotal public hearing.",
+     source:"AOL / local news", date:"background",
+     url:"https://www.aol.com/news/douglas-county-data-center-sparks-222241717.html"},
+    {loc:"Franklin County, MO", lat:38.4506, lng:-91.0068, status:"older",
+     headline:"Two proposed data centers draw opposition, hearing set",
+     desc:"Residents say the developments would sit too close to homes and change the rural character of the area.",
+     source:"FOX 2 Now", date:"background",
+     url:"https://fox2now.com/news/missouri/public-hearing-set-as-residents-fight-proposed-data-centers-in-franklin-county/"},
+    {loc:"Frederick County, MD", lat:39.4143, lng:-77.4105, status:"older",
+     headline:"Residents fear county becoming the next “data center alley”",
+     desc:"With projects proliferating nearby, residents worry the county could resemble Loudoun County, VA's dense data-center corridor.",
+     source:"Maryland Matters", date:"June 12, 2026",
+     url:"https://marylandmatters.org/2026/06/12/residents-fear-frederick-county-will-be-the-new-data-center-alley/"},
+    {loc:"Westfield, MA", lat:42.1251, lng:-72.7495, status:"older",
+     headline:"“I will tie myself to a bulldozer” — backlash over $4B data center",
+     desc:"Residents are mobilizing against a proposed $4 billion data center, citing water, power, and community-character concerns.",
+     source:"The Boston Globe", date:"July 14, 2026",
+     url:"https://www.bostonglobe.com/2026/07/14/business/westfield-data-center-backlash-healey/"},
+    {loc:"Indianapolis, IN", lat:39.7684, lng:-86.1581, status:"older",
+     headline:"Council committee advances citywide data-center moratorium",
+     desc:"Committee voted 10-3 to advance a moratorium on new data-center approvals through end of 2027, backed by Mayor Hogsett.",
+     source:"Mirror Indy", date:"July 13, 2026",
+     url:"https://mirrorindy.org/indianapolis-data-center-moratorium-city-county-council-joe-hogsett-support/"},
+    {loc:"Prince George's County, MD", lat:38.8162, lng:-76.7497, status:"older",
+     headline:"County Council approves two-year data-center moratorium",
+     desc:"Council voted to pause new data-center development for two years, joining other Maryland jurisdictions restricting the industry.",
+     source:"WJLA", date:"July 7, 2026",
+     url:"https://wjla.com/news/local/prince-georges-council-approves-moratorium-on-new-data-center-development"},
+    {loc:"Chesapeake, VA", lat:36.7682, lng:-76.2875, status:"older",
+     headline:"Council rejects data-center rezoning, 7-0",
+     desc:"Council unanimously rejected the Etheridge Lakes Data Center rezoning after a five-month process, citing noise and environmental concerns.",
+     source:"Data Center Dynamics", date:"background",
+     url:"https://www.datacenterdynamics.com/en/news/chesapeake-city-council-rejects-land-rezoning-proposal-for-virginia-data-center/"},
+    {loc:"Sturtevant, WI", lat:42.6975, lng:-87.8987, status:"older",
+     headline:"Residents file class-action lawsuit over Microsoft data-center noise",
+     desc:"Three residents sued alleging excessive, pervasive noise from diesel generators and cooling systems at a Microsoft AI data center.",
+     source:"Tom's Hardware", date:"background",
+     url:"https://www.tomshardware.com/tech-industry/data-centers/wisconsin-residents-file-class-action-lawsuit-against-microsofts-worlds-most-powerful-ai-data-center-due-to-data-center-noise-plaintiffs-also-mention-construction-noise-and-extreme-light-pollution-from-usd7-3-billion-facility"},
+    {loc:"Pahrump / Nye County, NV", lat:36.2083, lng:-115.9839, status:"older",
+     headline:"Residents join national day of protest against AI data centers",
+     desc:"Protesters lined Highway 160 opposing the Blackjack and Osprey data centers over water and utility concerns; the county has since imposed a temporary application moratorium.",
+     source:"FOX5 Vegas", date:"protest held July 18, 2026",
+     url:"https://www.fox5vegas.com/2026/07/20/pahrump-residents-protest-proposed-ai-data-center-citing-water-utility-concerns/"},
+    {loc:"Botetourt County, VA", lat:37.4948, lng:-79.8850, status:"older",
+     headline:"Residents rally against Google data center in national protest day",
+     desc:"Residents joined a national day of protest against a proposed Google data center, one of more than a dozen coordinated rallies nationwide.",
+     source:"WSLS", date:"July 18, 2026",
+     url:"https://www.wsls.com/news/local/2026/07/18/botetourt-county-residents-rally-against-google-data-center-amid-national-day-of-protest/"},
+    {loc:"Festus, MO", lat:38.2181, lng:-90.3990, status:"older",
+     headline:"Developer scales back project after sustained public opposition",
+     desc:"Facing sustained resident pushback, a data-center developer agreed to reduce the scope of its Festus-area project.",
+     source:"First Alert 4", date:"July 1, 2026",
+     url:"https://www.firstalert4.com/2026/07/01/festus-data-center-developer-scales-back-project-after-public-opposition/"}
   ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
+
+  var map = L.map('map', {scrollWheelZoom:true}).setView([39.0, -95.0], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var markers = {};
+  var COLORS = {current:'#2ea043', older:'#b08800'};
+
+  sites.forEach(function(s, i){
+    var color = COLORS[s.status];
+    var marker = L.circleMarker([s.lat, s.lng], {
+      radius: s.status === 'current' ? 9 : 7,
+      color: color, fillColor: color, fillOpacity: 0.85, weight: 2
+    }).addTo(map);
+
+    var badgeClass = s.status === 'current' ? 'cur' : 'old';
+    var badgeText = s.status === 'current' ? 'CURRENT' : 'OLDER';
+
+    marker.bindTooltip(
+      '<div class="tt"><span class="tbadge ' + badgeClass + '">' + badgeText + '</span>' +
+      '<b>' + s.loc + '</b>' + s.headline + '<br><br>' + s.desc +
+      '<br><br><em>' + s.source + ' &middot; ' + s.date + '</em></div>',
+      {direction:'top', offset:[0,-6], sticky:false}
+    );
+
+    marker.bindPopup(
+      '<b>' + s.loc + '</b><br>' + s.headline + '<br>' +
+      '<span style="color:#555">' + s.source + ' &middot; ' + s.date + '</span><br>' +
+      (s.url ? '<a href="' + s.url + '" target="_blank" rel="noopener">Read source &rarr;</a>' : '<em>No source link</em>')
+    );
+
+    markers[i] = marker;
   });
+
+  function buildList(containerId, groupLabel, status){
+    var container = document.getElementById(containerId);
+    var heading = document.createElement('h2');
+    heading.className = 'grp';
+    heading.textContent = groupLabel;
+    container.appendChild(heading);
+
+    var items = sites.map(function(s,i){return {s:s,i:i};}).filter(function(o){return o.s.status===status;});
+    items.forEach(function(o){
+      var s = o.s, i = o.i;
+      var row = document.createElement('div');
+      row.className = 'row-item ' + (status === 'current' ? 'cur' : 'old');
+      row.innerHTML =
+        '<span class="badge ' + (status === 'current' ? 'cur' : 'old') + '">' + (status === 'current' ? 'Current' : 'Older') + '</span>' +
+        '<span class="loc">' + s.loc + '</span>' +
+        '<div class="headline">' + s.headline + '</div>' +
+        '<div class="meta">' + s.source + ' &middot; ' + s.date + '</div>';
+      row.addEventListener('click', function(){
+        map.flyTo([s.lat, s.lng], 9, {duration: 0.8});
+        markers[i].openPopup();
+      });
+      container.appendChild(row);
+    });
+
+    if (status === 'current') {
+      var note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = 'Official meeting videos: no official government-meeting livestream/recording could be confirmed for this 24-hour window at the required confidence level, so none are plotted or listed.';
+      container.appendChild(note);
+    }
+  }
+
+  buildList('list-cur', 'Past 24 Hours (Current)', 'current');
+  buildList('list-old', 'Older / Background', 'older');
 </script>
 </body>
 </html>
