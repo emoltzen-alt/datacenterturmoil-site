@@ -3,39 +3,473 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<title>Data Center Turmoil — Live Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root {
+    --bg: #0b0e13;
+    --panel: #12161e;
+    --panel-border: #22283533;
+    --border: #232a36;
+    --text: #e7ebf2;
+    --muted: #93a0b4;
+    --current: #35d07f;
+    --older: #e8a33d;
+    --accent: #6ea8fe;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+  #sidebar {
+    width: 380px;
+    min-width: 300px;
+    max-width: 45vw;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #sidebar header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #sidebar header h1 {
+    font-size: 17px;
+    margin: 0 0 4px;
+    letter-spacing: 0.2px;
+  }
+  #sidebar header p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  #legend {
+    display: flex;
+    gap: 14px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  #legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px #0006; }
+  .dot.current { background: var(--current); }
+  .dot.older { background: var(--older); }
+  #list { overflow-y: auto; flex: 1; }
+  .group-title {
+    position: sticky; top: 0;
+    background: var(--panel);
+    padding: 10px 18px 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    z-index: 2;
+  }
+  .row {
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .row:hover { background: #ffffff08; }
+  .row .place {
+    font-size: 13.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .row .headline {
+    font-size: 12.5px;
+    color: #c7cee0;
+    margin-top: 3px;
+    line-height: 1.35;
+  }
+  .row .meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .badge.current { background: #35d07f22; color: var(--current); border: 1px solid #35d07f55; }
+  .badge.older { background: #e8a33d22; color: var(--older); border: 1px solid #e8a33d55; }
+  .badge.video { background: #6ea8fe22; color: var(--accent); border: 1px solid #6ea8fe55; }
+  #map { flex: 1; height: 100%; }
+
+  .lf-tooltip {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    max-width: 260px;
+    box-shadow: 0 6px 24px #000a;
+  }
+  .lf-tooltip .tt-place { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .lf-tooltip .tt-headline { color: #c7cee0; margin-bottom: 4px; line-height: 1.35; }
+  .lf-tooltip .tt-desc { color: var(--muted); margin-bottom: 4px; line-height: 1.35; }
+  .lf-tooltip .tt-meta { color: var(--muted); font-size: 11px; }
+
+  .leaflet-popup-content-wrapper {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .leaflet-popup-tip { background: var(--panel); }
+  .popup-place { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .popup-headline { color: #c7cee0; font-size: 12.5px; margin-bottom: 6px; line-height: 1.4; }
+  .popup-desc { color: var(--muted); font-size: 12px; margin-bottom: 6px; line-height: 1.4; }
+  .popup-meta { color: var(--muted); font-size: 11px; margin-bottom: 6px; }
+  .popup-link {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid #6ea8fe55;
+    padding: 3px 9px;
+    border-radius: 5px;
+  }
+  .popup-link:hover { background: #6ea8fe1a; }
+
+  #empty-video-note {
+    padding: 8px 18px 14px;
+    font-size: 11.5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: #2a3242; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  @media (max-width: 720px) {
+    #app { flex-direction: column; }
+    #sidebar { width: 100%; max-width: 100%; height: 45%; border-right: none; border-bottom: 1px solid var(--border); }
+    #map { height: 55%; }
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="sidebar">
+    <header>
+      <h1>Data Center Turmoil — U.S. Map</h1>
+      <p>Local community response to data center development. Green = past 24 hours. Amber = older / background context. Click a row to fly to its pin.</p>
+    </header>
+    <div id="legend">
+      <span><i class="dot current"></i>Current (24h)</span>
+      <span><i class="dot older"></i>Older / background</span>
+    </div>
+    <div id="list"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+// ---------------------------------------------------------------------
+// DATA — U.S. local community response to data centers.
+// Window: past 24 hours as of 2026-08-18 (CURRENT) vs older background.
+// Sources collected via web search; see report.html for full write-up.
+// ---------------------------------------------------------------------
+const ITEMS = [
+  // ---------------- CURRENT (past 24 hours) ----------------
+  {
+    id: "alamance-nc",
+    status: "current",
+    kind: "video",
+    place: "Alamance County, NC",
+    region: "Graham, North Carolina",
+    lat: 36.0682, lon: -79.4064,
+    headline: "Commissioners approve 1-year data center moratorium after marathon hearing",
+    desc: "Board of Commissioners voted unanimously to enact a one-year moratorium on large-scale (10MW+) data centers after hours of resident testimony; many wore 'No Data Centers' stickers and pushed for an even longer pause.",
+    source: "Alamance County Government — official YouTube livestream (public hearing) · corroborated by FOX8 WGHP",
+    date: "2026-08-17",
+    url: "https://www.youtube.com/watch?v=xztYfAvTKqY"
+  },
+  {
+    id: "edgerton-ks",
+    status: "current",
+    kind: "web",
+    place: "Edgerton, KS",
+    region: "Johnson County, Kansas",
+    lat: 38.7811, lon: -94.9927,
+    headline: "City sues its own residents to block data-center ban petition",
+    desc: "Edgerton filed suit in Johnson County District Court against petition organizers, seeking to void a citizen petition (200+ signatures) that would ban 'high-impact' data centers and to pause the ordinance from reaching a public vote.",
+    source: "Johnson County Post",
+    date: "2026-08-18",
+    url: "https://johnsoncountypost.com/2026/08/18/city-of-edgerton-files-lawsuit-294038/"
+  },
+  {
+    id: "knox-ne",
+    status: "current",
+    kind: "web",
+    place: "Knox County, NE",
+    region: "Center, Nebraska",
+    lat: 42.6039, lon: -97.8887,
+    headline: "Planning Commission holds public hearing on countywide data center moratorium",
+    desc: "The Planning Commission accepted written and oral public comment for and against a proposed moratorium on new data center development in the county.",
+    source: "Knox County, Nebraska (official notice)",
+    date: "2026-08-18",
+    url: "https://knoxcountyne.gov/2026/08/04/planning-commission-public-hearing-notice-8-18-2026-moratorium-on-data-centers-in-knox-county/"
+  },
+  {
+    id: "snohomish-wa",
+    status: "current",
+    kind: "web",
+    place: "Snohomish County, WA",
+    region: "Everett, Washington",
+    lat: 47.9790, lon: -122.2021,
+    headline: "Public hearing set on emergency data center moratorium",
+    desc: "The County Council scheduled an Aug. 19 public hearing for residents to testify on the emergency moratorium it adopted unanimously in June, pausing new data center development in unincorporated areas.",
+    source: "Lynnwood Times",
+    date: "2026-08-18",
+    url: "https://lynnwoodtimes.com/2026/08/18/data-center/"
+  },
+  {
+    id: "statesboro-ga",
+    status: "current",
+    kind: "web",
+    place: "Statesboro, GA",
+    region: "Bulloch County, Georgia",
+    lat: 32.4488, lon: -81.7832,
+    headline: "City Council takes up contested Burkhalter Road data center rezoning",
+    desc: "Council met to vote on rezoning ~27 acres from high-density residential to office/business for a data center, after the Planning Commission backed it 5-1 and nearby residents protested.",
+    source: "WSAV",
+    date: "2026-08-18",
+    url: "https://www.wsav.com/news/statesboro-city-council-to-vote-on-data-center-zoning-tuesday/"
+  },
+
+  // ---------------- OLDER / BACKGROUND ----------------
+  {
+    id: "stlouis-mo",
+    status: "older",
+    kind: "web",
+    place: "St. Louis County, MO",
+    region: "Clayton, Missouri",
+    lat: 38.6403, lon: -90.3226,
+    headline: "'We don't want them': residents push back on zoning rules for data centers",
+    desc: "At a public hearing, residents said proposed zoning regulations don't go far enough; one speaker called for an outright ban on future data center development in the county.",
+    source: "St. Louis Public Radio",
+    date: "2026-08-11",
+    url: "https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects"
+  },
+  {
+    id: "fortworth-tx",
+    status: "older",
+    kind: "web",
+    place: "Fort Worth, TX",
+    region: "Tarrant County, Texas",
+    lat: 32.7555, lon: -97.3308,
+    headline: "City Council unanimously advances data center moratorium",
+    desc: "Council voted unanimously on first procedural steps toward a data center moratorium; most public speakers at the hearing favored a pause.",
+    source: "Fort Worth Report",
+    date: "2026-08-12",
+    url: "https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"
+  },
+  {
+    id: "leavenworth-ks",
+    status: "older",
+    kind: "web",
+    place: "Leavenworth County, KS",
+    region: "near Tonganoxie, Kansas",
+    lat: 39.1114, lon: -95.0930,
+    headline: "Commission lifts moratorium 3-2, clearing path for large data center",
+    desc: "A push to extend the county's data center moratorium failed on a 3-2 vote, opening the way for a large data center proposed south of Tonganoxie over some residents' objections.",
+    source: "Tonganoxie Mirror",
+    date: "2026-08-12",
+    url: "https://www.tonganoxiemirror.com/news/2026/aug/12/leavenworth-county-commission-lifts-moratorium-on-data-center-by-3-2-vote/"
+  },
+  {
+    id: "effingham-ga",
+    status: "older",
+    kind: "web",
+    place: "Effingham County, GA",
+    region: "Springfield, Georgia",
+    lat: 32.3616, lon: -81.3129,
+    headline: "Commissioners plan public forum on OpenAI's $20B 'Project Camellia'",
+    desc: "Amid growing opposition over water, power and noise concerns, commissioners are planning a dedicated Saturday public forum (tentatively Aug. 22 or 29, to be livestreamed) on OpenAI's proposed data center campus, alongside discussion of a possible moratorium.",
+    source: "Effingham Herald",
+    date: "2026-08-17",
+    url: "https://www.effinghamherald.net/data-centers/project-camellia-effingham-plans-openai-data-center-forum-public-meeting/"
+  },
+  {
+    id: "washington-pa",
+    status: "older",
+    kind: "web",
+    place: "Washington County, PA",
+    region: "Hanover Township, Pennsylvania",
+    lat: 40.2984, lon: -80.3323,
+    headline: "Public hearing on data center's proposed gas power plant draws objections",
+    desc: "Lawyers for concerned citizens challenged the completeness of the application and the board of supervisors' jurisdiction to approve a gas-fired power plant meant to supply electricity to a proposed data center.",
+    source: "CBS News Pittsburgh",
+    date: "2026-08-05",
+    url: "https://www.cbsnews.com/pittsburgh/news/public-hearing-data-center-hanover-township-washington-county/"
+  },
+  {
+    id: "indianapolis-in",
+    status: "older",
+    kind: "web",
+    place: "Indianapolis, IN",
+    region: "Marion County, Indiana",
+    lat: 39.7684, lon: -86.1581,
+    headline: "City-County Council votes 23-1 for moratorium through end of 2027",
+    desc: "Following sustained community pressure, councilors overwhelmingly approved a moratorium on new data centers; the measure now heads to the Metropolitan Development Commission for final approval.",
+    source: "Mirror Indy / Inside INdiana Business",
+    date: "2026-08-10",
+    url: "https://mirrorindy.org/indianapolis-city-county-council-data-center-moratorium-approval/"
+  },
+  {
+    id: "forsyth-nc",
+    status: "older",
+    kind: "web",
+    place: "Forsyth County, NC",
+    region: "Rural Hall, North Carolina",
+    lat: 36.2957, lon: -80.2917,
+    headline: "Commissioners vote down hyperscale data center rezoning, 5-2",
+    desc: "The Forsyth County Board of Commissioners rejected a rezoning application that would have allowed a hyperscale data center near Rural Hall.",
+    source: "WFDD",
+    date: "2026-07-30",
+    url: "https://www.wfdd.org/politics-government/2026-07-30/forsyth-commission-votes-down-rural-hall-data-center-proposal"
+  },
+  {
+    id: "coweta-ga",
+    status: "older",
+    kind: "web",
+    place: "Coweta County, GA",
+    region: "Newnan, Georgia",
+    lat: 33.3807, lon: -84.7997,
+    headline: "Commissioners pass 180-day moratorium on data center proposals",
+    desc: "Citing being 'on our doorstep' of rapid data center growth nearby, commissioners approved a 180-day pause on new data center proposals.",
+    source: "Local wire via Yahoo News",
+    date: "2026-08-04",
+    url: "https://www.yahoo.com/news/doorstep-coweta-county-passes-180-175558126.html"
+  }
+];
+
+const NO_OTHER_VIDEOS_NOTE = "No other official government meeting livestreams/recordings met the bar for this window — several county channels (e.g. Snohomish County, Knox County NE) had not posted an archived hearing video at the time of this report; only clips or third-party news video existed, which are excluded.";
+
+// ---------------------------------------------------------------------
+// MAP
+// ---------------------------------------------------------------------
+const map = L.map('map', { zoomControl: true, minZoom: 3 }).setView([39.5, -98.35], 5);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+const markersById = {};
+
+function colorFor(status) {
+  return status === 'current' ? '#35d07f' : '#e8a33d';
+}
+
+function makeIcon(item) {
+  const color = colorFor(item.status);
+  const ring = item.kind === 'video' ? '#6ea8fe' : '#0b0e13';
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+        width:16px;height:16px;border-radius:50%;
+        background:${color};
+        border:2.5px solid ${ring};
+        box-shadow:0 0 0 2px #0008, 0 0 8px ${color}99;
+      "></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
   });
+}
+
+ITEMS.forEach(item => {
+  const marker = L.marker([item.lat, item.lon], { icon: makeIcon(item) }).addTo(map);
+
+  const badgeLabel = item.status === 'current' ? 'CURRENT' : 'OLDER';
+  marker.bindTooltip(`
+    <div class="tt-place">${item.place} <span style="color:${colorFor(item.status)};font-size:10px;font-weight:700;">● ${badgeLabel}</span></div>
+    <div class="tt-headline">${item.headline}</div>
+    <div class="tt-desc">${item.desc}</div>
+    <div class="tt-meta">${item.source} · ${item.date}</div>
+  `, { direction: 'top', offset: [0, -10], opacity: 0.97 });
+
+  marker.bindPopup(`
+    <div class="popup-place">${item.place}</div>
+    <div class="popup-headline">${item.headline}</div>
+    <div class="popup-desc">${item.desc}</div>
+    <div class="popup-meta">${item.source} · ${item.date}${item.kind === 'video' ? ' · Official meeting video' : ''}</div>
+    <a class="popup-link" href="${item.url}" target="_blank" rel="noopener">View source →</a>
+  `);
+
+  markersById[item.id] = marker;
+});
+
+// ---------------------------------------------------------------------
+// SIDEBAR
+// ---------------------------------------------------------------------
+const listEl = document.getElementById('list');
+
+function renderGroup(title, items) {
+  if (!items.length) return '';
+  let html = `<div class="group-title">${title} (${items.length})</div>`;
+  items.forEach(item => {
+    const badgeClass = item.status === 'current' ? 'current' : 'older';
+    const badgeLabel = item.status === 'current' ? 'Current' : 'Older';
+    html += `
+      <div class="row" data-id="${item.id}">
+        <div class="place">
+          <span class="badge ${badgeClass}">${badgeLabel}</span>
+          ${item.kind === 'video' ? '<span class="badge video">Video</span>' : ''}
+          ${item.place}
+        </div>
+        <div class="headline">${item.headline}</div>
+        <div class="meta">${item.region} · ${item.source} · ${item.date}</div>
+      </div>`;
+  });
+  return html;
+}
+
+const current = ITEMS.filter(i => i.status === 'current');
+const older = ITEMS.filter(i => i.status === 'older');
+
+listEl.innerHTML =
+  renderGroup('Past 24 Hours (Current)', current) +
+  renderGroup('Older / Background', older);
+
+listEl.innerHTML += `<div id="empty-video-note">📹 ${NO_OTHER_VIDEOS_NOTE}</div>`;
+
+listEl.querySelectorAll('.row').forEach(row => {
+  row.addEventListener('click', () => {
+    const item = ITEMS.find(i => i.id === row.dataset.id);
+    if (!item) return;
+    map.flyTo([item.lat, item.lon], 9, { duration: 0.9 });
+    const marker = markersById[item.id];
+    setTimeout(() => marker.openPopup(), 500);
+  });
+});
 </script>
 </body>
 </html>
