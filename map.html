@@ -6,36 +6,395 @@
 <title>Data Center Community Response — Map (last 24 hours)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root{--bg:#0f1419;--panel:#151b22;--ink:#e6edf3;--muted:#9aa7b4;--line:#2a333d;
+        --current:#2ea043;--older:#d29922;--accent:#4ea1ff}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink)}
+  #app{display:flex;height:100%;width:100%}
+  #map{flex:1 1 auto;height:100%;min-width:0}
+
+  #sidebar{flex:0 0 340px;height:100%;display:flex;flex-direction:column;
+    background:var(--panel);border-left:1px solid var(--line)}
+  #sidebar h1{font-size:15px;margin:0;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+  #sidebar h1 span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;font-weight:400}
+
+  .legend{display:flex;gap:14px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .legend .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+  .sections{flex:1 1 auto;overflow-y:auto}
+  .section-label{position:sticky;top:0;background:var(--panel);padding:10px 16px 6px;
+    font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line);z-index:5}
+  .row{padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+  .row:hover{background:#1c242d}
+  .row .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .badge.current{background:rgba(46,160,67,.18);color:#5fd67a}
+  .badge.older{background:rgba(210,153,34,.18);color:#e3b341}
+  .row .place{font-weight:600;font-size:13px}
+  .row .headline{color:var(--muted);font-size:12.5px;margin-top:3px}
+  .row .meta{color:#6e7a86;font-size:11px;margin-top:4px}
+
+  .tt{font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:260px}
+  .tt b{font-size:13.5px}
+  .tt .b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:3px;margin-bottom:4px}
+  .tt .b.current{background:rgba(46,160,67,.22);color:#5fd67a}
+  .tt .b.older{background:rgba(210,153,34,.22);color:#e3b341}
+  .tt .loc{color:#9aa7b4;font-size:11.5px;margin:2px 0 4px}
+  .tt .desc{color:#c7d0d9}
+  .tt .src{color:#7d8791;font-size:11px;margin-top:4px}
+
+  .leaflet-popup-content-wrapper{background:#151b22;color:var(--ink)}
+  .leaflet-popup-tip{background:#151b22}
+  .leaflet-popup-content a{color:var(--accent)}
+
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #map{flex:0 0 55vh}
+    #sidebar{flex:1 1 auto;border-left:0;border-top:1px solid var(--line)}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="map"></div>
+  <div id="sidebar">
+    <h1>Data Center Community Response<span>U.S. map · updated daily</span></h1>
+    <div class="legend">
+      <span><span class="sw" style="background:#2ea043"></span>Past 24 hours</span>
+      <span><span class="sw" style="background:#d29922"></span>Older / background</span>
+    </div>
+    <div class="sections" id="sections"></div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+const ITEMS = [
+  {
+    id: "ralls-mo", status: "CURRENT", type: "web",
+    place: "Ralls County, MO", state: "Missouri", lat: 39.5928, lon: -91.4082,
+    headline: "Ralls County commissioners hold public data center discussion",
+    desc: "Commissioners held an informational meeting after a land tenant said the owner may sell to a data center developer. No formal proposal is on file yet; the presiding commissioner wants any decision to go to a countywide vote. A follow-up meeting on a possible moratorium is set for Sept. 16.",
+    source: "WGEM", date: "2026-08-20",
+    url: "https://www.wgem.com/2026/08/20/ralls-county-commissioners-hold-public-discussion-about-data-centers/"
+  },
+  {
+    id: "oneida-wi", status: "CURRENT", type: "web",
+    place: "Oneida County, WI", state: "Wisconsin", lat: 45.6363, lon: -89.4098,
+    headline: "Oneida County Board unanimously passes one-year data center moratorium",
+    desc: "Supervisors voted to bar new data-center permits for 12 months in zoned, unincorporated areas, citing electricity and water demand, constant industrial noise, and diesel-generator air pollution, while a committee drafts permanent rules.",
+    source: "The Northwoods River News", date: "2026-08-21",
+    url: "https://rivernewsonline.com/news/2026/aug/21/oneida-county-unanimously-passes-data-center-moratorium/"
+  },
+  {
+    id: "tulare-ca", status: "CURRENT", type: "web",
+    place: "Tulare County, CA", state: "California", lat: 36.3302, lon: -119.2921,
+    headline: "Tulare County supervisors impose 45-day data center moratorium",
+    desc: "The Board of Supervisors voted 4-1 to pause data center construction (extendable up to two years) after residents warned of price hikes on utilities, poor water pressure, contaminated/discolored water, and noise pollution. Staff say existing zoning predates data centers.",
+    source: "Valley Voice", date: "2026-08-20",
+    url: "https://www.ourvalleyvoice.com/2026/08/20/agencies-take-action-after-outcry-against-data-center-construction/"
+  },
+  {
+    id: "hanford-ca", status: "CURRENT", type: "web",
+    place: "Hanford, CA", state: "California", lat: 36.3274, lon: -119.6457,
+    headline: "Hanford City Council declines to open zoning to data centers",
+    desc: "The same week Tulare County paused new construction, Hanford's city council declined to change local zoning that currently bars data centers and edge-computing centers within city limits, amid regional resident outcry over resources and noise.",
+    source: "Valley Voice", date: "2026-08-20",
+    url: "https://www.ourvalleyvoice.com/2026/08/20/agencies-take-action-after-outcry-against-data-center-construction/"
+  },
+  {
+    id: "richmond-va", status: "CURRENT", type: "web",
+    place: "Richmond, VA (statewide)", state: "Virginia", lat: 37.5407, lon: -77.4360,
+    headline: "Virginia lawmakers launch study of data center tax breaks, consumption tax",
+    desc: "The General Assembly's Joint Subcommittee on Tax Policy will formally study Virginia's data-center sales-tax exemption and related impacts, with recommendations due Dec. 15. A presenter said citizens \"feel like they're being steamrolled by their local governing bodies and the state.\"",
+    source: "Cardinal News", date: "2026-08-20",
+    url: "https://cardinalnews.org/2026/08/20/general-assembly-launches-effort-to-study-tax-exemptions-consumption-tax-for-data-centers/"
+  },
+  {
+    id: "stlouis-mo", status: "OLDER", type: "web",
+    place: "St. Louis County, MO", state: "Missouri", lat: 38.6413, lon: -90.3260,
+    headline: "Residents push back on zoning rules for data centers",
+    desc: "At a public hearing on proposed data-center zoning rules for unincorporated St. Louis County, residents asked commissioners for a temporary or permanent ban.",
+    source: "STLPR", date: "2026-08-11",
+    url: "https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects"
+  },
+  {
+    id: "imperial-ca", status: "OLDER", type: "web",
+    place: "Imperial County, CA", state: "California", lat: 32.7920, lon: -115.5631,
+    headline: "Imperial Valley cities hit the brakes on data centers",
+    desc: "After months of public outcry, Imperial Valley cities and the county have suspended or slow-walked data-center projects, including a suspension on county land through May 2027.",
+    source: "KPBS", date: "2026-08-04",
+    url: "https://www.kpbs.org/news/environment/2026/08/04/after-months-of-public-outcry-imperial-valley-cities-are-hitting-the-brakes-on-data-centers"
+  },
+  {
+    id: "henry-va", status: "OLDER", type: "web",
+    place: "Henry County, VA", state: "Virginia", lat: 36.6907, lon: -79.8725,
+    headline: "Crowd packs hearing; county goes 'back to the drawing board'",
+    desc: "More than 100 residents packed a Board of Supervisors hearing citing water, noise, health, and animal-habitat concerns, prompting the county to rework proposed data center regulations.",
+    source: "Cardinal News", date: "2026-07-29",
+    url: "https://cardinalnews.org/2026/07/29/crowd-packs-hearing-as-henry-county-goes-back-to-the-drawing-board-on-data-center-regulations/"
+  },
+  {
+    id: "clay-fl", status: "OLDER", type: "web",
+    place: "Clay County, FL", state: "Florida", lat: 29.9911, lon: -81.6787,
+    headline: "Large crowd at hearing on data center development pause",
+    desc: "A public hearing on a proposed one-year pause on new data center development drew a large crowd of concerned residents.",
+    source: "First Coast News", date: "2026-08-05",
+    url: "https://www.firstcoastnews.com/article/news/community/clay-county-commissioners-consider-one-year-pause-on-data-centers/77-27ed60eb-d1b8-4a41-8902-8a7963a0d7af"
+  },
+  {
+    id: "washington-pa", status: "OLDER", type: "web",
+    place: "Washington County, PA", state: "Pennsylvania", lat: 40.1734, lon: -80.2462,
+    headline: "Controversial data center at center of public hearing",
+    desc: "Residents of rural Hanover Township turned out for a public hearing on a proposed data center they say threatens their community's character and resources.",
+    source: "CBS Pittsburgh", date: "2026-08-07",
+    url: "https://www.cbsnews.com/pittsburgh/news/public-hearing-data-center-hanover-township-washington-county/"
+  },
+  {
+    id: "randolph-nc", status: "OLDER", type: "web",
+    place: "Randolph County, NC", state: "North Carolina", lat: 35.7101, lon: -79.8136,
+    headline: "Commissioners adopt data center restrictions after packed hearing",
+    desc: "After a nearly three-hour hearing packed mostly with opponents, commissioners unanimously adopted new restrictions on data center development.",
+    source: "Randolph Hub", date: "2026-07-21",
+    url: "https://randolphhub.com/article/news/randolph-county-commissioners-adopt-data-center-restrictions-after-packed-hours-long-public-hearing"
+  },
+  {
+    id: "janesville-wi", status: "OLDER", type: "web",
+    place: "Janesville, WI (town)", state: "Wisconsin", lat: 42.6828, lon: -89.0187,
+    headline: "Town panel backs yearlong data center moratorium",
+    desc: "The town's planning and zoning committee backed a 12-month moratorium on data center development after residents packed a hearing.",
+    source: "The Cool Down", date: "2026-07-15",
+    url: "https://www.thecooldown.com/green-tech/janesville-data-center-moratorium-public-hearing/"
+  },
+  {
+    id: "prichard-al", status: "OLDER", type: "web",
+    place: "Prichard, AL", state: "Alabama", lat: 30.7396, lon: -88.1201,
+    headline: "Residents voice strong opposition to proposed data center",
+    desc: "Residents packed city council chambers with one message: they do not want a data center in their community.",
+    source: "WPMI NBC15", date: "2026-07-24",
+    url: "https://mynbc15.com/news/local/prichard-residents-voice-strong-opposition-to-proposed-data-center-at-public-hearing"
+  },
+  {
+    id: "westover-al", status: "OLDER", type: "web",
+    place: "Westover, AL", state: "Alabama", lat: 33.4001, lon: -86.4980,
+    headline: "Residents voice concerns over proposed data center",
+    desc: "Residents packed a town hall over a proposed data center on more than 450 acres near U.S. 280, raising questions about water, power, and noise.",
+    source: "CBS42", date: "2026-07-30",
+    url: "https://www.cbs42.com/top-stories/westover-residents-voice-concerns-over-proposed-data-center/"
+  },
+  {
+    id: "calvert-md", status: "OLDER", type: "web",
+    place: "Calvert County, MD", state: "Maryland", lat: 38.5498, lon: -76.5972,
+    headline: "Commissioners pass six-month data center moratorium",
+    desc: "All five commissioners agreed to a six-month moratorium on new data center applications; Amazon had recently withdrawn plans for three data centers near Calvert Cliffs Nuclear Plant.",
+    source: "FOX 5 DC", date: "2026-08-06",
+    url: "https://www.fox5dc.com/news/calvert-county-commissioners-unanimously-pass-6-month-data-center-moratorium"
+  },
+  {
+    id: "yakima-wa", status: "OLDER", type: "web",
+    place: "Yakima County, WA", state: "Washington", lat: 46.6021, lon: -120.5059,
+    headline: "Commissioners pass six-month data center moratorium",
+    desc: "Commissioners voted unanimously for a six-month moratorium barring the county from accepting land-use or building permits for data centers in unincorporated areas.",
+    source: "Yakima Herald", date: "2026-08-05",
+    url: "https://www.yakimaherald.com/news/local/government/yakima-county-commissioners-pass-six-month-data-center-moratorium/article_997dbbc7-7fe0-476a-9d92-73179f958bf7.html"
+  },
+  {
+    id: "alamance-nc", status: "OLDER", type: "web",
+    place: "Alamance County, NC", state: "North Carolina", lat: 36.0684, lon: -79.4001,
+    headline: "Commissioners approve one-year data center moratorium",
+    desc: "Commissioners voted 5-0 after a packed meeting to pause data center discussion for a year; similar moratoriums have followed in Davie, Stokes, and Forsyth counties.",
+    source: "FOX8 WGHP", date: "2026-08-18",
+    url: "https://myfox8.com/news/north-carolina/alamance/alamance-county-commissioners-approve-1-year-data-center-moratorium/"
+  },
+  {
+    id: "alamance-nc-video", status: "OLDER", type: "video",
+    place: "Alamance County, NC", state: "North Carolina", lat: 36.0684, lon: -79.4001,
+    headline: "Official livestream: Commissioners' public hearing on data center moratorium",
+    desc: "Official county-produced livestream of the Aug. 17 commissioners meeting, including the public hearing on the data center moratorium.",
+    source: "Alamance County Government (YouTube)", date: "2026-08-17",
+    url: "https://www.youtube.com/watch?v=xztYfAvTKqY"
+  },
+  {
+    id: "loudoun-va", status: "OLDER", type: "web",
+    place: "Loudoun County, VA", state: "Virginia", lat: 39.1157, lon: -77.5636,
+    headline: "Planning Commission rejects 3M-square-foot data center campus",
+    desc: "The Planning Commission soundly rejected a proposed 3-million-square-foot data center campus, sending a strong signal ahead of a Board of Supervisors vote.",
+    source: "Loudoun Now", date: "2026-06-25",
+    url: "https://www.loudounnow.com/news/loudoun-planning-commission-rejects-3m-square-foot-data-center-campus/article_35f01dc9-af58-4afb-a364-e93b96b50e43.html"
+  },
+  {
+    id: "hanover-va", status: "OLDER", type: "web",
+    place: "Hanover County, VA", state: "Virginia", lat: 37.7674, lon: -77.3411,
+    headline: "Planning Commission votes to deny rezoning for data center",
+    desc: "Commissioners voted to deny a motion to rezone roughly 400 acres for a data center complex; the final call now goes to the Board of Supervisors.",
+    source: "WTVR CBS 6", date: "2026-01-15",
+    url: "https://www.wtvr.com/news/local-news/hanover-planning-commission-hhhunt-data-center-rezoning-jan-15-2026"
+  },
+  {
+    id: "douglas-ga", status: "OLDER", type: "web",
+    place: "Douglas County, GA", state: "Georgia", lat: 33.7515, lon: -84.7477,
+    headline: "Commission approves data center despite opposition, staff recommendation to deny",
+    desc: "After months of community opposition — and county staff recommending denial — the commission approved construction of a new data center near the historic Winston community.",
+    source: "AP via Yahoo News", date: "2026-07-16",
+    url: "https://www.yahoo.com/news/douglas-county-commissioners-approve-data-210537294.html"
+  },
+  {
+    id: "douglas-co", status: "OLDER", type: "web",
+    place: "Douglas County, CO (Parker)", state: "Colorado", lat: 39.3722, lon: -104.8560,
+    headline: "Commissioners approve $19M tax rebate for Parker data center over objections",
+    desc: "Commissioners unanimously approved an estimated $19 million, 35-year tax rebate for a data center; every public commenter at the meeting opposed it, noting the project is expected to create only 16 jobs.",
+    source: "CBS Colorado", date: "2026-08-19",
+    url: "https://www.cbsnews.com/colorado/news/colorado-county-grant-19-million-tax-break-controversial-data-center/"
+  },
+  {
+    id: "southaven-ms", status: "OLDER", type: "web",
+    place: "Southaven, MS", state: "Mississippi", lat: 34.9890, lon: -90.0126,
+    headline: "Residents allege near-constant turbine noise tied to data center power plants",
+    desc: "A lawsuit describes 'near-constant noise' like a jet engine from nearly 60 gas turbines allegedly operated to power nearby xAI-linked data centers.",
+    source: "Class Action / news coverage", date: "2026-07-10",
+    url: "https://www.classaction.org/data-center-noise-water-pollution-lawsuit"
+  },
+  {
+    id: "fairwater-wi", status: "OLDER", type: "web",
+    place: "Mount Pleasant, WI", state: "Wisconsin", lat: 42.7175, lon: -87.8845,
+    headline: "Residents file class-action lawsuit over data center noise, light pollution",
+    desc: "Residents near Microsoft's $7.3 billion 'Fairwater' data center filed a proposed class action alleging excessive noise from cooling systems and generators audible 1.5 miles away, plus construction noise and light pollution.",
+    source: "Tom's Hardware", date: "2026-07-02",
+    url: "https://www.tomshardware.com/tech-industry/data-centers/wisconsin-residents-file-class-action-lawsuit-against-microsofts-worlds-most-powerful-ai-data-center-due-to-data-center-noise-plaintiffs-also-mention-construction-noise-and-extreme-light-pollution-from-usd7-3-billion-facility"
+  },
+  {
+    id: "salem-or", status: "OLDER", type: "web",
+    place: "Salem, OR", state: "Oregon", lat: 44.9429, lon: -123.0351,
+    headline: "Protesters bring guillotine to city council meeting over data center",
+    desc: "Data center company representatives left a city council meeting after protesters displayed a guillotine outside; the council later voted unanimously to direct staff toward a temporary moratorium.",
+    source: "Gizmodo / Tom's Hardware", date: "2026-08-07",
+    url: "https://gizmodo.com/data-center-reps-face-the-guillotine-flee-public-hearing-2000795939"
+  },
+  {
+    id: "redoak-tx", status: "OLDER", type: "web",
+    place: "Red Oak, TX", state: "Texas", lat: 32.5085, lon: -96.8083,
+    headline: "Council approves 800-acre data center project despite resident protests",
+    desc: "After a marathon meeting lasting until nearly midnight and outcry from more than 150 residents over noise, power use, and school impacts, the city council approved the project.",
+    source: "FOX 4 Dallas-Fort Worth", date: "2026-06-10",
+    url: "https://www.fox4news.com/news/red-oak-data-center-city-council-protest"
+  },
+  {
+    id: "portwashington-wi", status: "OLDER", type: "web",
+    place: "Port Washington, WI", state: "Wisconsin", lat: 43.3903, lon: -87.8754,
+    headline: "Protesters arrested at meeting over $15B AI data center campus",
+    desc: "Three people were arrested at a city meeting where protesters spoke out against a proposed $15 billion AI data center campus for OpenAI and Oracle.",
+    source: "Yahoo News", date: "2025-12-03",
+    url: "https://www.yahoo.com/news/articles/anti-data-center-protesters-arrested-022030477.html"
+  },
+  {
+    id: "pittsburg-ca", status: "OLDER", type: "web",
+    place: "Pittsburg, CA", state: "California", lat: 38.0280, lon: -121.8847,
+    headline: "300+ residents rally at city council against data center",
+    desc: "More than 300 residents packed a city council meeting supporting a ban on a data center development approved in 2024 for the former Delta View Golf Course site.",
+    source: "NBC Bay Area / ABC7", date: "2026-06-17",
+    url: "https://www.nbcbayarea.com/news/local/residents-protest-planned-data-center-at-pittsburg-city-hall/4116455/"
+  },
+  {
+    id: "coloradosprings-co", status: "OLDER", type: "web",
+    place: "Colorado Springs, CO", state: "Colorado", lat: 38.8339, lon: -104.8214,
+    headline: "Rising local resistance to data center development",
+    desc: "A local revolt over a proposed data center points to broader rising resistance to the industry in the Colorado Springs area.",
+    source: "Axios", date: "2026-04-09",
+    url: "https://www.axios.com/local/colorado-springs/2026/04/09/data-center-opposition-colorado-springs"
+  },
+  {
+    id: "morrow-or", status: "OLDER", type: "web",
+    place: "Morrow County, OR", state: "Oregon", lat: 45.3573, lon: -119.5522,
+    headline: "Residents allege data-center-linked wastewater contaminated groundwater",
+    desc: "Residents say wastewater linked in part to Amazon data centers contributed to nitrate contamination that made nearby well water unsafe to drink.",
+    source: "WilmerHale litigation summary", date: "2026-06-01",
+    url: "https://www.wilmerhale.com/en/insights/client-alerts/20260713-data-centers-in-court-the-emerging-wave-of-nuisance-environmental-and-land-use-litigation"
+  },
+  {
+    id: "hagerstown-md", status: "OLDER", type: "web",
+    place: "Western Maryland (Hagerstown area)", state: "Maryland", lat: 39.6418, lon: -77.7200,
+    headline: "Residents ration showers, haul water amid soaring bills tied to AI growth",
+    desc: "Amid rising utility costs linked to AI data center growth, Western Maryland residents on privately owned water systems describe rationing showers and hauling buckets of water from a creek.",
+    source: "The Daily Caller", date: "2026-08-18",
+    url: "https://dailycaller.com/2026/08/18/privately-owned-water-utilities-artificial-intelligence-data-centers/"
+  },
+  {
+    id: "austin-tx", status: "OLDER", type: "web",
+    place: "Austin, TX (statewide)", state: "Texas", lat: 30.2747, lon: -97.7404,
+    headline: "Texas House holds marathon hearing on data center growth",
+    desc: "An overflow crowd testified for six hours at the Capitol on data centers' strain on the power grid, water use, and electric bills; the online public comment window stayed open through Aug. 21. Comes amid Gov. Abbott's Aug. 3 pause on new grid interconnections pending an ERCOT/PUCT audit.",
+    source: "CBS Texas / Community Impact", date: "2026-08-19",
+    url: "https://www.cbsnews.com/texas/news/texas-data-center-hearing-residents-overflow-capitol-august-2026/"
+  }
+];
+
+const map = L.map('map', {scrollWheelZoom:true}).setView([39.5, -96.0], 4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+}).addTo(map);
+
+const markers = {};
+function colorFor(status){ return status === 'CURRENT' ? '#2ea043' : '#d29922'; }
+
+ITEMS.forEach(function(it){
+  const m = L.circleMarker([it.lat, it.lon], {
+    radius: it.status === 'CURRENT' ? 10 : 8,
+    color: colorFor(it.status),
+    fillColor: colorFor(it.status),
+    fillOpacity: 0.85,
+    weight: 2
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  const badgeClass = it.status === 'CURRENT' ? 'current' : 'older';
+  const tooltipHtml =
+    '<div class="tt"><span class="b ' + badgeClass + '">' + it.status + (it.type==='video' ? ' · OFFICIAL VIDEO' : '') + '</span><br>' +
+    '<b>' + it.place + '</b>' +
+    '<div class="loc">' + it.headline + '</div>' +
+    '<div class="desc">' + it.desc + '</div>' +
+    '<div class="src">' + it.source + ' · ' + it.date + '</div></div>';
+  m.bindTooltip(tooltipHtml, {direction:'top', offset:[0,-6]});
+
+  const popupHtml =
+    '<b>' + it.place + '</b><br>' + it.headline + '<br>' +
+    '<a href="' + it.url + '" target="_blank" rel="noopener">' + it.source + ' (' + it.date + ') &rarr;</a>';
+  m.bindPopup(popupHtml);
+
+  markers[it.id] = m;
+});
+
+function buildSection(title, items){
+  let html = '<div class="section-label">' + title + ' (' + items.length + ')</div>';
+  items.forEach(function(it){
+    const badgeClass = it.status === 'CURRENT' ? 'current' : 'older';
+    html += '<div class="row" data-id="' + it.id + '">' +
+      '<span class="badge ' + badgeClass + '">' + it.status + '</span>' +
+      (it.type === 'video' ? '<span class="badge older" style="background:rgba(78,161,255,.18);color:#7cb8ff">VIDEO</span>' : '') +
+      '<div class="place">' + it.place + '</div>' +
+      '<div class="headline">' + it.headline + '</div>' +
+      '<div class="meta">' + it.source + ' · ' + it.date + '</div>' +
+      '</div>';
   });
+  return html;
+}
+
+const current = ITEMS.filter(function(i){ return i.status === 'CURRENT'; });
+const older = ITEMS.filter(function(i){ return i.status === 'OLDER'; });
+
+document.getElementById('sections').innerHTML =
+  buildSection('Past 24 Hours (Current)', current) +
+  buildSection('Older / Background', older);
+
+document.querySelectorAll('.row').forEach(function(row){
+  row.addEventListener('click', function(){
+    const id = row.getAttribute('data-id');
+    const it = ITEMS.find(function(i){ return i.id === id; });
+    const m = markers[id];
+    if (it && m) {
+      map.flyTo([it.lat, it.lon], 9, {duration: 0.8});
+      m.openPopup();
+    }
+  });
+});
 </script>
 </body>
 </html>
