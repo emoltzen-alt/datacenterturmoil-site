@@ -3,261 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Local Community Response to Data Centers — Daily Report, June 30, 2026</title>
+<title>Data Center Turmoil — Daily Report</title>
 <style>
   :root{
-    --bg:#0f1419; --card:#1a2129; --ink:#e6edf3; --muted:#9aa7b4;
-    --accent:#4ea1ff; --current:#2ea043; --older:#b08800; --line:#2a333d;
+    --bg:#0b0e14; --panel:#11151f; --panel2:#161b28; --border:#232939;
+    --text:#e7ebf3; --muted:#93a0b8; --current:#3ddc84; --older:#f2b94c;
+    --accent:#5b9dff; --video:#c9a8ff;
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 64px}
-  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:26px}
-  h1{font-size:26px;margin:0 0 6px}
-  .range{color:var(--muted);font-size:14px}
-  h2{font-size:20px;margin:34px 0 6px;display:flex;align-items:center;gap:10px}
-  h3{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
-    margin:22px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
-  .summary{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
-  .summary p{margin:0 0 10px}
-  .summary p:last-child{margin:0}
-  .item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
-    border-radius:8px;padding:14px 16px;margin:0 0 12px}
-  .item .loc{font-weight:700;font-size:16px}
-  .item .meta{color:var(--muted);font-size:13px;margin:2px 0 8px}
-  .item p{margin:0}
-  .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-    padding:2px 8px;border-radius:20px;color:#06120a;vertical-align:middle}
-  .tag.cur{background:var(--current);color:#02160a}
-  .tag.old{background:var(--older);color:#1a1400}
-  .item.cur{border-left-color:var(--current)}
-  .item.old{border-left-color:var(--older)}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .src{font-size:13px;margin-top:8px}
-  .note{color:var(--muted);font-size:14px;font-style:italic;background:var(--card);
-    border:1px dashed var(--line);border-radius:8px;padding:12px 16px;margin:10px 0}
-  footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px}
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+  .page{max-width:920px; margin:0 auto; padding:36px 20px 80px;}
+  header{border-bottom:1px solid var(--border); padding-bottom:22px; margin-bottom:28px;}
+  h1{font-size:26px; margin:0 0 6px; font-weight:800; letter-spacing:0.2px;}
+  .window{color:var(--muted); font-size:13.5px;}
+  .window strong{color:var(--text);}
+  .trends{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; margin-bottom:34px;
+  }
+  .trends h2{margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted);}
+  .trends p{margin:0 0 10px; font-size:14.5px; color:#d5dbe8;}
+  .trends p:last-child{margin-bottom:0;}
+  section.block{margin-bottom:40px;}
+  .block-title{
+    display:flex; align-items:center; gap:10px; font-size:19px; font-weight:800;
+    padding-bottom:10px; margin-bottom:16px; border-bottom:2px solid var(--border);
+  }
+  .block-title .dot{width:12px; height:12px; border-radius:50%; flex-shrink:0;}
+  .block-title.current .dot{background:var(--current); box-shadow:0 0 8px rgba(61,220,132,0.6);}
+  .block-title.older .dot{background:var(--older); box-shadow:0 0 8px rgba(242,185,76,0.6);}
+  .block-title .count{font-size:12px; font-weight:600; color:var(--muted); margin-left:auto;}
+  .subhead{
+    font-size:12.5px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted);
+    margin:22px 0 12px; display:flex; align-items:center; gap:8px;
+  }
+  .subhead::after{content:""; flex:1; height:1px; background:var(--border);}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin-bottom:12px;
+  }
+  .card .top-row{display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .card .place{font-weight:700; font-size:14.5px;}
+  .card .date{font-size:12px; color:var(--muted); white-space:nowrap;}
+  .card .headline{font-size:14px; font-weight:600; margin:6px 0 4px; color:#f0f3fa;}
+  .card .desc{font-size:13.5px; color:#c3cbdb; margin-bottom:8px;}
+  .card .meta-row{display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--muted); flex-wrap:wrap;}
+  .card a{color:var(--accent); text-decoration:none; font-weight:600;}
+  .card a:hover{text-decoration:underline;}
+  .tag{
+    display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.4px; padding:2px 7px; border-radius:9px;
+  }
+  .tag.video{background:rgba(201,168,255,0.15); color:var(--video);}
+  .video-card{border-left:3px solid var(--video);}
+  .empty-box{
+    border:1px dashed var(--border); border-radius:10px; padding:16px 18px;
+    color:var(--muted); font-size:13.5px; font-style:italic; background:var(--panel);
+  }
+  footer{margin-top:50px; padding-top:16px; border-top:1px solid var(--border); font-size:11.5px; color:var(--muted);}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h1>Local Community Response to Data Centers — Daily Report</h1>
-  <div class="range">Generated Tuesday, June 30, 2026 · Coverage window: prior 24 hours (≈ June 29 – June 30, 2026), with older context where relevant.</div>
-</header>
+<div class="page">
 
-<div class="summary">
-  <p><strong>Today's national picture.</strong> Local opposition to data centers remains broad, bipartisan, and overwhelmingly focused on water, power/electricity bills, noise, and the scale of proposed campuses. The dominant municipal tool continues to be the temporary moratorium or development "pause," typically paired with a study period to write zoning and ordinance rules.</p>
-  <p><strong>Genuinely new in the last 24 hours:</strong> Springfield, MO's council adopted an 8–0, 120-day moratorium (June 29); Massachusetts Gov. Healey publicly froze the state's 20-year data center tax exemption pending ratepayer/environmental protections (June 29); a developer filed a court appeal of Dickson City, PA's zoning denial (reported June 29); and three matters were on calendars for today, June 30 — Maryland's Supreme Court oral arguments in the Frederick County referendum appeal, a Logan, UT council vote on data center regulation, and an Emporia, KS Planning Commission rezoning vote previously tabled to today.</p>
-  <p><strong>Official meeting livestreams (last 24 h):</strong> No official, full-length municipal meeting livestream or archived recording specifically about data centers, posted by a government body within the past 24 hours, could be confirmed. See that section for details and one older official feed.</p>
-</div>
+  <header>
+    <h1>🏭 Data Center Turmoil — U.S. Community Response Report</h1>
+    <div class="window">24-hour window: <strong>Aug 23, 2026 (afternoon) – Aug 24, 2026</strong> · compiled from public web search and official government meeting sources.</div>
+  </header>
 
-<h2>🟢 Past 24 Hours (Current)</h2>
-<h3>Web Results</h3>
+  <div class="trends">
+    <h2>National Trends Snapshot</h2>
+    <p>The data-center backlash keeps escalating politically rather than fading: on Aug 23, Texas Gov. Greg Abbott — a governor who spent last year courting hyperscalers — said data center developers "dug their own grave" with the current backlash, days after ordering a statewide audit that has effectively frozen up to ~1,800 pending grid-connection requests. The same day, the Washington Post reported that a majority of Republican elected officials now talk about data centers negatively, and trade press described "thousands" of projects nationally as halted or delayed amid moratoriums, lawsuits and permit fights (Texas and New York's new state-level pauses chief among them).</p>
+    <p>Beneath the national headlines, the week's pattern is familiar and continues today: local boards keep splitting on moratoriums (Louisville and St. Charles passed them; Salix, Iowa voted one down), planning commissions keep recommending denial only to be overridden or contested by elected councils (Edgerton, KS; Piedmont, OK today), and noise/water lawsuits are spreading beyond the original Virginia "data center alley" hot spots into Wisconsin, Michigan, Mississippi and Tennessee. Two live votes are happening as this report is compiled: Piedmont, Oklahoma's council on "Project Open Sky," and a rescheduled Bartow County, Georgia planning hearing on a Brown Farm Road rezoning.</p>
+  </div>
 
-<div class="item cur">
-  <div class="loc">Springfield, Missouri <span class="tag cur">Current</span></div>
-  <div class="meta">City Council · vote · June 29, 2026</div>
-  <p>At a special meeting on Monday, June 29, the City Council voted 8–0 to adopt a 120-day moratorium on new data center applications, giving staff time to gather public input and research impacts. Community concern over a wave of applications drove the pause.</p>
-  <div class="src">Source: <a href="https://sgfcitizen.org/government/springfield-greene-county/springfield-data-center-moratorium-2/">Springfield Daily Citizen — "Springfield imposes moratorium on new data centers"</a></div>
-</div>
+  <!-- ============================= CURRENT ============================= -->
+  <section class="block">
+    <div class="block-title current"><span class="dot"></span> Past 24 Hours (Current) <span class="count">5 items</span></div>
 
-<div class="item cur">
-  <div class="loc">Massachusetts (statewide) <span class="tag cur">Current</span></div>
-  <div class="meta">Governor's office · policy · reported June 29, 2026</div>
-  <p>Gov. Maura Healey is keeping the state's 20-year data center sales-and-use tax exemption on hold, pairing the freeze with new energy/environmental guidance. She said the pause will stay until strong protections are in place against higher gas and electric bills, citing water and grid impacts as guiding concerns.</p>
-  <div class="src">Source: <a href="https://commonwealthbeacon.org/government/state-government/healey-slams-brakes-on-data-center-tax-incentives/">CommonWealth Beacon — "Healey slams brakes on data center tax incentives"</a> · via <a href="https://writing.strisker.com/data-centers-daily-notes-june-29-2026/">Strisker Daily Notes, June 29, 2026</a></div>
-</div>
+    <div class="subhead">Web / News Results</div>
 
-<div class="item cur">
-  <div class="loc">Dickson City, Pennsylvania <span class="tag cur">Current</span></div>
-  <div class="meta">Court appeal · reported June 29, 2026</div>
-  <p>A developer (Dickson City Development LLC, linked to Kriger Construction) appealed the borough's zoning denial to Lackawanna County court, seeking to build four data centers and three affiliated gas plants producing a combined 400 megawatts above Business Route 6. The appeal challenges the borough's data center ordinance and the Zoning Hearing Board's May 20 decision.</p>
-  <div class="src">Source: <a href="https://www.thetimes-tribune.com/2026/06/29/monday-update-data-center-developer-appeals-dickson-city-zoning-denial/">The Times-Tribune — "Data center developer appeals Dickson City zoning denial"</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Austin (Statewide) — Texas</div><div class="date">Aug 23, 2026</div></div>
+      <div class="headline">Gov. Abbott: Data Center Companies "Dug Their Own Grave"</div>
+      <div class="desc">Days after ordering a grid-connection audit that has frozen new projects statewide, Gov. Greg Abbott told ABC's "This Week" that the industry brought the local backlash on itself by moving into communities without first securing public support — a sharp reversal from the governor who once called Texas the "epicenter of AI development."</div>
+      <div class="meta-row">Axios / Newsweek <a href="https://www.newsweek.com/texas-governor-abbott-says-data-centers-dug-their-own-grave-12357334" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item cur">
-  <div class="loc">Frederick County, Maryland <span class="tag cur">Current</span></div>
-  <div class="meta">Maryland Supreme Court · oral arguments scheduled · June 30, 2026, 10 a.m.</div>
-  <p>The Frederick County Data Center Referendum Committee — a citizen group that gathered more than 20,000 signatures — is appealing on an accelerated schedule, with oral arguments before the state Supreme Court set for today. Residents fear the county becoming a new "data center alley."</p>
-  <div class="src">Source: <a href="https://writing.strisker.com/data-centers-daily-notes-june-25-2026/">Strisker Daily Notes (June 30 calendar item)</a> · background: <a href="https://marylandmatters.org/2026/06/12/residents-fear-frederick-county-will-be-the-new-data-center-alley/">Maryland Matters</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Piedmont, Oklahoma</div><div class="date">Aug 24, 2026 (tonight)</div></div>
+      <div class="headline">City Council Votes Tonight on Contested "Project Open Sky" Data Campus</div>
+      <div class="desc">Council decides today on Cloverleaf's rezoning of 630 acres for a $1 billion data campus, after the planning commission recommended denial of both the PUD and annexation. Residents have circulated three citizen-initiative petitions aiming to block the project or force it to a public vote, citing water-infrastructure capacity and rural character.</div>
+      <div class="meta-row">Radio Oklahoma News / News9 / KFOR <a href="https://www.radiooklahomanews.com/post/piedmont-data-center-proposal-heads-to-city-council-vote-tonight" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item cur">
-  <div class="loc">Logan, Utah <span class="tag cur">Current</span></div>
-  <div class="meta">Logan Municipal Council · meeting scheduled · June 30, 2026</div>
-  <p>The Logan Municipal Council is slated to meet today to consider data center regulation, following Cache County's adoption of a preemptive 180-day moratorium in unincorporated areas.</p>
-  <div class="src">Source: <a href="https://writing.strisker.com/data-centers-daily-notes-june-25-2026/">Strisker Daily Notes (June 30 calendar item)</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Bartow County (Cartersville), Georgia</div><div class="date">Aug 24, 2026 (tonight)</div></div>
+      <div class="headline">Planning Commission Reconvenes on Brown Farm Road Data Center Rezoning</div>
+      <div class="desc">The Planning Commission holds its rescheduled hearing tonight on a request to rezone 111.4 acres on Brown Farm Road from agricultural to business park district for a data center. The hearing was postponed once already after staff found a gap in required outreach to Native American nations with ancestral ties to the district.</div>
+      <div class="meta-row">The Daily Tribune News <a href="https://www.daily-tribune.com/news/data-center-public-hearing-rescheduled-for-aug-24/article_b273ab7f-6389-5d9a-b7be-53961c942e05.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item cur">
-  <div class="loc">Emporia, Kansas <span class="tag cur">Current</span></div>
-  <div class="meta">Planning Commission · tabled rezoning vote · June 30, 2026</div>
-  <p>The Emporia Planning Commission tabled a rezoning vote tied to a proposed data center to today, June 30. The matter follows a roughly six-hour June 23 meeting dominated by a public hearing on the project.</p>
-  <div class="src">Source: web search summary (Emporia Planning Commission). Confirm via the city's agenda portal.</div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Nationwide (no single location)</div><div class="date">Aug 23, 2026</div></div>
+      <div class="headline">Tracking Data: Most GOP Officials Now Talk Negatively About Data Centers</div>
+      <div class="desc">New political-messaging analysis shows Republican elected officials' public statements about data centers have turned sharply negative over the past six months, with opposition becoming a bipartisan rallying cry roughly three months before the midterms.</div>
+      <div class="meta-row">The Washington Post <a href="https://www.washingtonpost.com/technology/2026/08/23/most-gop-politicians-now-talk-negatively-about-data-centers-data-shows/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item cur">
-  <div class="loc">Kansas City, Missouri <span class="tag cur">Current</span></div>
-  <div class="meta">Staff review scheduled · June 30, 2026 (City Plan Commission hearing Aug. 5)</div>
-  <p>A staff review of a data center / tower proposal was scheduled for today, with a City Plan Commission public hearing set for August 5.</p>
-  <div class="src">Source: <a href="https://writing.strisker.com/data-centers-daily-notes-june-25-2026/">Strisker Daily Notes (June 30 calendar item)</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Nationwide (no single location)</div><div class="date">Aug 23, 2026</div></div>
+      <div class="headline">Analysis: Backlash Has Brought "Thousands" of Data Center Projects to a Halt</div>
+      <div class="desc">A national roundup ties together the Texas audit-freeze and New York's new discretionary-permit moratorium with dozens of local pauses and lawsuits, estimating the combined effect has halted or delayed thousands of proposed U.S. data center projects.</div>
+      <div class="meta-row">Daily Caller / Daily Signal <a href="https://dailycaller.com/2026/08/23/data-center-backlash-brings-thousands-projects-screeching-halt-texas-new-york/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item cur">
-  <div class="loc">East Rockhill Township, Pennsylvania <span class="tag cur">Current (≈June 28)</span></div>
-  <div class="meta">Board of Supervisors · revised ordinance authorized · reported June 28, 2026</div>
-  <p>The Board of Supervisors authorized a revised data center ordinance folding in resident concerns about noise and groundwater depletion — adding well-depletion language, expanded environmental impact requirements, decommissioning rules, quarterly noise reporting, and limited construction hours. The township has received no application; the measure is preemptive.</p>
-  <div class="src">Source: <a href="https://www.thereporteronline.com/2026/06/28/east-rockhill-supervisors-authorize-revised-data-center-ordinance-following-community-concerns/">The Reporter — "East Rockhill supervisors authorize revised data center ordinance"</a></div>
-</div>
+    <div class="subhead">Official Meeting Videos (Livestreams / Recordings)</div>
+    <div class="empty-box">No official government meeting livestreams or recordings from the past 24 hours qualified. (Tonight's Piedmont, OK council meeting and Bartow County, GA planning commission hearing had not yet been posted as recordings at compile time.) The one official video that surfaced in research — Alamance County, NC's Aug. 17 commissioners livestream — falls outside the 24-hour window and is listed under Older / Background below.</div>
+  </section>
 
-<h3>Official Meeting Videos (livestreams / recordings) — Past 24 Hours</h3>
-<div class="note">
-  No official, full-length municipal or county meeting livestream (or its archived recording) specifically about data centers — posted by a government body's own channel within the past 24 hours — could be confirmed today. YouTube results in this window were dominated by local TV news segments and edited clips, which are excluded by design. If a qualifying official meeting feed for the June 30 Logan, Emporia, or Kansas City matters is posted later today, it would appear in tomorrow's report.
-</div>
+  <!-- ============================= OLDER ============================= -->
+  <section class="block">
+    <div class="block-title older"><span class="dot"></span> Older / Background <span class="count">30 items</span></div>
 
-<h2>🟡 Older / Background</h2>
-<h3>Web Results</h3>
+    <div class="subhead">Web / News Results</div>
 
-<div class="item old">
-  <div class="loc">Seattle, Washington <span class="tag old">Older</span></div>
-  <div class="meta">City Council · moratorium passed · ~June 9, 2026</div>
-  <p>The council unanimously passed an emergency moratorium and policy framework freezing new large data center siting amid major public outcry over environmental, infrastructure, and economic impacts. Roughly 50 public comments preceded the vote ("We're Not a Company Town").</p>
-  <div class="src">Sources: <a href="https://council.seattle.gov/2026/06/09/city-council-passes-emergency-data-center-moratorium-and-policy-framework/">Seattle City Council Blog</a> · <a href="https://komonews.com/news/local/seattle-city-council-unanimously-backs-temporary-moratorium-on-new-data-centers-two-measures-preventing-new-facilities-study-impact-environmental-infrastructure-economic-effects">KOMO News</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Clayton (St. Louis County), Missouri</div><div class="date">Aug 11, 2026</div></div>
+      <div class="headline">Residents Push Back on Proposed Data Center Zoning Rules</div>
+      <div class="desc">At a hearing on zoning rules for unincorporated St. Louis County, most speakers asked for a temporary or permanent ban, citing utility rates, water/energy use, pollution and noise.</div>
+      <div class="meta-row">St. Louis Public Radio <a href="https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Minneapolis, Minnesota <span class="tag old">Older</span></div>
-  <div class="meta">City Council · five-month moratorium approved · ~June 25, awaiting mayor's signature</div>
-  <p>The council approved a five-month pause on new data centers over 350,000 sq ft, sending it to Mayor Jacob Frey. Residents questioned neighborhood impacts while labor groups noted construction jobs.</p>
-  <div class="src">Sources: <a href="https://www.cbsnews.com/minnesota/news/minneapolis-city-council-data-center-pause/">CBS Minnesota</a> · <a href="https://www.planetizen.com/news/2026/06/137884-minneapolis-ordinance-would-halt-new-data-centers-5-months">Planetizen</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">El Centro (Imperial County), California</div><div class="date">Aug 4, 2026</div></div>
+      <div class="headline">Imperial Valley Cities Hit the Brakes on Data Centers</div>
+      <div class="desc">After months of public outcry, the Imperial County Board of Supervisors extended an emergency moratorium on new data center projects on county land through May 2027.</div>
+      <div class="meta-row">KPBS <a href="https://www.kpbs.org/news/environment/2026/08/04/after-months-of-public-outcry-imperial-valley-cities-are-hitting-the-brakes-on-data-centers" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Inver Grove Heights, Minnesota <span class="tag old">Older</span></div>
-  <div class="meta">City Council · moratorium passed 3–2 · June 26, 2026</div>
-  <p>The council passed a data center moratorium 3–2 despite a developer threatening litigation.</p>
-  <div class="src">Source: <a href="https://www.fox9.com/news/inver-grove-heights-data-center-moratorium-june-26-2026">FOX 9</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Greenfield (Hancock County), Indiana</div><div class="date">Aug 22, 2026</div></div>
+      <div class="headline">Residents Speak Out at Data Center Input Session</div>
+      <div class="desc">Hancock County residents used a public input session to raise concerns about a proposed data center's effect on water, power rates and rural character.</div>
+      <div class="meta-row">Greenfield Daily Reporter <a href="https://www.greenfieldreporter.com/2026/08/22/residents-speak-out-at-data-center-input-session/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">DeSoto County, Florida <span class="tag old">Older</span></div>
-  <div class="meta">County Commission · directed one-year moratorium draft · June 23, 2026</div>
-  <p>After ~3 hours of discussion at a packed meeting, commissioners directed the county attorney to draft a one-year moratorium. Concern spiked after a developer described daily water needs of up to 3 million gallons for an 800–1,300-acre gas-powered campus.</p>
-  <div class="src">Source: <a href="https://www.thecooldown.com/green-tech/data-center-moratorium-desoto-county-residents-concerns/">The Cool Down</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Martinsville (Henry County), Virginia</div><div class="date">Jul 29, 2026</div></div>
+      <div class="headline">Packed Hearing Prompts County to Pull Data Centers From Zoning Plan</div>
+      <div class="desc">More than 100 residents packed a Board of Supervisors hearing citing water, noise, health and wildlife-habitat concerns; supervisors voted unanimously to strip data centers from a pending zoning ordinance.</div>
+      <div class="meta-row">Cardinal News <a href="https://cardinalnews.org/2026/07/29/crowd-packs-hearing-as-henry-county-goes-back-to-the-drawing-board-on-data-center-regulations/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Woodbury County, Iowa <span class="tag old">Older</span></div>
-  <div class="meta">Board of Supervisors · one-year moratorium approved · June 23, 2026</div>
-  <p>Supervisors approved a one-year moratorium on data centers in unincorporated areas; existing/approved projects are untouched. A separate proposed campus near Salix sits on annexed city land outside the moratorium.</p>
-  <div class="src">Source: <a href="https://www.thecooldown.com/green-tech/data-center-moratorium-woodbury-county-rural-development/">The Cool Down</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Graham (Alamance County), North Carolina</div><div class="date">Aug 17–18, 2026</div></div>
+      <div class="headline">Alamance County Adopts One-Year Data Center Moratorium</div>
+      <div class="desc">After a three-hour public hearing where more than three dozen residents urged a pause, commissioners voted 5-0 to approve a year-long moratorium on large (10MW+) data centers.</div>
+      <div class="meta-row">Alamance News / FOX8 WGHP <a href="https://myfox8.com/news/north-carolina/alamance/alamance-county-commissioners-approve-1-year-data-center-moratorium/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Brookville, Pennsylvania <span class="tag old">Older</span></div>
-  <div class="meta">Borough Council · 180-day freeze · June 2026</div>
-  <p>The council froze data center development for 180 days and barred projects from drawing borough water, citing two possible developments that could each need more than 1.2 million gallons of water per day.</p>
-  <div class="src">Source: <a href="https://www.thecooldown.com/green-tech/brookville-data-center-development-moratorium-water-concerns/">The Cool Down</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Plymouth Township / Conshohocken, Pennsylvania</div><div class="date">Aug 2026</div></div>
+      <div class="headline">Residents Boo, Shout at Data Center Zoning Hearing</div>
+      <div class="desc">A zoning board hearing on a hyperscale data center proposed for the old Cleveland-Cliffs steel site was repeatedly interrupted by a crowd booing and shouting at the developer's attorney.</div>
+      <div class="meta-row">WHYY <a href="https://whyy.org/articles/conshohocken-data-center-plymouth-township-pushback/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Norman, Oklahoma &amp; Asheville, North Carolina <span class="tag old">Older</span></div>
-  <div class="meta">City councils · one-year moratoriums · June 23 &amp; June 25, 2026</div>
-  <p>Norman approved a one-year moratorium (applications suspended until June 9, 2027); Asheville's council approved a one-year moratorium on June 25.</p>
-  <div class="src">Source: web search summary (data center moratorium tracker coverage)</div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Asheboro (Randolph County), North Carolina</div><div class="date">2026</div></div>
+      <div class="headline">Randolph County Adopts Data Center Restrictions After Packed Hearing</div>
+      <div class="desc">Commissioners adopted new siting and buffer restrictions on data centers after an hours-long, standing-room-only public hearing.</div>
+      <div class="meta-row">Randolph Hub <a href="https://randolphhub.com/article/news/randolph-county-commissioners-adopt-data-center-restrictions-after-packed-hours-long-public-hearing" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Genesee County, New York <span class="tag old">Older</span></div>
-  <div class="meta">Public hearing · residents oppose $19B project</div>
-  <p>A packed public hearing drew strong opposition to a proposed $19 billion data center, focused on water usage and power consumption.</p>
-  <div class="src">Source: <a href="https://www.whec.com/top-news/genesee-county-residents-pack-public-hearing-to-oppose-proposed-19b-data-center-project/">WHEC</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Austin (Texas Capitol), Texas</div><div class="date">Aug 19, 2026</div></div>
+      <div class="headline">Texas Lawmakers Hear Hours of Public Testimony on Data Centers</div>
+      <div class="desc">Overflow crowds filled two extra rooms at the Capitol as residents and regulators testified about noise, water use, rising electricity bills and the state's lack of local control over siting.</div>
+      <div class="meta-row">CBS Texas / KWTX <a href="https://www.cbsnews.com/texas/news/texas-data-center-hearing-residents-overflow-capitol-august-2026/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Hood County, Texas <span class="tag old">Older</span></div>
-  <div class="meta">Commissioners · eight proposed projects · June 2, 2026</div>
-  <p>Residents urged commissioners to deny projects pending details on traffic, watershed, public safety, and noise. Most of the seven proposals omitted power-use estimates and several lacked water projections.</p>
-  <div class="src">Source: <a href="https://www.texastribune.org/2026/06/02/texas-data-centers-hood-county-local-control-rural-water-power/">The Texas Tribune</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Fort Worth, Texas</div><div class="date">Aug 12, 2026</div></div>
+      <div class="headline">Fort Worth Advances Steps Toward Data Center Moratorium</div>
+      <div class="desc">City Council voted unanimously to form a data center committee and begin moving toward a 90-day construction moratorium.</div>
+      <div class="meta-row">Fort Worth Report <a href="https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Bell County, Texas <span class="tag old">Older</span></div>
-  <div class="meta">Commissioners court · resident protest · June 1, 2026</div>
-  <p>More than 30 residents spoke against a data center proposed for Temple, saying it would consume local resources while offering few jobs ("We don't want this").</p>
-  <div class="src">Source: <a href="https://www.kwtx.com/2026/06/02/we-dont-want-this-bell-county-residents-show-up-by-masses-protest-data-center-asks-commissioners-court-intervention/">KWTX</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Lakeland, Florida</div><div class="date">Aug 3, 2026</div></div>
+      <div class="headline">Lakeland Approves One-Year Data Center Moratorium</div>
+      <div class="desc">City commissioners voted 4-3 to pause new data center development for a year.</div>
+      <div class="meta-row">Bay News 9 <a href="https://baynews9.com/fl/tampa/news/2026/08/03/lakeland-city-officials-approve-vote-on-data-center-moratorium" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Montgomery County, Maryland <span class="tag old">Older</span></div>
-  <div class="meta">Public hearing · ~June 16, 2026</div>
-  <p>Advocates and residents packed a hearing to support a proposed two-year data center moratorium.</p>
-  <div class="src">Source: <a href="https://www.foodandwaterwatch.org/2026/06/16/advocates-residents-packed-hearing-to-support-2-year-data-center-moratorium-in-montgomery-county-md/">Food &amp; Water Watch</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Westover, Alabama</div><div class="date">Aug 2026</div></div>
+      <div class="headline">Westover Council Unanimously Approves Data Center Moratorium</div>
+      <div class="desc">Amid resident concern over a proposed local project, the City Council passed a six-month moratorium on data centers.</div>
+      <div class="meta-row">ABC 3340 <a href="https://abc3340.com/news/local/westover-city-council-unanimously-approves-6-month-moratorium-on-data-centers" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Ohio (statehouse committee) <span class="tag old">Older</span></div>
-  <div class="meta">Committee hearing · water/pollution concerns</div>
-  <p>Residents lined up to voice water and pollution concerns at a data center committee hearing ("Water is not Republican or Democrat").</p>
-  <div class="src">Source: <a href="https://www.10tv.com/article/news/local/ohio-residents-voice-water-pollution-concerns-data-center-committee-hearing/530-24bcc387-2a2f-4bf1-a165-9d5037dc6fd1">10TV</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Louisville, Kentucky</div><div class="date">Aug 13, 2026</div></div>
+      <div class="headline">Louisville Metro Council Approves Data Center Moratorium</div>
+      <div class="desc">Council members voted 24-1 to bar new data center approvals for six months or until comprehensive zoning rules are adopted.</div>
+      <div class="meta-row">Louisville Public Media <a href="https://www.lpm.org/news/2026-08-13/louisville-metro-council-approves-data-center-moratorium-as-new-proposal-sparks-controversy" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Oshkosh, Wisconsin <span class="tag old">Older</span></div>
-  <div class="meta">Common Council · moving toward moratorium · resolution expected July 14</div>
-  <p>Oshkosh is asking staff to draft a moratorium amid water and land-use concerns, following Winnebago County's 12-month pause.</p>
-  <div class="src">Source: <a href="https://www.nbc26.com/oshkosh/oshkosh-weighs-moratorium-on-new-data-centers">NBC 26</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Salix (Woodbury County), Iowa</div><div class="date">Aug 21, 2026</div></div>
+      <div class="headline">Northwest Iowa Town Votes Down Data Center Moratorium</div>
+      <div class="desc">The Salix City Council voted 3-2 against a proposed one-year moratorium despite resident requests for a pause.</div>
+      <div class="meta-row">Iowa Public Radio <a href="https://www.iowapublicradio.org/ipr-news/2026-08-21/salix-data-center-moratorium-fails" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Rappahannock County, Virginia <span class="tag old">Older</span></div>
-  <div class="meta">Petition · 200+ signatures</div>
-  <p>Residents filed a 200-plus-signature petition seeking explicit zoning rules, though the county administrator says the current ordinance already bars data centers as an unlisted use.</p>
-  <div class="src">Source: <a href="https://www.rappnews.com/land-use/petition-seeks-regs-to-block-data-centers-in-rappahannock-county-95b08758">Rappahannock News</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Edgerton, Kansas</div><div class="date">Jul 25, 2026</div></div>
+      <div class="headline">Council Overrides Planning Commission, Approves Data Center</div>
+      <div class="desc">The council unanimously approved an $860 million data center project over the planning commission's earlier denial and resident objections.</div>
+      <div class="meta-row">KCUR <a href="https://www.kcur.org/housing-development-section/2026-07-25/edgerton-data-center-city-council-planning-commission" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Rural Montana <span class="tag old">Older</span></div>
-  <div class="meta">Resident organizing · ~3,800-acre AI campus</div>
-  <p>A homesteading mother has become a leading voice against a proposed AI data center developers say could cover roughly 3,800 football fields, citing farmland, wildlife, water, and rural character.</p>
-  <div class="src">Source: <a href="https://www.thecooldown.com/green-tech/montana-mother-resists-ai-data-center/">The Cool Down</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Kansas City, Missouri</div><div class="date">Aug 2026</div></div>
+      <div class="headline">Plan Commission Rejects Downtown Data Center Tower</div>
+      <div class="desc">The City Plan Commission voted to deny a proposal for a 20-story data center at the site of a historic former newspaper building.</div>
+      <div class="meta-row">Fox 4 KC / KSHB <a href="https://fox4kc.com/news/kansas-city-planning-commission-rejects-proposal-for-20-story-data-center/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Northeast Pennsylvania (Lackawanna region) <span class="tag old">Older</span></div>
-  <div class="meta">Regional reporting · water concerns</div>
-  <p>Residents fear negative impacts on water resources as multiple data centers are proposed across the region; developers pitch tax base and jobs.</p>
-  <div class="src">Source: <a href="https://www.wvia.org/news/local/2026-02-04/data-centers-residents-fear-negative-impacts-on-water-resources-as-data-centers-are-proposed-across-northeast-pa">WVIA</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Naperville, Illinois</div><div class="date">Aug 2026</div></div>
+      <div class="headline">Naperville Council Rejects Data Center Proposal</div>
+      <div class="desc">After late-night debate, the council voted 6-1 with two abstentions to deny a controversial data center development.</div>
+      <div class="meta-row">Yahoo / Daily Herald <a href="https://www.yahoo.com/news/articles/naperville-city-council-denies-controversial-103541888.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">Georgia (Meta facility) <span class="tag old">Older</span></div>
-  <div class="meta">Federal hearing · drinking-water investigation</div>
-  <p>A Meta data center is alleged to have muddied a town's drinking water; the EPA promised an investigation after a congresswoman brought dirty jars of water to a hearing.</p>
-  <div class="src">Source: <a href="https://www.tomshardware.com/tech-industry/big-tech/meta-data-center-allegedly-muddies-georgia-towns-drinking-water-investigation-underway-epa-promises-immediate-investigation-after-congresswoman-brings-dirty-jars-of-water-to-hearing">Tom's Hardware</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">St. Charles, Missouri</div><div class="date">Aug 2026</div></div>
+      <div class="headline">St. Charles Approves One-Year Data Center Moratorium</div>
+      <div class="desc">The City Council voted unanimously to pause new data center projects for a year.</div>
+      <div class="meta-row">Yahoo News <a href="https://www.yahoo.com/news/articles/st-charles-approves-one-moratorium-221000645.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<div class="item old">
-  <div class="loc">National context <span class="tag old">Older</span></div>
-  <div class="meta">Tracking / analysis</div>
-  <p>Roughly $64 billion in U.S. data center projects have been blocked or delayed by growing local, bipartisan opposition, per Data Center Watch — the backdrop to the local actions above.</p>
-  <div class="src">Sources: <a href="https://www.datacenterwatch.org/report">Data Center Watch</a> · <a href="https://fortune.com/2026/01/03/data-centers-town-halls-angry-citizens-affordability-zoning-utility/">Fortune</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Statesboro, Georgia</div><div class="date">Aug 18–19, 2026</div></div>
+      <div class="headline">Mayor Breaks Tie to Approve Data Center Rezoning Amid Protests</div>
+      <div class="desc">With the chamber filled to capacity and protesters outside, Mayor Jonathan McCollar cast the deciding vote to approve rezoning for a 230,000-sq-ft data center off Burkhalter Road.</div>
+      <div class="meta-row">WTOC / Statesboro Herald <a href="https://www.wtoc.com/2026/08/19/statesboro-city-council-approves-rezoning-data-center-amid-protests/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<h3>Official Meeting Videos (livestreams / recordings) — Older</h3>
-<div class="item old">
-  <div class="loc">Winnebago County, Wisconsin — County Board <span class="tag old">Older</span></div>
-  <div class="meta">Official board meeting video · June 16, 2026</div>
-  <p>Data center presentation to the Winnebago County Board, posted as an official county board meeting recording (referenced in connection with the county's 12-month pause). Included here as an example of a qualifying official meeting feed, though outside the 24-hour window.</p>
-  <div class="src">Video: <a href="https://www.youtube.com/watch?v=TYrxyKLRUF8">Winnebago County Board, June 16, 2026 (YouTube)</a></div>
-</div>
+    <div class="card">
+      <div class="top-row"><div class="place">Spartanburg County, South Carolina</div><div class="date">Aug 17, 2026</div></div>
+      <div class="headline">Spartanburg County Delays Data Center Moratorium Vote</div>
+      <div class="desc">Council unanimously postponed the final reading of a 12-month moratorium to Sept. 21 for further review.</div>
+      <div class="meta-row">Post and Courier / WSPA <a href="https://www.postandcourier.com/spartanburg/news/spartanburg-county-data-center-moratorium/article_9d34893a-8dea-457e-9e5f-2a04755be399.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
 
-<footer>
-  Compiled automatically from public web and YouTube searches on June 30, 2026. Items are labeled <strong>Current</strong> when the event or its reporting falls within roughly the past 24 hours, and <strong>Older</strong> otherwise. "Current" calendar items dated June 30 are scheduled events; outcomes may post later. The YouTube/official-meeting-video section deliberately excludes TV news segments, edited clips, and resident-shot footage, including only full official government meeting livestreams or their archived recordings. Where a video's official status could not be confirmed, it was omitted rather than included.
-</footer>
+    <div class="card">
+      <div class="top-row"><div class="place">Newnan (Coweta County), Georgia</div><div class="date">2026</div></div>
+      <div class="headline">Coweta County Passes 180-Day Data Center Moratorium</div>
+      <div class="desc">Commissioners approved a six-month pause on new data center proposals after residents said projects were landing "on our doorstep."</div>
+      <div class="meta-row">Yahoo News <a href="https://www.yahoo.com/news/doorstep-coweta-county-passes-180-175558126.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Hanover County, Virginia</div><div class="date">Aug 2026</div></div>
+      <div class="headline">Resident Fears Grow as Data Center Campus Advances</div>
+      <div class="desc">The Planning Commission voted to send the large "Iron Horse" data center campus to the Board of Supervisors over objections from more than a dozen residents.</div>
+      <div class="meta-row">WRIC 8News <a href="https://www.wric.com/news/local-news/hanover-county/resident-fears-grow-commission-data-center-campus-plan/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Howell Township (Livingston County), Michigan</div><div class="date">2026</div></div>
+      <div class="headline">Residents Demand Moratorium on Data Center Rezoning</div>
+      <div class="desc">A resident group called on the Howell Township Board to enact at least a six-month moratorium on rezoning tied to data centers, citing a lack of transparency.</div>
+      <div class="meta-row">CBS News Detroit <a href="https://www.cbsnews.com/detroit/news/livingston-county-moratorium-data-center" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Mahoning Township, Pennsylvania</div><div class="date">2026</div></div>
+      <div class="headline">Residents Outraged Over "Too Vague" Data Center Ordinance</div>
+      <div class="desc">Residents packed a hearing describing nausea, migraines and vertigo they attribute to nearby data center noise and vibration; the board passed the ordinance but also ordered a noise/vibration study.</div>
+      <div class="meta-row">WFMJ <a href="https://www.wfmj.com/news/ohio-pennsylvania-news/mahoning-township-residents-outraged-over-too-vague-data-center-ordinance/article_27b4ae53-b635-4cfb-9351-594865882efa.html" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">New London (Ralls County), Missouri</div><div class="date">Aug 20, 2026</div></div>
+      <div class="headline">Ralls County Commissioners Hold Public Data Center Discussion</div>
+      <div class="desc">Commissioners hosted an informational meeting at the courthouse to answer resident questions about prospective data center development.</div>
+      <div class="meta-row">WGEM <a href="https://www.wgem.com/2026/08/20/ralls-county-commissioners-hold-public-discussion-about-data-centers/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Sturtevant, Wisconsin</div><div class="date">2026</div></div>
+      <div class="headline">Wisconsin Residents Sue Microsoft Over Data Center Noise</div>
+      <div class="desc">Residents near Microsoft's "Fairwater" AI data center filed a class-action lawsuit alleging noise from cooling systems and generators is audible more than a mile away, plus construction noise and light pollution.</div>
+      <div class="meta-row">Tom's Hardware <a href="https://www.tomshardware.com/tech-industry/data-centers/wisconsin-residents-file-class-action-lawsuit-against-microsofts-worlds-most-powerful-ai-data-center-due-to-data-center-noise-plaintiffs-also-mention-construction-noise-and-extreme-light-pollution-from-usd7-3-billion-facility" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Dowagiac, Michigan</div><div class="date">2026</div></div>
+      <div class="headline">Residents Sue Over Constant Data Center Noise</div>
+      <div class="desc">Homeowners near an Alliance Cloud Services facility sued alleging two years of a relentless high-pitched whine disrupting sleep and daily life; the company was fined for a noise-ordinance violation.</div>
+      <div class="meta-row">Newsweek / Tom's Hardware <a href="https://www.newsweek.com/michigan-residents-sue-ai-data-center-noise-not-alone-12254427" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Southaven, Mississippi</div><div class="date">2026</div></div>
+      <div class="headline">Residents Endure "Jet Engine" Noise From xAI Turbines</div>
+      <div class="desc">Residents say they've suffered near-constant noise, described as sounding like a jet engine, from gas turbines powering nearby xAI data centers.</div>
+      <div class="meta-row">NBC News <a href="https://www.nbcnews.com/tech/tech-news/data-centers-noise-lawsuits-social-media-rcna587447" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Memphis, Tennessee</div><div class="date">2026</div></div>
+      <div class="headline">NAACP, Residents Move to Sue Over xAI Colossus Air Quality</div>
+      <div class="desc">Local residents and the NAACP filed notice of intent to sue under the Clean Air Act over gas turbines at xAI's Colossus data center, citing worsened air quality in a high-asthma community.</div>
+      <div class="meta-row">NBC News <a href="https://www.nbcnews.com/tech/tech-news/data-centers-noise-lawsuits-social-media-rcna587447" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Brigham City (Box Elder County), Utah</div><div class="date">May 2026</div></div>
+      <div class="headline">Commissioners Approve Massive Data Center Amid Boos</div>
+      <div class="desc">Hundreds of residents cried out as commissioners unanimously approved plans for a large data center; two commissioners who backed the project later trailed in their primary races.</div>
+      <div class="meta-row">Utah News Dispatch / KSL <a href="https://utahnewsdispatch.com/2026/05/04/box-elder-commissioners-approve-data-center/" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="top-row"><div class="place">Pensacola (Escambia County), Florida</div><div class="date">Jul 2026</div></div>
+      <div class="headline">Escambia County Commissioners Vote to Ban Data Centers</div>
+      <div class="desc">Citing AI-related infrastructure concerns, commissioners voted to prohibit new data centers in the county.</div>
+      <div class="meta-row">WEAR TV <a href="https://weartv.com/news/local/escambia-county-commissioners-discuss-future-of-data-centers-while-some-oppose-it" target="_blank" rel="noopener">Read source →</a></div>
+    </div>
+
+    <div class="subhead">Official Meeting Videos (Livestreams / Recordings)</div>
+
+    <div class="card video-card">
+      <div class="top-row"><div class="place">Graham (Alamance County), North Carolina <span class="tag video">Official Video</span></div><div class="date">Aug 17, 2026</div></div>
+      <div class="headline">Commissioners Meeting Live Stream — Public Hearing: Moratorium on Data Centers</div>
+      <div class="desc">Official Alamance County Board of Commissioners YouTube livestream of the meeting and public hearing that preceded the county's 5-0 vote to adopt a one-year data center moratorium. Confirmed as an official county government channel recording, not an edited news clip.</div>
+      <div class="meta-row">Alamance County Government (YouTube) <a href="https://www.youtube.com/watch?v=xztYfAvTKqY" target="_blank" rel="noopener">Watch source →</a></div>
+    </div>
+
+  </section>
+
+  <footer>
+    Compiled via web search on Aug 24, 2026. Locations are approximate (city/county-seat level); see map.html for the interactive version. YouTube inclusion is limited to official government meeting livestreams/recordings — TV news clips, edited segments, and resident/reporter videos were excluded.
+  </footer>
+
 </div>
 </body>
 </html>
