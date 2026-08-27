@@ -3,39 +3,450 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root{
+    --bg:#0b0e14; --panel:#131722; --panel2:#181d2b; --border:#262c3d;
+    --text:#e8ebf3; --muted:#9aa3b8; --accent:#5ec6ff;
+    --current:#3ddc84; --older:#f2b544;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%; margin:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;
+  }
+  #app{display:flex; height:100vh; width:100vw;}
+
+  #sidebar{
+    width:360px; min-width:300px; max-width:40vw;
+    background:var(--panel); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  #sidebar header{
+    padding:1rem 1.1rem .8rem; border-bottom:1px solid var(--border);
+  }
+  #sidebar h1{font-size:1.05rem; margin:0 0 .25rem; letter-spacing:-0.01em;}
+  #sidebar .sub{font-size:.75rem; color:var(--muted);}
+  #legend{
+    display:flex; gap:1rem; padding:.7rem 1.1rem; border-bottom:1px solid var(--border);
+    font-size:.78rem; color:var(--muted); align-items:center; flex-wrap:wrap;
+  }
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:.35rem; vertical-align:middle;}
+  .dot.current{background:var(--current); box-shadow:0 0 6px rgba(61,220,132,.7);}
+  .dot.older{background:var(--older); box-shadow:0 0 6px rgba(242,181,68,.6);}
+
+  #list{flex:1; overflow-y:auto; padding:.5rem 0 2rem;}
+  .group-label{
+    padding:.7rem 1.1rem .3rem; font-size:.72rem; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted); font-weight:700;
+  }
+  .row{
+    padding:.55rem 1.1rem; cursor:pointer; border-left:3px solid transparent;
+    font-size:.85rem;
+  }
+  .row:hover{background:var(--panel2);}
+  .row.active{background:var(--panel2); border-left-color:var(--accent);}
+  .row.current{border-left-color:var(--current);}
+  .row.older{border-left-color:var(--older);}
+  .row .rh{font-weight:600; margin-bottom:.15rem;}
+  .row .rl{color:var(--muted); font-size:.75rem;}
+
+  #map{flex:1; height:100%;}
+
+  .leaflet-popup-content-wrapper{
+    background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:10px;
+  }
+  .leaflet-popup-tip{background:var(--panel); border:1px solid var(--border);}
+  .leaflet-popup-content{margin:.8rem 1rem; font-size:.85rem; line-height:1.45;}
+  .leaflet-popup-content a{color:var(--accent);}
+  .popup-badge{
+    display:inline-block; font-size:.65rem; text-transform:uppercase; font-weight:700;
+    padding:.1rem .45rem; border-radius:5px; margin-bottom:.35rem; letter-spacing:.03em;
+  }
+  .popup-badge.current{background:var(--current); color:#062f16;}
+  .popup-badge.older{background:var(--older); color:#3a2600;}
+  .popup-h{font-weight:700; margin:.1rem 0 .3rem;}
+  .popup-loc{color:var(--accent); font-size:.78rem; margin-bottom:.35rem;}
+  .popup-meta{color:var(--muted); font-size:.72rem; margin-top:.4rem;}
+
+  .tt-card{
+    background:var(--panel); color:var(--text); border:1px solid var(--border);
+    border-radius:8px; padding:.55rem .7rem; font-size:.75rem; max-width:230px; line-height:1.4;
+    box-shadow:0 4px 14px rgba(0,0,0,.5);
+  }
+  .tt-card .popup-badge{margin-bottom:.25rem;}
+  .tt-h{font-weight:700; margin-bottom:.15rem;}
+  .tt-loc{color:var(--accent); font-size:.7rem; margin-bottom:.25rem;}
+
+  @media (max-width: 720px){
+    #sidebar{position:absolute; z-index:1000; height:45vh; width:100%; max-width:100%; bottom:0; top:auto; border-right:none; border-top:1px solid var(--border);}
+    #map{height:100vh;}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="app">
+  <div id="sidebar">
+    <header>
+      <h1>Data Center Turmoil</h1>
+      <div class="sub">U.S. community response tracker · window: Aug 26–27, 2026</div>
+    </header>
+    <div id="legend">
+      <span><span class="dot current"></span>Current (24h)</span>
+      <span><span class="dot older"></span>Older / background</span>
+    </div>
+    <div id="list"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+// ---- Data ----------------------------------------------------------------
+const ITEMS = [
+  // CURRENT (past 24 hours)
+  {
+    id:"elkhart", status:"current",
+    place:"Elkhart, IN", location:"Elkhart, Indiana",
+    lat:41.6819, lon:-85.9767,
+    headline:"Elkhart council holds final vote today on data center & battery-storage moratorium",
+    desc:"Special 6pm meeting: second/third readings, public comment, and final vote on a moratorium through Dec. 31, 2027 on new data center and battery storage applications.",
+    source:"ABC57 / WVPE", date:"Aug 27, 2026",
+    url:"https://www.wvpe.org/wvpe-news/2026-08-18/elkhart-advances-data-center-pause-to-adopt-standards"
+  },
+  {
+    id:"siouxfalls", status:"current",
+    place:"Sioux Falls / Lincoln County, SD", location:"Sioux Falls / Lincoln County, South Dakota",
+    lat:43.5460, lon:-96.7313,
+    headline:"Lincoln County–Sioux Falls joint meeting on data centers turns contentious",
+    desc:"A moratorium proposal and an NDA-ban measure were both voted down 3-2 in a heated joint session; the chair threatened to remove audience members.",
+    source:"Dakota News Now", date:"Aug 26, 2026 (meeting Aug 25)",
+    url:"https://www.dakotanewsnow.com/2026/08/26/data-center-debate-fuels-fiery-lincoln-county-sioux-falls-joint-meeting/"
+  },
+  {
+    id:"bloomington", status:"current",
+    place:"Bloomington/Normal, IL", location:"Bloomington / Normal, Illinois",
+    lat:40.4842, lon:-88.9937,
+    headline:"Bloomington & Normal host joint public forum on data center regulations",
+    desc:"Both towns, currently under moratoriums, co-hosted a community forum with energy/environmental/policy panelists ahead of separate rulemaking.",
+    source:"WGLT", date:"Aug 26, 2026",
+    url:"https://www.wglt.org/local-news/2026-08-25/bloomington-councilman-plans-data-center-discussion-with-constituents"
+  },
+  {
+    id:"neworleans", status:"current",
+    place:"New Orleans, LA", location:"New Orleans, Louisiana",
+    lat:29.9511, lon:-90.0715,
+    headline:"Planning Commission defers data center zoning rules again over water concerns",
+    desc:"Commissioners signaled interest in banning larger facilities and setting water-use thresholds; New Orleans East groups warn of being an 'experimental staging ground.'",
+    source:"Verite News", date:"Aug 26, 2026 (vote Aug 25)",
+    url:"https://veritenews.org/2026/08/26/data-centers-new-orleans-east-cpc/"
+  },
+  {
+    id:"wheeling", status:"current",
+    place:"Wheeling (Warwood), WV", location:"Wheeling (Warwood), West Virginia",
+    lat:40.0640, lon:-80.7209,
+    headline:"Data center opponents hold their own public hearing after officials, company mostly absent",
+    desc:"Citizen groups organized a 'Very Public Data Center Hearing' on the proposed Centre Foundry site conversion; company's outside counsel fielded resident questions.",
+    source:"The Intelligencer", date:"Aug 26, 2026 (hearing Aug 25)",
+    url:"https://www.theintelligencer.net/news/top-headlines/2026/08/data-center-opponents-host-their-own-public-hearing/"
+  },
+
+  // OLDER / BACKGROUND
+  {
+    id:"stlouis", status:"older",
+    place:"St. Louis County, MO", location:"St. Louis County, Missouri",
+    lat:38.6270, lon:-90.3960,
+    headline:"Residents push back on data center zoning rules, ask for outright ban",
+    desc:"At a hearing on proposed zoning rules for unincorporated areas, residents said the rules weren't strict enough and called for a full ban.",
+    source:"STLPR", date:"Aug 11, 2026",
+    url:"https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects"
+  },
+  {
+    id:"imperial", status:"older",
+    place:"Imperial County, CA", location:"Imperial County, California",
+    lat:32.7920, lon:-115.5631,
+    headline:"Imperial Valley cities hit the brakes on data centers after months of outcry",
+    desc:"Board of Supervisors approved an emergency moratorium suspending all data center projects on county land through May 2027.",
+    source:"KPBS", date:"Aug 4, 2026",
+    url:"https://www.kpbs.org/news/environment/2026/08/04/after-months-of-public-outcry-imperial-valley-cities-are-hitting-the-brakes-on-data-centers"
+  },
+  {
+    id:"henry", status:"older",
+    place:"Henry County, VA", location:"Henry County, Virginia",
+    lat:36.6912, lon:-79.8822,
+    headline:"Supervisors pull data centers from zoning plan after packed hearing",
+    desc:"100+ residents cited water, noise, health, and wildlife concerns; the board voted unanimously to remove data centers from proposed zoning amendments.",
+    source:"Cardinal News", date:"Jul 29, 2026",
+    url:"https://cardinalnews.org/2026/07/29/crowd-packs-hearing-as-henry-county-goes-back-to-the-drawing-board-on-data-center-regulations/"
+  },
+  {
+    id:"alamance", status:"older",
+    place:"Alamance County, NC", location:"Alamance County (Graham), North Carolina",
+    lat:36.0723, lon:-79.4059,
+    headline:"42 residents speak out at hearing on data center moratorium",
+    desc:"A three-hour public hearing drew dozens of speakers urging commissioners to adopt a moratorium on new data center development.",
+    source:"alamancenews.com", date:"Aug 2026",
+    url:"https://alamancenews.com/during-3-hour-public-hearing-more-than-three-dozen-residents-speak-out-against-data-centers-for-moratorium/"
+  },
+  {
+    id:"clay", status:"older",
+    place:"Clay County, FL", location:"Clay County (Green Cove Springs), Florida",
+    lat:29.9925, lon:-81.6987,
+    headline:"Hearing on data center development pause draws packed house",
+    desc:"Speakers split between wanting to pause data centers entirely and narrower concerns, at a hearing on a proposed one-year moratorium.",
+    source:"First Coast News", date:"Aug 2026",
+    url:"https://www.firstcoastnews.com/article/news/community/clay-county-commissioners-consider-one-year-pause-on-data-centers/77-27ed60eb-d1b8-4a41-8902-8a7963a0d7af"
+  },
+  {
+    id:"frederick", status:"older",
+    place:"Frederick County, MD", location:"Frederick County, Maryland",
+    lat:39.4143, lon:-77.4105,
+    headline:"Residents fear becoming the next 'Data Center Alley'",
+    desc:"Residents voiced concern the county could follow neighboring Loudoun County, VA into becoming a dense hyperscale data center corridor.",
+    source:"Maryland Matters", date:"Jun 12, 2026",
+    url:"https://marylandmatters.org/2026/06/12/residents-fear-frederick-county-will-be-the-new-data-center-alley/"
+  },
+  {
+    id:"lawrence", status:"older",
+    place:"Lawrence, KS", location:"Lawrence, Kansas",
+    lat:38.9717, lon:-95.2353,
+    headline:"City weighs one-year data center ban amid water, power, noise fears",
+    desc:"Officials are considering a one-year ban on new data center development amid resident concerns.",
+    source:"The Cool Down", date:"Aug 2026",
+    url:"https://www.thecooldown.com/green-tech/lawrence-kansas-data-center-ban-residents-fear-water-power-noise/"
+  },
+  {
+    id:"festus", status:"older",
+    place:"Festus, MO", location:"Festus, Missouri",
+    lat:38.2247, lon:-90.3990,
+    headline:"Voters recall mayor and four council members over $6B data center approval",
+    desc:"Residents of this town of 12,000 forced a recall vote and ousted officials who had approved a $6 billion data center project.",
+    source:"SupplyChainBrain", date:"Apr 2026",
+    url:"https://www.supplychainbrain.com/articles/44688-data-center-boom-faces-pushback-from-local-communities"
+  },
+  {
+    id:"louisville", status:"older",
+    place:"Louisville, KY", location:"Louisville, Kentucky",
+    lat:38.2527, lon:-85.7585,
+    headline:"Metro Council approves six-month data center moratorium, 24-1",
+    desc:"The Metro Council overwhelmingly passed a six-month pause on new data center development.",
+    source:"WHAS11", date:"Aug 13, 2026",
+    url:"https://www.whas11.com/article/news/community/data-centers/louisville-residents-rally-data-centers-regulations-metro-council-vote/417-3ee3cde8-e290-488c-9f84-d17c4cf22794"
+  },
+  {
+    id:"indianapolis", status:"older",
+    place:"Indianapolis (Marion Co.), IN", location:"Indianapolis (Marion County), Indiana",
+    lat:39.7684, lon:-86.1581,
+    headline:"City-County Council bars new data centers through 2027",
+    desc:"Council voted 23-1 to block new data center construction countywide through the end of 2027.",
+    source:"datacenterbans.com", date:"Aug 10, 2026",
+    url:"https://www.datacenterbans.com/state/indiana"
+  },
+  {
+    id:"greensboro", status:"older",
+    place:"Greensboro, NC", location:"Greensboro, North Carolina",
+    lat:36.0726, lon:-79.7920,
+    headline:"Council adopts 180-day data center pause, 8-0",
+    desc:"City council unanimously approved a 180-day moratorium on new data center applications.",
+    source:"dcmap.us", date:"Aug 18, 2026",
+    url:"https://dcmap.us/insights/policy/"
+  },
+  {
+    id:"lakeland", status:"older",
+    place:"Lakeland, FL", location:"Lakeland, Florida",
+    lat:28.0395, lon:-81.9498,
+    headline:"Commissioners narrowly approve one-year data center moratorium",
+    desc:"City commissioners voted 4-3 to pause new data center development for a year.",
+    source:"Bay News 9", date:"Aug 3, 2026",
+    url:"https://baynews9.com/fl/tampa/news/2026/08/03/lakeland-city-officials-approve-vote-on-data-center-moratorium"
+  },
+  {
+    id:"montgomery", status:"older",
+    place:"Montgomery County, MD", location:"Montgomery County, Maryland",
+    lat:39.1547, lon:-77.2405,
+    headline:"Council approves 18-month data center moratorium and limits",
+    desc:"The council passed measures establishing an 18-month moratorium plus new safeguards on future data center development.",
+    source:"Montgomery County, MD (official)", date:"Aug 2026",
+    url:"https://www.montgomerycountymd.gov/news/council-approves-18-month-data-center-moratorium-places-limitations-data-center-development"
+  },
+  {
+    id:"coweta", status:"older",
+    place:"Coweta County, GA", location:"Coweta County (Newnan), Georgia",
+    lat:33.3809, lon:-84.7997,
+    headline:"Commissioners pass 180-day data center moratorium",
+    desc:"A 180-day pause on new data center proposals amid resident concern over rapid growth 'on our doorstep.'",
+    source:"regional coverage", date:"Aug 2026",
+    url:"https://www.yahoo.com/news/doorstep-coweta-county-passes-180-175558126.html"
+  },
+  {
+    id:"fredericksburg", status:"older",
+    place:"Fredericksburg, VA", location:"Fredericksburg, Virginia",
+    lat:38.3032, lon:-77.4605,
+    headline:"Council rejects 1-million-sq-ft Gateway data center, 7-0",
+    desc:"City council unanimously blocked the proposed 1500 Gateway data center project.",
+    source:"Construction Review Online", date:"Aug 2026",
+    url:"https://constructionreviewonline.com/fredericksburg-city-council-unanimously-rejects-1500-gateway-data-center/"
+  },
+  {
+    id:"pataskala", status:"older",
+    place:"Pataskala, OH", location:"Pataskala, Ohio",
+    lat:39.9995, lon:-82.6788,
+    headline:"Council votes down 200MW Aligned Data Centers proposal",
+    desc:"Council unanimously rejected the site plan after months of debate and a resident petition drive; a related ballot measure heads to voters in November.",
+    source:"The Reporting Project", date:"Aug 2026",
+    url:"https://www.thereportingproject.org/pataskala-residents-cheer-city-council-vote-to-reject-site-plan-for-proposed-large-scale-data-center/"
+  },
+  {
+    id:"kc", status:"older",
+    place:"Kansas City, MO", location:"Kansas City, Missouri",
+    lat:39.0997, lon:-94.5786,
+    headline:"Planning Commission rejects proposed 20-story downtown data center",
+    desc:"The commission turned down a Miami-based developer's proposal for a high-rise data center downtown.",
+    source:"FOX4KC", date:"Aug 2026",
+    url:"https://fox4kc.com/news/kansas-city-planning-commission-rejects-proposal-for-20-story-data-center/"
+  },
+  {
+    id:"fortworth", status:"older",
+    place:"Fort Worth, TX", location:"Fort Worth, Texas",
+    lat:32.7555, lon:-97.3308,
+    headline:"Council votes unanimously toward data center moratorium",
+    desc:"Council took first steps on a moratorium after residents packed chambers for a set of data center-related votes.",
+    source:"Fort Worth Report", date:"Aug 12, 2026",
+    url:"https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"
+  },
+  {
+    id:"grayslake", status:"older",
+    place:"Grayslake (Lake Co.), IL", location:"Grayslake (Lake County), Illinois",
+    lat:42.3453, lon:-88.0334,
+    headline:"Residents sue to block 472-acre data center campus",
+    desc:"Residents filed suit over the 'project of unprecedented scale,' challenging approvals granted in 2024-2025 for the T5 @ Chicago IV campus.",
+    source:"Lake & McHenry County Scanner", date:"Aug 8, 2026",
+    url:"https://www.lakemchenryscanner.com/2026/08/08/project-of-unprecedented-scale-lake-county-residents-file-lawsuit-to-block-472-acre-data-center-campus-in-grayslake/"
+  },
+  {
+    id:"spartanburg", status:"older",
+    place:"Spartanburg County, SC", location:"Spartanburg County, South Carolina",
+    lat:34.9496, lon:-81.9320,
+    headline:"Residents, environmental group challenge data center before PSC",
+    desc:"Oral arguments began as residents and an environmental group formally challenged a proposed data center project before the state Public Service Commission.",
+    source:"FOX Carolina", date:"Aug 5, 2026",
+    url:"https://www.foxcarolina.com/2026/08/05/live-oral-arguments-begin-over-proposed-data-center-spartanburg-county/"
+  },
+  {
+    id:"statesboro", status:"older",
+    place:"Statesboro, GA", location:"Statesboro, Georgia",
+    lat:32.4488, lon:-81.7832,
+    headline:"Planning Commission backs data center rezoning, 5-1, amid hundreds of protesters",
+    desc:"Hundreds of residents gathered inside and outside city hall urging a 'no' vote; the commission approved the rezoning anyway.",
+    source:"WTOC", date:"Aug 19, 2026",
+    url:"https://www.wtoc.com/2026/08/19/statesboro-city-council-approves-rezoning-data-center-amid-protests/"
+  },
+  {
+    id:"leavenworth", status:"older",
+    place:"Leavenworth County, KS", location:"Leavenworth County, Kansas",
+    lat:39.3111, lon:-94.9224,
+    headline:"Protesters pack planning meeting over proposed data center",
+    desc:"About 100 opponents filled a county planning meeting pushing for stricter scrutiny after a countywide moratorium expired.",
+    source:"KCUR", date:"Aug 14, 2026",
+    url:"https://www.kcur.org/politics-elections-and-government/2026-08-14/leavenworth-county-kansas-data-center"
+  },
+  {
+    id:"spokane", status:"older",
+    place:"Spokane County, WA", location:"Spokane County, Washington",
+    lat:47.6588, lon:-117.4260,
+    headline:"Commissioners confronted by data center opponents",
+    desc:"Members of the public accused commissioners of downplaying opposition and leaving residents in the dark during testimony on a proposed development.",
+    source:"The Spokesman-Review", date:"Aug 11, 2026",
+    url:"https://www.spokesman.com/stories/2026/aug/11/spokane-county-commission-confronted-by-data-cente/"
+  },
+  {
+    id:"topeka", status:"older",
+    place:"Topeka, KS", location:"Topeka, Kansas",
+    lat:39.0473, lon:-95.6752,
+    headline:"City Council presses Compass Data Centers and Evergy on annexation plan",
+    desc:"Special information-only work session (closed to public comment) on a proposed 10-building data center campus southwest of the city. A recording surfaced online but its channel could not be confirmed as an official government channel, so it is not listed as a verified official meeting video.",
+    source:"WIBW", date:"Aug 19-20, 2026",
+    url:"https://www.wibw.com/2026/08/20/topeka-city-council-presses-compass-data-centers-evergy-during-special-meeting/"
+  }
+];
+
+// ---- Map setup -------------------------------------------------------------
+const map = L.map('map', { zoomControl:true, minZoom:3 }).setView([39.5, -98.35], 5);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+const markers = {};
+
+function colorFor(status){ return status === 'current' ? '#3ddc84' : '#f2b544'; }
+
+ITEMS.forEach(item => {
+  const color = colorFor(item.status);
+  const marker = L.circleMarker([item.lat, item.lon], {
+    radius: item.status === 'current' ? 9 : 7,
+    color: color,
+    weight: 2,
+    fillColor: color,
+    fillOpacity: 0.85,
+    className: 'dc-marker'
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  const tooltipHtml = `
+    <div class="tt-card">
+      <span class="popup-badge ${item.status}">${item.status === 'current' ? 'Current' : 'Older'}</span>
+      <div class="tt-h">${item.place}</div>
+      <div class="tt-loc">${item.location}</div>
+      <div>${item.headline}</div>
+      <div style="margin-top:.3rem; color:#9aa3b8;">${item.desc}</div>
+      <div style="margin-top:.3rem; color:#9aa3b8;">${item.source} · ${item.date}</div>
+    </div>`;
+  marker.bindTooltip(tooltipHtml, { direction:'top', offset:[0,-6], opacity:1, className:'tt-wrap', sticky:true });
+
+  const popupHtml = `
+    <span class="popup-badge ${item.status}">${item.status === 'current' ? 'Current' : 'Older'}</span>
+    <div class="popup-h">${item.headline}</div>
+    <div class="popup-loc">${item.location}</div>
+    <div>${item.desc}</div>
+    <div class="popup-meta">${item.source} · ${item.date}</div>
+    <div style="margin-top:.5rem;"><a href="${item.url}" target="_blank" rel="noopener">Read source →</a></div>`;
+  marker.bindPopup(popupHtml);
+
+  markers[item.id] = marker;
+});
+
+// ---- Sidebar ----------------------------------------------------------------
+const listEl = document.getElementById('list');
+
+function renderGroup(title, status){
+  const group = ITEMS.filter(i => i.status === status);
+  const label = document.createElement('div');
+  label.className = 'group-label';
+  label.textContent = `${title} (${group.length})`;
+  listEl.appendChild(label);
+
+  group.forEach(item => {
+    const row = document.createElement('div');
+    row.className = `row ${status}`;
+    row.dataset.id = item.id;
+    row.innerHTML = `<div class="rh">${item.place}</div><div class="rl">${item.headline}</div>`;
+    row.addEventListener('click', () => {
+      document.querySelectorAll('.row.active').forEach(r => r.classList.remove('active'));
+      row.classList.add('active');
+      map.flyTo([item.lat, item.lon], 9, { duration: 0.9 });
+      markers[item.id].openPopup();
+    });
+    listEl.appendChild(row);
   });
+}
+
+renderGroup('Past 24 Hours (Current)', 'current');
+renderGroup('Older / Background', 'older');
 </script>
 </body>
 </html>
