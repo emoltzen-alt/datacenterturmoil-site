@@ -3,39 +3,519 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root {
+    --bg: #0b0d12;
+    --panel: #12151d;
+    --panel-2: #171b26;
+    --border: #262b38;
+    --text: #e6e8ee;
+    --muted: #9aa2b1;
+    --green: #35d07f;
+    --amber: #f5a623;
+    --link: #7ab8ff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+  #sidebar {
+    width: 360px;
+    min-width: 300px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #sidebar-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  #sidebar-header h1 {
+    font-size: 1.05rem;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  #sidebar-header .sub {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  #sidebar-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 10px 10px 20px;
+  }
+  .group-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 14px 8px 6px;
+  }
+  .row {
+    padding: 10px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+  }
+  .row:hover {
+    background: var(--panel-2);
+    border-color: var(--border);
+  }
+  .row .rtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .row .rloc {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .dot.current { background: var(--green); }
+  .dot.older { background: var(--amber); }
+  #map { flex: 1; height: 100%; }
+  .legend {
+    position: absolute;
+    bottom: 24px;
+    left: 380px;
+    z-index: 1000;
+    background: rgba(18,21,29,0.92);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: var(--text);
+    backdrop-filter: blur(4px);
+  }
+  .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
+  .legend-item:last-child { margin-bottom: 0; }
+  .legend-swatch {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+    border: 2px solid #0b0d12;
+  }
+  .legend-swatch.current { background: var(--green); }
+  .legend-swatch.older { background: var(--amber); }
+  .legend-swatch.video { background: #c86bff; }
+
+  .leaflet-tooltip.dc-tooltip {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    max-width: 260px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  }
+  .leaflet-tooltip.dc-tooltip::before { border-top-color: var(--border); }
+  .tt-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  .tt-badge.current { background: #1f6b46; color: var(--green); }
+  .tt-badge.older { background: #7a5518; color: var(--amber); }
+  .tt-headline { font-weight: 700; margin-bottom: 3px; }
+  .tt-loc { color: var(--muted); margin-bottom: 4px; }
+  .tt-desc { color: #cbd1de; margin-bottom: 4px; }
+  .tt-src { color: var(--muted); font-size: 0.72rem; }
+
+  .leaflet-popup-content-wrapper {
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .leaflet-popup-tip { background: var(--panel); }
+  .popup-title { font-weight: 700; margin-bottom: 4px; font-size: 0.92rem; }
+  .popup-loc { color: var(--muted); font-size: 0.78rem; margin-bottom: 6px; }
+  .popup-desc { font-size: 0.82rem; color: #cbd1de; margin-bottom: 8px; }
+  .popup-link { color: var(--link); font-size: 0.8rem; text-decoration: none; font-weight: 600; }
+  .popup-link:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    #sidebar { width: 100%; height: 40%; position: absolute; z-index: 900; }
+    #app { flex-direction: column; }
+    #map { height: 60%; margin-top: 40%; }
+    .legend { left: 12px; bottom: 12px; }
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <h1>Data Center Turmoil</h1>
+      <div class="sub">Community response map · window ending 2026-08-28</div>
+    </div>
+    <div id="sidebar-list"></div>
+  </div>
+  <div id="map"></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch current"></span>Current (past 24h)</div>
+    <div class="legend-item"><span class="legend-swatch older"></span>Older / background</div>
+    <div class="legend-item"><span class="legend-swatch video"></span>Official meeting video</div>
+  </div>
+</div>
+
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+const ITEMS = [
+  // ---- CURRENT (past 24h) ----
+  {
+    name: "Pinal County board rejects La Osa data center",
+    location: "Eloy / Pinal County, Arizona",
+    lat: 32.7548, lon: -111.5470,
+    current: true, isVideo: false,
+    headline: "Pinal County rejects massive La Osa data center near Eloy",
+    desc: "Supervisors rejected rezoning for 11 data center buildings and a 500MW gas plant despite an 80% size cut offer, citing groundwater and air quality concerns.",
+    source: "AZFamily", date: "Aug 27, 2026",
+    url: "https://www.azfamily.com/2026/08/27/pinal-county-board-rejects-massive-data-center-project/"
+  },
+  {
+    name: "Edgerton, KS — city sues residents over petition",
+    location: "Edgerton, Kansas",
+    lat: 38.7963, lon: -94.9822,
+    current: true, isVideo: false,
+    headline: "Edgerton sues residents over anti-data-center referendum petition",
+    desc: "One of three Kansas cities suing constituents over petitions seeking to block local data center development.",
+    source: "HPPR", date: "Aug 27, 2026",
+    url: "https://www.hppr.org/hppr-news/2026-08-27/kansans-fear-impacts-of-data-centers-despite-promise-of-economic-benefits"
+  },
+  {
+    name: "El Dorado, KS — city sues residents over petition",
+    location: "El Dorado, Kansas",
+    lat: 37.8194, lon: -96.8628,
+    current: true, isVideo: false,
+    headline: "El Dorado sues residents over anti-data-center referendum petition",
+    desc: "City government is suing residents who filed a petition to block a proposed data center via referendum.",
+    source: "HPPR", date: "Aug 27, 2026",
+    url: "https://www.hppr.org/hppr-news/2026-08-27/kansans-fear-impacts-of-data-centers-despite-promise-of-economic-benefits"
+  },
+  {
+    name: "Emporia, KS — city sues residents over petition",
+    location: "Emporia, Kansas",
+    lat: 38.4034, lon: -96.1817,
+    current: true, isVideo: false,
+    headline: "Emporia sues residents over anti-data-center referendum petition",
+    desc: "Third of three Kansas cities suing residents over petitions aimed at stopping local data center projects.",
+    source: "HPPR", date: "Aug 27, 2026",
+    url: "https://www.hppr.org/hppr-news/2026-08-27/kansans-fear-impacts-of-data-centers-despite-promise-of-economic-benefits"
+  },
+  {
+    name: "Tonganoxie, KS — residents crowdfund legal fight",
+    location: "Tonganoxie, Kansas",
+    lat: 39.1122, lon: -95.0813,
+    current: true, isVideo: false,
+    headline: "Tonganoxie residents raise money for legal fight over proposed data center",
+    desc: "Residents are crowdfunding a legal challenge against a proposed data center project in the area.",
+    source: "HPPR", date: "Aug 27, 2026",
+    url: "https://www.hppr.org/hppr-news/2026-08-27/kansans-fear-impacts-of-data-centers-despite-promise-of-economic-benefits"
+  },
+  {
+    name: "Indiana counties expand data center restrictions",
+    location: "Indianapolis / statewide, Indiana",
+    lat: 39.7684, lon: -86.1581,
+    current: true, isVideo: false,
+    headline: "13 Indiana counties now have data center ordinances or restrictions",
+    desc: "Statewide wave of county-level planning, design, and reporting requirements for data centers as local pushback grows.",
+    source: "Indiana Public Media", date: "Aug 27, 2026",
+    url: "https://www.ipm.org/news/2026-08-27/indiana-counties-increasingly-turn-to-local-restrictions-as-data-center-development-grows"
+  },
+  {
+    name: "Chesterfield County weighs car-tax cut from data center revenue",
+    location: "Chesterfield County, Virginia",
+    lat: 37.3771, lon: -77.5058,
+    current: true, isVideo: false,
+    headline: "Chesterfield County proposes cutting car tax using data center revenue",
+    desc: "Officials propose using $3.5-5.3M/year in projected Google data center tax revenue to cut personal property tax bills ~$400/household.",
+    source: "VPM", date: "Aug 27, 2026",
+    url: "https://www.vpm.org/news/2026-08-27/chesterfield-data-center-car-tax-cut-google-peanut-skye-loch-harris-ingle-christie/"
+  },
+  {
+    name: "Arlington leaders warn of spillover from NoVA data center boom",
+    location: "Arlington, Virginia",
+    lat: 38.8816, lon: -77.0910,
+    current: true, isVideo: false,
+    headline: "Northern Virginia data center boom impacts could reach Arlington",
+    desc: "Local officials warn grid strain and land pressure from the region's data center buildout may spill into Arlington despite few local facilities.",
+    source: "ARLnow", date: "Aug 27, 2026",
+    url: "https://www.arlnow.com/2026/08/27/impacts-of-n-va-s-data-center-boom-could-hit-arlington-leaders-say/"
+  },
+  {
+    name: "Data centers squeeze Texas farmland and rural roads",
+    location: "Statewide, Texas",
+    lat: 30.2672, lon: -97.7431,
+    current: true, isVideo: false,
+    headline: "Texas data center boom threatens agriculture, damages rural roads",
+    desc: "Agriculture Commissioner Sid Miller says developers are building on prime farmland; construction traffic is congesting and damaging farm roads.",
+    source: "Texas Tribune", date: "Aug 27, 2026",
+    url: "https://www.texastribune.org/2026/08/27/texas-agriculture-data-centers/"
+  },
+
+  // ---- OLDER / BACKGROUND ----
+  {
+    name: "Douglas County rejects 700-acre data center campus",
+    location: "Douglasville / Douglas County, Georgia",
+    lat: 33.7515, lon: -84.7477,
+    current: false, isVideo: false,
+    headline: "Douglas County commission rejects 700-acre data center campus, 4-1",
+    desc: "Commissioners rejected rezoning for a 4.4M sq ft, five-building complex; residents argued the county already hosts 11 active data centers.",
+    source: "Douglasville Sentinel", date: "Jul 2026",
+    url: "https://www.douglascountysentinel.com/douglasville_sentinel/county-rejects-plans-for-700-acre-data-center-campus/article_a5761e68-bcdb-5537-a954-b2a948460ea3.html"
+  },
+  {
+    name: "Fredericksburg Council kills I-95 data center 7-0",
+    location: "Fredericksburg, Virginia",
+    lat: 38.3032, lon: -77.4605,
+    current: false, isVideo: false,
+    headline: "Fredericksburg City Council unanimously denies $23M I-95 data center",
+    desc: "After a hearing past midnight, council voted 7-0 to deny both rezoning and a height variance for two data center buildings along I-95.",
+    source: "Potomac Local News", date: "Aug 26, 2026",
+    url: "https://www.potomaclocal.com/2026/08/26/no-byte-tonight-fred-council-unplugs-23m-i-95-data-center-7-0-after-midnight-hearing/"
+  },
+  {
+    name: "St. Louis County residents push back on zoning rules",
+    location: "Clayton / St. Louis County, Missouri",
+    lat: 38.6270, lon: -90.1994,
+    current: false, isVideo: false,
+    headline: "St. Louis County residents ask for ban on data center development",
+    desc: "At a hearing on proposed zoning rules, residents cited utility rate hikes, water/energy use, pollution, noise, and infrastructure strain.",
+    source: "St. Louis Public Radio", date: "Aug 11, 2026",
+    url: "https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects"
+  },
+  {
+    name: "Imperial Valley pauses data center approvals",
+    location: "El Centro / Imperial County, California",
+    lat: 32.7920, lon: -115.5631,
+    current: false, isVideo: false,
+    headline: "Imperial Valley suspends new data center projects through May 2027",
+    desc: "After months of public outcry over environmental and public health effects, county land is off-limits to new data center projects.",
+    source: "KPBS", date: "Aug 4, 2026",
+    url: "https://www.kpbs.org/news/environment/2026/08/04/after-months-of-public-outcry-imperial-valley-cities-are-hitting-the-brakes-on-data-centers"
+  },
+  {
+    name: "Conshohocken-area hearing turns raucous",
+    location: "Conshohocken / Plymouth Township, Pennsylvania",
+    lat: 40.0779, lon: -75.3024,
+    current: false, isVideo: false,
+    headline: "Residents shout, boo as data center hearing begins",
+    desc: "A public hearing opened to shouting and booing, reflecting Philadelphia-suburb pushback against new AI infrastructure siting.",
+    source: "WHYY", date: "2026",
+    url: "https://whyy.org/articles/conshohocken-data-center-plymouth-township-pushback/"
+  },
+  {
+    name: "Washington County rural data center hearing",
+    location: "Hanover Township / Washington County, Pennsylvania",
+    lat: 40.1959, lon: -80.2462,
+    current: false, isVideo: false,
+    headline: "Controversial rural data center at center of packed public hearing",
+    desc: "Residents raised concerns about traffic, noise, and a rushed rezoning process for a proposed rural data center site.",
+    source: "CBS Pittsburgh", date: "2026",
+    url: "https://www.cbsnews.com/pittsburgh/news/public-hearing-data-center-hanover-township-washington-county/"
+  },
+  {
+    name: "Leavenworth County planning meeting draws ~100 protesters",
+    location: "Leavenworth County, Kansas",
+    lat: 39.3111, lon: -94.9224,
+    current: false, isVideo: false,
+    headline: "~100 protesters pack Leavenworth County planning meeting",
+    desc: "Opponents pushed for stricter noise, water, and health regulations; commission voted 8-1 to reconsider the proposed rules.",
+    source: "KCUR", date: "Aug 14, 2026",
+    url: "https://www.kcur.org/politics-elections-and-government/2026-08-14/leavenworth-county-kansas-data-center"
+  },
+  {
+    name: "Baltimore Planning Commission meeting on data center rules",
+    location: "Baltimore, Maryland",
+    lat: 39.2904, lon: -76.6122,
+    current: false, isVideo: false,
+    headline: "Packed Baltimore hearing over proposed data center regulation",
+    desc: "A proposal to require conditional-use approval, a health equity assessment, public input, and a Council vote for data center projects.",
+    source: "WMAR-2 News", date: "2026",
+    url: "https://www.wmar2news.com/news/region/baltimore-city/debate-over-data-centers-returns-to-baltimore-city-as-neighbors-oppose-proposed-legislation"
+  },
+  {
+    name: "Westlake zoning meeting over 87-acre data center campus",
+    location: "Westlake / Keller, Texas",
+    lat: 32.9843, lon: -97.1972,
+    current: false, isVideo: false,
+    headline: "Raucous Westlake zoning meeting recommends data center approval",
+    desc: "100+ residents, many from neighboring Keller, turned out; P&Z recommended approval with conditions.",
+    source: "CandysDirt", date: "Aug 6, 2026",
+    url: "https://candysdirt.com/2026/08/06/as-tensions-rise-over-texas-data-center-growth-westlake-advances-87-acre-project-as-keller-neighbors-protest/"
+  },
+  {
+    name: "Kansas City Plan Commission denies downtown data center",
+    location: "Kansas City, Missouri",
+    lat: 39.0997, lon: -94.5786,
+    current: false, isVideo: false,
+    headline: "KC Plan Commission denies downtown data center, 6-0",
+    desc: "Commission cited location and minimal city benefit; opposing residents vow to keep fighting future proposals.",
+    source: "KCUR", date: "Aug 10, 2026",
+    url: "https://www.kcur.org/housing-development-section/2026-08-10/kansas-city-officials-denied-a-plan-for-downtown-data-center-some-residents-vow-to-keep-fighting"
+  },
+  {
+    name: "Gaines Township: hundreds protest Microsoft rezoning",
+    location: "Gaines Township, Michigan",
+    lat: 42.8608, lon: -85.5772,
+    current: false, isVideo: false,
+    headline: "Hundreds protest Microsoft data center rezoning in Gaines Township",
+    desc: "Hearing moved to a high school auditorium to fit hundreds of neighbors opposing a 400+ acre rezoning request.",
+    source: "FOX 17 Grand Rapids", date: "2026",
+    url: "https://www.fox17online.com/news/local-news/wyoming-kentwood-byron-center/hundreds-of-neighbors-protest-microsoft-data-center-rezoning-proposal-at-gaines-township-public-hearing"
+  },
+  {
+    name: "Class-action noise suit over Microsoft Fairwater data center",
+    location: "Mount Pleasant / Sturtevant, Wisconsin",
+    lat: 42.7261, lon: -87.9223,
+    current: false, isVideo: false,
+    headline: "Wisconsin residents sue over $7.3B Microsoft data center noise",
+    desc: "Proposed class action alleges cooling-system and generator noise audible 1.5 miles beyond the property line, plus light pollution.",
+    source: "Tom's Hardware", date: "2026",
+    url: "https://www.tomshardware.com/tech-industry/data-centers/wisconsin-residents-file-class-action-lawsuit-against-microsofts-worlds-most-powerful-ai-data-center-due-to-data-center-noise-plaintiffs-also-mention-construction-noise-and-extreme-light-pollution-from-usd7-3-billion-facility"
+  },
+  {
+    name: "Southaven residents describe near-constant turbine noise",
+    location: "Southaven, Mississippi",
+    lat: 34.9890, lon: -90.0126,
+    current: false, isVideo: false,
+    headline: "Near-constant noise from data-center-linked gas turbines",
+    desc: "Residents say ~60 xAI-operated gas turbines powering nearby data centers sound like jet engines around the clock.",
+    source: "NBC News", date: "2026",
+    url: "https://www.nbcnews.com/tech/tech-news/data-centers-noise-lawsuits-social-media-rcna587447"
+  },
+  {
+    name: "Louisa County homeowner sues Amazon over construction impacts",
+    location: "Louisa County, Virginia",
+    lat: 38.0121, lon: -77.9964,
+    current: false, isVideo: false,
+    headline: "Homeowner sues Amazon over brown water, dust, and construction noise",
+    desc: "Lawsuit alleges data center construction fouled well water and produced excessive dust and noise nearby.",
+    source: "Virginia Mercury", date: "Jul 28, 2026",
+    url: "https://virginiamercury.com/2026/07/28/brown-water-dust-and-loud-noises-louisa-homeowner-sues-amazon-over-data-center-construction/"
+  },
+
+  // ---- OFFICIAL MEETING VIDEO ----
+  {
+    name: "Alamance County Commissioners — moratorium hearing (official recording)",
+    location: "Graham / Alamance County, North Carolina",
+    lat: 36.0654, lon: -79.4342,
+    current: false, isVideo: true,
+    headline: "Official livestream: Public hearing on data center moratorium",
+    desc: "Full county-channel recording of the Aug. 17 meeting, including the public hearing before the board approved a one-year moratorium.",
+    source: "Alamance County Government (YouTube)", date: "Aug 17, 2026",
+    url: "https://www.youtube.com/watch?v=xztYfAvTKqY"
+  }
+];
+
+const map = L.map('map', { zoomControl: true }).setView([39.5, -96], 4.4);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+function markerColor(item) {
+  if (item.isVideo) return '#c86bff';
+  return item.current ? '#35d07f' : '#f5a623';
+}
+
+function makeIcon(item) {
+  const color = markerColor(item);
+  const html = `<div style="
+    width:16px;height:16px;border-radius:50%;
+    background:${color};
+    border:2px solid #0b0d12;
+    box-shadow:0 0 0 1px ${color}55;
+  "></div>`;
+  return L.divIcon({ html, className: '', iconSize: [16, 16], iconAnchor: [8, 8] });
+}
+
+const markerById = {};
+
+ITEMS.forEach((item, idx) => {
+  const marker = L.marker([item.lat, item.lon], { icon: makeIcon(item) }).addTo(map);
+  const badgeClass = item.current ? 'current' : 'older';
+  const badgeLabel = item.current ? 'CURRENT' : 'OLDER';
+
+  const tooltipHtml = `
+    <div class="tt-badge ${badgeClass}">${badgeLabel}${item.isVideo ? ' · VIDEO' : ''}</div>
+    <div class="tt-headline">${item.headline}</div>
+    <div class="tt-loc">${item.location}</div>
+    <div class="tt-desc">${item.desc}</div>
+    <div class="tt-src">${item.source} · ${item.date}</div>
+  `;
+  marker.bindTooltip(tooltipHtml, { className: 'dc-tooltip', direction: 'top', offset: [0, -8] });
+
+  const popupHtml = `
+    <div class="popup-title">${item.headline}</div>
+    <div class="popup-loc">${item.location} · ${item.source}, ${item.date}</div>
+    <div class="popup-desc">${item.desc}</div>
+    <a class="popup-link" href="${item.url}" target="_blank" rel="noopener">Read source →</a>
+  `;
+  marker.bindPopup(popupHtml);
+
+  markerById[idx] = marker;
+});
+
+// Sidebar
+const listEl = document.getElementById('sidebar-list');
+
+function renderGroup(title, items) {
+  const label = document.createElement('div');
+  label.className = 'group-label';
+  label.textContent = title + ` (${items.length})`;
+  listEl.appendChild(label);
+
+  items.forEach(({ item, idx }) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const dotClass = item.current ? 'current' : 'older';
+    row.innerHTML = `
+      <div class="rtitle"><span class="dot ${dotClass}"></span>${item.headline}</div>
+      <div class="rloc">${item.location}${item.isVideo ? ' · 🎥 official video' : ''}</div>
+    `;
+    row.addEventListener('click', () => {
+      map.flyTo([item.lat, item.lon], 9, { duration: 0.9 });
+      const marker = markerById[idx];
+      setTimeout(() => marker.openPopup(), 950);
+    });
+    listEl.appendChild(row);
   });
+}
+
+const currentItems = ITEMS.map((item, idx) => ({ item, idx })).filter(x => x.item.current);
+const olderItems = ITEMS.map((item, idx) => ({ item, idx })).filter(x => !x.item.current);
+
+renderGroup('Past 24 Hours (Current)', currentItems);
+renderGroup('Older / Background', olderItems);
 </script>
 </body>
 </html>
