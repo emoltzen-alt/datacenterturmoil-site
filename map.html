@@ -6,36 +6,220 @@
 <title>Data Center Community Response — Map (last 24 hours)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root{
+    --bg:#0f1419; --card:#1a2129; --ink:#e6edf3; --muted:#9aa7b4;
+    --accent:#4ea1ff; --current:#2ea043; --older:#b08800; --line:#2a333d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  #app{display:flex;height:100%;width:100%}
+  #map{flex:1;height:100%}
+  #sidebar{width:340px;min-width:280px;height:100%;overflow-y:auto;background:var(--card);
+    border-left:1px solid var(--line);}
+  #sidebar header{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+  #sidebar h1{font-size:16px;margin:0 0 4px}
+  #sidebar .sub{color:var(--muted);font-size:12px}
+  .legend{display:flex;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .dot.cur{background:var(--current)}
+  .dot.old{background:var(--older)}
+  .group-title{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    padding:12px 16px 6px}
+  .row{padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+  .row:hover{background:#212a33}
+  .row .loc{font-weight:700;font-size:13px}
+  .row .headline{font-size:12.5px;margin-top:2px;color:var(--ink)}
+  .row .meta{font-size:11px;color:var(--muted);margin-top:3px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;padding:1px 7px;border-radius:20px;margin-right:6px;vertical-align:middle}
+  .badge.cur{background:var(--current);color:#02160a}
+  .badge.old{background:var(--older);color:#1a1400}
+  .none{padding:10px 16px;color:var(--muted);font-style:italic;font-size:12.5px}
+  a{color:var(--accent)}
+  .leaflet-popup-content{font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  .leaflet-popup-content b{font-size:14px}
+  .leaflet-popup-content a{color:#1a6fd8}
+  .tt{font:12.5px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:240px}
+  .tt b{font-size:13px;display:block;margin-bottom:2px}
+  .tt .badge{margin-bottom:4px}
+  .tt .meta{color:#666;font-size:11px;margin-top:4px}
+  @media (max-width:720px){
+    #app{flex-direction:column}
+    #sidebar{width:100%;height:40%;order:2;border-left:none;border-top:1px solid var(--line)}
+    #map{height:60%;order:1}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="map"></div>
+  <div id="sidebar">
+    <header>
+      <h1>Data Center Community Response</h1>
+      <div class="sub">Sunday, August 30, 2026 · prior 24 hours + background</div>
+    </header>
+    <div class="legend">
+      <span><span class="dot cur"></span>Current (24h)</span>
+      <span><span class="dot old"></span>Older / Background</span>
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
+  // Data compiled from public web search results, prior 24h window ending Aug 30, 2026.
   var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
+    {
+      place: "St. Louis, MO", lat: 38.6270, lng: -90.1994, status: "current",
+      headline: "Residents & groups sue over $3B Midtown Armory data center",
+      desc: "Residents, the Missouri Workers' Center, and Missouri Coalition for the Environment sued the city's Board of Adjustment, arguing the data center use isn't legally permitted in that zoning district and citing heat, pollution, and noise concerns.",
+      source: "St. Louis Public Radio", date: "Aug 29, 2026",
+      url: "https://www.stlpr.org/government-politics-issues/2026-08-29/opponents-of-st-louis-data-center-take-their-fight-to-court"
+    },
+    {
+      place: "Douglas County, NV (Minden)", lat: 38.9558, lng: -119.7658, status: "current",
+      headline: "Data center debate arrives in Douglas County",
+      desc: "Planning commissioners were told at least two inquiries have come in about siting data centers in the Carson Valley, prompting early community concern as officials weigh zoning and infrastructure policy.",
+      source: "The Record-Courier", date: "Aug 29, 2026",
+      url: "https://www.recordcourier.com/news/2026/aug/29/data-center-debate-coming-to-douglas/"
+    },
+    {
+      place: "Hope / Hempstead County, AR", lat: 33.6674, lng: -93.5916, status: "current",
+      headline: "Public meeting set after residents demand transparency",
+      desc: "A public meeting on a proposed 130,000-sq-ft data center (89 acres, ~40 MW) was scheduled at Hempstead Hall after residents questioned developer claims of very low water use and local hiring.",
+      source: "Hope Prescott", date: "Aug 29, 2026",
+      url: "https://hopeprescott.com/2026/08/29/proposed-data-center-meeting-thursday-at-hempstead-hall/"
+    },
+    {
+      place: "Imperial County, CA (El Centro)", lat: 32.7920, lng: -115.5631, status: "older",
+      headline: "Court sets aside county's data center moratorium",
+      desc: "A judge ruled the county failed to show a \"current and immediate threat\" to public health/safety required to justify its emergency moratorium; the county says it respects the ruling and is reviewing next steps.",
+      source: "KPBS", date: "Aug 28, 2026",
+      url: "https://www.kpbs.org/news/environment/2026/08/28/judge-poised-to-strike-down-imperial-countys-data-center-moratorium"
+    },
+    {
+      place: "Indiantown / Martin County, FL", lat: 27.0387, lng: -80.4970, status: "older",
+      headline: "Village sets Sept. 1 special meeting on moratorium",
+      desc: "Council voted unanimously to hold a special meeting after residents warned four data center proposals have moved through the village's process in rapid succession; a developer's attorney says a moratorium would be improper.",
+      source: "WQCS", date: "Aug 28, 2026",
+      url: "https://www.wqcs.org/wqcs-news/2026-08-28/indiantown-sets-special-meeting-to-discuss-data-center-moratorium"
+    },
+    {
+      place: "Bowie County (Texarkana), TX", lat: 33.4418, lng: -94.0477, status: "older",
+      headline: "Commissioners approve land sale amid sharp opposition",
+      desc: "Commissioners approved selling ~582 acres for a proposed AI data center after over two hours of heated public questioning over property taxes, transparency, and economic-development strategy.",
+      source: "Texarkana Gazette", date: "Aug 28, 2026",
+      url: "https://www.texarkanagazette.com/news/2026/aug/28/watch-bowie-county-commissioners-approve-data/"
+    },
+    {
+      place: "Snohomish County, WA (Everett)", lat: 47.9790, lng: -122.2021, status: "older",
+      headline: "Public largely calls for a full ban, not just a pause",
+      desc: "At a county council hearing on the existing six-month moratorium (through Dec. 24), most speakers urged the council to make the pause a permanent, outright ban.",
+      source: "Snohomish County Tribune", date: "Aug 26, 2026",
+      url: "https://www.snoho.com/news/2026/aug/26/public-largely-calls-for-full-ban-of-data-centers-at-county-hearing/"
+    },
+    {
+      place: "Louisville, KY", lat: 38.2527, lng: -85.7585, status: "older",
+      headline: "Planning Commission moves to tighten new rules",
+      desc: "After a Metro Council moratorium and four public hearings with heavy resident demand for restrictions, the Planning Commission is weighing rules to limit water use and close permitting loopholes.",
+      source: "Louisville Public Media", date: "Aug 20, 2026",
+      url: "https://www.lpm.org/news/2026-08-20/louisville-planning-commission-looks-to-strengthen-data-center-restrictions"
+    },
+    {
+      place: "Morgan County, GA", lat: 33.5940, lng: -83.4074, status: "older",
+      headline: "Meta data center linked to muddied drinking water",
+      desc: "Rep. Alexandria Ocasio-Cortez displayed jars of discolored water at an EPA hearing tied to a Meta data center; the EPA said it would investigate, amid a wider pattern of Georgia water/noise/jobs complaints.",
+      source: "Tom's Hardware", date: "Aug 2026",
+      url: "https://www.tomshardware.com/tech-industry/big-tech/meta-data-center-allegedly-muddies-georgia-towns-drinking-water-investigation-underway-epa-promises-immediate-investigation-after-congresswoman-brings-dirty-jars-of-water-to-hearing"
+    }
   ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
+
+  var map = L.map('map', {scrollWheelZoom:true}).setView([39.2, -96.5], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19, subdomains: 'abcd'
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var colors = { current: '#2ea043', older: '#b08800' };
+  var markers = {};
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  sites.forEach(function(s, i){
+    var color = colors[s.status];
+    var marker = L.circleMarker([s.lat, s.lng], {
+      radius: 9, color: color, fillColor: color, fillOpacity: 0.85, weight: 2
+    }).addTo(map);
+
+    var badgeLabel = s.status === 'current' ? 'CURRENT' : 'OLDER';
+    var badgeClass = s.status === 'current' ? 'cur' : 'old';
+
+    var tooltipHtml = '<div class="tt">' +
+      '<span class="badge ' + badgeClass + '">' + badgeLabel + '</span>' +
+      '<b>' + escapeHtml(s.place) + '</b>' +
+      escapeHtml(s.headline) +
+      '<div class="meta">' + escapeHtml(s.desc) + '</div>' +
+      '<div class="meta">' + escapeHtml(s.source) + ' &middot; ' + escapeHtml(s.date) + '</div>' +
+      '</div>';
+    marker.bindTooltip(tooltipHtml, {direction:'top', offset:[0,-8]});
+
+    var popupHtml = '<b>' + escapeHtml(s.place) + '</b><br>' +
+      '<span class="badge ' + badgeClass + '" style="color:#06120a">' + badgeLabel + '</span><br><br>' +
+      escapeHtml(s.headline) + '<br><br>' +
+      escapeHtml(s.desc) + '<br><br>' +
+      escapeHtml(s.source) + ' &middot; ' + escapeHtml(s.date) + '<br>' +
+      '<a href="' + s.url + '" target="_blank" rel="noopener">Read source &rarr;</a>';
+    marker.bindPopup(popupHtml, {maxWidth: 280});
+
+    markers[i] = marker;
   });
+
+  function buildList(){
+    var list = document.getElementById('list');
+    var current = sites.map(function(s,i){return {s:s,i:i};}).filter(function(o){return o.s.status==='current';});
+    var older = sites.map(function(s,i){return {s:s,i:i};}).filter(function(o){return o.s.status==='older';});
+
+    var html = '<div class="group-title">🟢 Past 24 Hours (Current)</div>';
+    if (current.length === 0){
+      html += '<div class="none">Nothing genuinely new in the last 24 hours.</div>';
+    } else {
+      current.forEach(function(o){ html += rowHtml(o.s, o.i, 'cur'); });
+    }
+
+    html += '<div class="group-title">🟡 Older / Background</div>';
+    if (older.length === 0){
+      html += '<div class="none">No background items.</div>';
+    } else {
+      older.forEach(function(o){ html += rowHtml(o.s, o.i, 'old'); });
+    }
+
+    list.innerHTML = html;
+
+    list.querySelectorAll('.row').forEach(function(row){
+      row.addEventListener('click', function(){
+        var i = parseInt(row.getAttribute('data-i'), 10);
+        var s = sites[i];
+        map.flyTo([s.lat, s.lng], 9, {duration: 0.8});
+        markers[i].openPopup();
+      });
+    });
+  }
+
+  function rowHtml(s, i, cls){
+    return '<div class="row" data-i="' + i + '">' +
+      '<span class="badge ' + cls + '">' + (cls==='cur'?'Current':'Older') + '</span>' +
+      '<span class="loc">' + escapeHtml(s.place) + '</span>' +
+      '<div class="headline">' + escapeHtml(s.headline) + '</div>' +
+      '<div class="meta">' + escapeHtml(s.source) + ' &middot; ' + escapeHtml(s.date) + '</div>' +
+      '</div>';
+  }
+
+  buildList();
 </script>
 </body>
 </html>
