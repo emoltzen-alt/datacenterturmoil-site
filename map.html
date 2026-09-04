@@ -6,36 +6,240 @@
 <title>Data Center Community Response — Map (last 24 hours)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root{
+    --bg:#0f1419; --panel:#161d26; --ink:#e6edf3; --muted:#9aa7b4; --line:#2a333d;
+    --current:#2ea043; --older:#d29922; --link:#7cc4ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{display:flex;height:100%}
+  #map{flex:1 1 auto;height:100%;min-width:0}
+
+  .sidebar{flex:0 0 340px;height:100%;overflow-y:auto;border-left:1px solid var(--line);
+    background:var(--panel)}
+  .sidebar h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+    margin:0;padding:12px 14px 6px}
+  .sidebar .row{padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+  .sidebar .row:hover{background:#1d2530}
+  .sidebar .row .loc{font-weight:600;font-size:13px}
+  .sidebar .row .headline{font-size:12.5px;color:#c7d0d9;margin-top:2px}
+  .sidebar .empty{padding:8px 14px;color:var(--muted);font-style:italic;font-size:12.5px}
+
+  .legend{position:absolute;left:12px;bottom:14px;background:rgba(22,29,38,.92);
+    border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12.5px;z-index:1000}
+  .legend div{display:flex;align-items:center;gap:7px;margin:3px 0}
+  .sw{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .sw.current{background:var(--current)}
+  .sw.older{background:var(--older)}
+
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;padding:1px 6px;border-radius:4px;margin-bottom:4px}
+  .badge.current{background:rgba(46,160,67,.18);color:#5fd97a;border:1px solid rgba(46,160,67,.5)}
+  .badge.older{background:rgba(210,153,34,.18);color:#e8b73a;border:1px solid rgba(210,153,34,.5)}
+
+  .leaflet-tooltip.dc-tip{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;font:12.5px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    padding:8px 10px;max-width:250px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  .leaflet-tooltip.dc-tip .loc{font-weight:700;font-size:13px;margin-bottom:2px}
+  .leaflet-tooltip.dc-tip .headline{font-weight:600;margin-bottom:3px}
+  .leaflet-tooltip.dc-tip .desc{color:#c7d0d9}
+  .leaflet-tooltip.dc-tip .meta{color:var(--muted);font-size:11px;margin-top:4px}
+
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--panel)}
+  .leaflet-popup-content{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    margin:12px 14px}
+  .leaflet-popup-content b{font-size:14px}
+  .leaflet-popup-content a{color:var(--link)}
+
+  @media (max-width:820px){
+    .wrap{flex-direction:column}
+    .sidebar{flex:1 1 auto;border-left:0;border-top:1px solid var(--line);order:2}
+    #map{flex:0 0 55vh;order:1}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div class="wrap">
+  <div id="map"></div>
+  <div class="sidebar" id="sidebar">
+    <h2>Past 24 Hours (Current)</h2>
+    <div id="list-current"></div>
+    <h2>Older / Background</h2>
+    <div id="list-older"></div>
+    <h2>Official Meeting Videos</h2>
+    <div class="empty">No official government-channel livestream/recording could be confirmed with certainty in this window (Baltimore County's Planning Board hearing likely has one on @BaltCoGov, but it could not be verified this cycle — excluded per policy).</div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
+  // Data compiled from public web search results. Coordinates are approximate
+  // (city / county-seat level), not exact project sites.
   var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
+    {
+      status: "current",
+      loc: "Towson / Baltimore County, MD",
+      lat: 39.4015, lng: -76.6019,
+      headline: "Overflow crowd tells county planners: reject large data centers",
+      desc: "60+ residents signed up to speak at a Sept. 3 Planning Board hearing on the county's data center study; overflow crowd called for an outright ban.",
+      source: "Baltimore Sun · Sept. 3, 2026",
+      url: "https://www.baltimoresun.com/2026/09/03/baltimore-county-residents-data-center-ban/"
+    },
+    {
+      status: "current",
+      loc: "Beatrice / Gage County, NE",
+      lat: 40.2681, lng: -96.7472,
+      headline: "Residents pack hearing, push to more than double moratorium length",
+      desc: "Dozens of speakers urged the County Board on Sept. 3 to extend the moratorium from 8 to 18 months, citing water, energy and farmland concerns.",
+      source: "KLKNTV · Sept. 3, 2026",
+      url: "https://www.klkntv.com/gage-county-holds-public-hearing-about-possible-moratorium-on-data-centers/"
+    },
+    {
+      status: "current",
+      loc: "Lubbock, TX",
+      lat: 33.5779, lng: -101.8552,
+      headline: "Council formally sets hearing on citizen-petitioned moratorium",
+      desc: "After a 3,900+ signature petition, council set a Sept. 8 public hearing on an 18-month pause on new data center development.",
+      source: "High Plains Public Radio · Sept. 3, 2026",
+      url: "https://www.hppr.org/hppr-news/2026-09-03/lubbock-city-council-schedules-public-hearing-for-data-center-moratorium"
+    },
+    {
+      status: "current",
+      loc: "Independence, MO",
+      lat: 39.0911, lng: -94.4155,
+      headline: "Tax-break backlash claims a second council seat",
+      desc: "A second Independence City Council member lost his seat over prior data-center tax-incentive votes, extending an electoral backlash begun in April.",
+      source: "KCUR · Sept. 3, 2026",
+      url: "https://www.kcur.org/politics-elections-and-government/2026-09-03/independences-ai-data-center-decision-cost-another-council-member-his-seat-what-happens-next"
+    },
+    {
+      status: "older",
+      loc: "Fredericksburg, VA",
+      lat: 38.3032, lng: -77.4605,
+      headline: "Council unanimously kills I-95 data center rezoning",
+      desc: "After a hearing past midnight, council voted 7-0 twice to deny rezoning and a height variance for two data center buildings on I-95.",
+      source: "Potomac Local · Aug. 25–26, 2026",
+      url: "https://www.potomaclocal.com/2026/08/26/no-byte-tonight-fred-council-unplugs-23m-i-95-data-center-7-0-after-midnight-hearing/"
+    },
+    {
+      status: "older",
+      loc: "Statesboro, GA",
+      lat: 32.4488, lng: -81.7832,
+      headline: "Council approves rezoning amid protests, mayor breaks tie",
+      desc: "Council approved a zoning map amendment for a data center on land previously zoned residential; mayor broke a tied vote over resident objections.",
+      source: "WTOC · Aug. 19, 2026",
+      url: "https://www.wtoc.com/2026/08/19/statesboro-city-council-approves-rezoning-data-center-amid-protests/"
+    },
+    {
+      status: "older",
+      loc: "Coweta County, GA",
+      lat: 33.3809, lng: -84.7997,
+      headline: "Commissioners unanimously deny 'Project Oak' rezoning",
+      desc: "The Board of Commissioners unanimously denied the rezoning application for the proposed 'Project Oak' data center after organized opposition.",
+      source: "Times-Herald",
+      url: "https://www.times-herald.com/news/project-oak-data-center-denied-by-commissioners/article_76db6b0a-615b-48e6-aacd-5042bdd0f401.html"
+    },
+    {
+      status: "older",
+      loc: "Harrodsburg / Mercer County, KY",
+      lat: 37.7659, lng: -84.8522,
+      headline: "Fiscal Court passes one-year moratorium",
+      desc: "Mercer County passed a one-year moratorium on new data center applications, with a carve-out tied to a pending Burgin annexation.",
+      source: "Louisville Public Media · Aug. 12, 2026",
+      url: "https://www.lpm.org/news/2026-08-12/a-kentucky-county-passes-a-data-center-moratorium-with-a-city-sized-hole"
+    },
+    {
+      status: "older",
+      loc: "Indianapolis / Marion County, IN",
+      lat: 39.7684, lng: -86.1581,
+      headline: "Council advances moratorium 23-1, finalized through 2027",
+      desc: "City-County Council voted 23-1 to advance a data-center permitting pause; later finalized through Dec. 31, 2027, exempting three contested projects.",
+      source: "WFYI · Aug. 10, 2026",
+      url: "https://www.wfyi.org/wfyi-news/2026-08-10/indy-council-advances-pause-on-data-centers-sends-to-commission-for-final-approval"
+    },
+    {
+      status: "older",
+      loc: "Fort Worth, TX",
+      lat: 32.7555, lng: -97.3308,
+      headline: "Council unanimously takes first step toward moratorium",
+      desc: "City Council voted unanimously to begin the process toward a data center moratorium, sending an ordinance to the zoning commission.",
+      source: "Fort Worth Report · Aug. 12, 2026",
+      url: "https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"
+    },
+    {
+      status: "older",
+      loc: "St. Louis, MO",
+      lat: 38.6270, lng: -90.1994,
+      headline: "Opponents sue to overturn $3B Midtown data center permit",
+      desc: "Residents/orgs sued to reverse the Board of Adjustment's approval of a conditional use permit near the historic Armory, citing zoning and pollution concerns.",
+      source: "St. Louis Public Radio · Aug. 28–29, 2026",
+      url: "https://www.stlpr.org/government-politics-issues/2026-08-29/opponents-of-st-louis-data-center-take-their-fight-to-court"
+    },
+    {
+      status: "older",
+      loc: "Grayslake, IL",
+      lat: 42.3453, lng: -88.0334,
+      headline: "Village issues first permit despite pending lawsuit",
+      desc: "Residents sued to block a 472-acre, up to $18B T5 campus over alleged Open Meetings Act violations; village issued the first building permit Sept. 1 anyway.",
+      source: "Lake & McHenry County Scanner · Jul. 31–Sept. 1, 2026",
+      url: "https://www.lakemchenryscanner.com/2026/09/01/grayslake-issues-first-permit-for-construction-to-begin-on-mega-data-center-campus-as-lawsuit-seeks-to-block-development/"
+    }
   ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
+
+  var map = L.map('map', {scrollWheelZoom:true}).setView([39.5, -95.5], 4.3);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19, subdomains: 'abcd'
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var colors = {current: '#2ea043', older: '#d29922'};
+  var markers = {};
+  var listCurrent = document.getElementById('list-current');
+  var listOlder = document.getElementById('list-older');
+
+  sites.forEach(function(s, i){
+    var color = colors[s.status];
+    var marker = L.circleMarker([s.lat, s.lng], {
+      radius: 9, color: color, fillColor: color, fillOpacity: 0.85, weight: 2
+    }).addTo(map);
+
+    var badgeLabel = s.status === 'current' ? 'CURRENT' : 'OLDER';
+    var tipHtml =
+      '<div class="loc">' + s.loc + '</div>' +
+      '<div class="badge ' + s.status + '">' + badgeLabel + '</div>' +
+      '<div class="headline">' + s.headline + '</div>' +
+      '<div class="desc">' + s.desc + '</div>' +
+      '<div class="meta">' + s.source + '</div>';
+    marker.bindTooltip(tipHtml, {className: 'dc-tip', direction: 'top', offset: [0, -6]});
+
+    var popupHtml =
+      '<b>' + s.loc + '</b><br>' + s.headline + '<br>' +
+      '<span style="color:#9aa7b4">' + s.source + '</span><br>' +
+      '<a href="' + s.url + '" target="_blank" rel="noopener">Read source →</a>';
+    marker.bindPopup(popupHtml);
+
+    markers[i] = marker;
+
+    var row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = '<div class="loc">' + s.loc + '</div><div class="headline">' + s.headline + '</div>';
+    row.addEventListener('click', function(){
+      map.flyTo([s.lat, s.lng], 7, {duration: 0.8});
+      marker.openPopup();
+    });
+    (s.status === 'current' ? listCurrent : listOlder).appendChild(row);
   });
+
+  var legend = L.control({position: 'bottomleft'});
+  legend.onAdd = function(){
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML =
+      '<div><span class="sw current"></span> Current (past 24 hours)</div>' +
+      '<div><span class="sw older"></span> Older / background</div>';
+    return div;
+  };
+  legend.addTo(map);
 </script>
 </body>
 </html>
