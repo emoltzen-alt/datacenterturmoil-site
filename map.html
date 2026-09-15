@@ -3,39 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<title>Data Center Community Response — Map (Sept 14–15, 2026)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
+  :root{
+    --bg:#0f1419; --panel:#161b22; --border:#2a3138; --text:#e6edf3; --muted:#9aa7b2;
+    --green:#2ea043; --amber:#d29922; --link:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  #app{display:flex;height:100%;width:100%}
+  #sidebar{width:340px;min-width:280px;max-width:38vw;height:100%;overflow-y:auto;background:var(--panel);border-right:1px solid var(--border);flex-shrink:0}
+  #map{flex:1;height:100%}
+  .sb-header{padding:16px 16px 10px;border-bottom:1px solid var(--border)}
+  .sb-header h1{font-size:15px;margin:0 0 4px}
+  .sb-header .win{color:var(--muted);font-size:11.5px}
+  .legend{display:flex;gap:14px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .dot.current{background:var(--green)}
+  .dot.older{background:var(--amber)}
+  .sb-group-title{padding:10px 16px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .row{padding:9px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+  .row:hover{background:rgba(255,255,255,0.04)}
+  .row .rloc{font-weight:700;font-size:13px}
+  .row .rhead{font-size:12.5px;color:#c3ccd4;margin-top:2px}
+  .row .rmeta{font-size:11px;color:var(--muted);margin-top:3px}
+  .badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 6px;border-radius:20px;margin-right:6px}
+  .badge.current{background:rgba(46,160,67,0.15);color:var(--green);border:1px solid var(--green)}
+  .badge.older{background:rgba(210,153,34,0.15);color:var(--amber);border:1px solid var(--amber)}
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--text)}
+  .leaflet-popup-tip{background:var(--panel)}
+  .leaflet-popup-content{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;margin:12px 14px}
+  .leaflet-popup-content b{font-size:14px}
+  .leaflet-popup-content a{color:var(--link)}
+  .lf-tooltip{background:var(--panel);color:var(--text);border:1px solid var(--border);font:12.5px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:260px;padding:8px 10px}
+  .lf-tooltip b{font-size:13px}
+  @media (max-width:640px){
+    #app{flex-direction:column}
+    #sidebar{width:100%;max-width:100%;height:42%}
+    #map{height:58%}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="sidebar">
+    <div class="sb-header">
+      <h1>Data Center Community Response</h1>
+      <div class="win">24h window: Sept 14–15, 2026 &middot; click a row to fly to it</div>
+    </div>
+    <div class="legend">
+      <span><span class="dot current"></span>Current (past 24h)</span>
+      <span><span class="dot older"></span>Older / Background</span>
+    </div>
+    <div class="sb-group-title">Past 24 Hours (Current)</div>
+    <div id="list-current"></div>
+    <div class="sb-group-title">Older / Background</div>
+    <div id="list-older"></div>
+  </div>
+  <div id="map"></div>
+</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+var sites = [
+  // -------- CURRENT (past 24 hours) --------
+  {loc:"Philadelphia, PA", lat:39.9526, lon:-75.1652, status:"current",
+   headline:"~100 protesters rally at City Hall demanding a data-center moratorium",
+   desc:"The \"No Data Centers in Philly\" coalition rallied Sept. 14, urging a 3-year moratorium before two proposed AI data-center sites advance.",
+   source:"WHYY / The Philadelphia Inquirer", date:"Sept 14, 2026",
+   url:"https://whyy.org/articles/philadelphia-protest-data-centers-city-hall/"},
+  {loc:"Orlando / Orange County, FL", lat:28.5383, lon:-81.3792, status:"current",
+   headline:"Commission to weigh one-year AI data-center moratorium",
+   desc:"Vice Mayor Kelly Martinez Semrad's proposal, citing a projected 96M-gallon/day groundwater shortfall by 2045, goes to the county commission Sept. 15.",
+   source:"Hoodline", date:"Sept 15, 2026",
+   url:"https://hoodline.com/2026/09/orange-county-weighs-yearlong-pause-on-ai-data-centers-over-water-fears/"},
+  {loc:"Raritan Township, NJ", lat:40.5228, lon:-74.8874, status:"current",
+   headline:"Revised data-center ban ordinance goes to public hearing",
+   desc:"Officials reintroduced ordinance 26-32 banning large-scale data centers, clarifying accessory server-room rules; public hearing Sept. 15.",
+   source:"Raritan Township, NJ — Planning Board (official)", date:"Sept 15, 2026",
+   url:"https://www.raritantwpnj.gov/boards/planning"},
+  {loc:"Piqua, OH", lat:40.1442, lon:-84.2422, status:"current",
+   headline:"Commissioners weigh recall elections and a data-center ban charter amendment",
+   desc:"Commissioners meet Sept. 15 on three recall elections and a charter amendment banning data centers and crypto mining citywide.",
+   source:"Dayton Daily News", date:"Sept 15, 2026",
+   url:"https://www.daytondailynews.com/local/piqua-may-hold-elections-on-recalls-and-proposed-crypto-ban/article_0a394081-33aa-5bd2-a869-3b6539d136cd.html"},
+  {loc:"Beaufort County, NC", lat:35.5465, lon:-77.0552, status:"current",
+   headline:"Data-center moratorium vote postponed to October 5",
+   desc:"Commissioners pushed back the vote on a one-year moratorium to gather more public input and review utility/infrastructure impacts.",
+   source:"Public Radio East (WTEB)", date:"Sept 14, 2026",
+   url:"https://www.publicradioeast.org/2026-09-14/vote-on-proposed-one-year-data-center-moratorium-in-beaufort-county-postponed"},
+
+  // -------- OLDER / BACKGROUND --------
+  {loc:"Lake County, IL (Waukegan)", lat:42.3636, lon:-87.8448, status:"older",
+   headline:"Board committee recommends 8-month data-center moratorium",
+   desc:"Planning committee unanimously recommended an 8-month moratorium Sept. 2, ahead of a full board vote Sept. 8.",
+   source:"DCMap US Data Center Policy Tracker", date:"Sept 2–8, 2026",
+   url:"https://dcmap.us/insights/policy/"},
+  {loc:"Grayslake, IL (Lake County)", lat:42.3453, lon:-88.0334, status:"older",
+   headline:"Residents sue to block 472-acre data-center campus",
+   desc:"A resident collective and nine individuals sued to block a 472-acre data-center campus called a \"project of unprecedented scale.\"",
+   source:"Lake & McHenry County Scanner", date:"Jul 31, 2026",
+   url:"https://www.lakemchenryscanner.com/2026/08/08/project-of-unprecedented-scale-lake-county-residents-file-lawsuit-to-block-472-acre-data-center-campus-in-grayslake/"},
+  {loc:"Cheyenne, WY", lat:41.1400, lon:-104.8202, status:"older",
+   headline:"Planning Commission denies rezoning for 162-acre data center",
+   desc:"The Planning Commission recommended denial of the Orchard Hills rezoning request for a south-Cheyenne data-center development.",
+   source:"Wyoming Tribune Eagle", date:"~Sept 12, 2026",
+   url:"https://www.wyomingnews.com/laramieboomerang/laramieboomerang/news/planning-commission-recommends-denial-of-proposed-orchard-hills-data-center-rezoning/article_a54b7036-badb-4497-aa8d-15862963a9c9.html"},
+  {loc:"McCormick County, SC", lat:33.9146, lon:-82.2996, status:"older",
+   headline:"Planners side with residents: rezoning denied, 9-month pause recommended",
+   desc:"Planning Commission denied a rezoning tied to a data-center site and recommended a 9-month pause plus a protective ordinance.",
+   source:"WRDW", date:"Jul 31, 2026",
+   url:"https://www.wrdw.com/2026/07/31/no-rezoning-no-data-center-mccormick-county-planners-side-with-residents-opposing-development/"},
+  {loc:"Hanover County, VA", lat:37.7401, lon:-77.3405, status:"older",
+   headline:"Board denies 427-acre data-center rezoning after planners approved it",
+   desc:"The Board of Supervisors overturned the Planning Commission's approval and rejected a 427-acre data-center rezoning.",
+   source:"Zonewire", date:"background",
+   url:"https://www.zonewire.co/blog/hanover-county-data-center-rezoning-case-study"},
+  {loc:"Coweta, OK (Wagoner County)", lat:35.9498, lon:-95.6516, status:"older",
+   headline:"Planning Commission votes 4-1 to deny data-center rezoning",
+   desc:"Commissioners rejected rezoning for a proposed 270-acre data center north of the Arkansas River.",
+   source:"NewsOn6 (Tulsa)", date:"background",
+   url:"https://www.newson6.com/tulsa-oklahoma-news/cowetas-planning-commission-votes-4-1-to-deny-rezoning-request-for-proposed-data-center"},
+  {loc:"Coweta County, GA (Newnan)", lat:33.3809, lon:-84.7997, status:"older",
+   headline:"County passes 180-day moratorium on data-center proposals",
+   desc:"Commissioners approved a 180-day moratorium citing the pace of applications arriving \"on our doorstep.\"",
+   source:"Yahoo News / AJC", date:"background",
+   url:"https://www.yahoo.com/news/doorstep-coweta-county-passes-180-175558126.html"},
+  {loc:"Fort Worth, TX", lat:32.7555, lon:-97.3308, status:"older",
+   headline:"City Council unanimous vote begins data-center moratorium process",
+   desc:"Council voted unanimously to take first procedural steps toward a data-center moratorium.",
+   source:"Fort Worth Report", date:"Aug 12, 2026",
+   url:"https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"},
+  {loc:"Levy County, FL (Bronson)", lat:29.4522, lon:-82.6270, status:"older",
+   headline:"Commissioners unanimously approve 3-year data-center moratorium",
+   desc:"County approved a three-year moratorium on new data centers and other heavy-power-demand facilities in unincorporated areas.",
+   source:"Data Center Moratoriums Tracker", date:"background",
+   url:"https://www.datacenterbans.com/state/florida"},
+  {loc:"Loudoun County, VA (Leesburg)", lat:39.1157, lon:-77.5636, status:"older",
+   headline:"Supervisors weigh pausing applications and ending by-right permitting",
+   desc:"Supervisors preparing amendments to pause new data-center applications and require special exceptions and hearings.",
+   source:"Data Centers Daily Notes", date:"Sept 14, 2026",
+   url:"https://writing.strisker.com/data-centers-daily-notes-september-14-2026/"},
+  {loc:"Austin, TX (State Capitol)", lat:30.2747, lon:-97.7404, status:"older",
+   headline:"Overflow crowd testifies at Capitol on data-center water/power impacts",
+   desc:"Residents packed an overflow legislative hearing to press regulators and lawmakers on bills, water use and rapid growth.",
+   source:"CBS Texas", date:"Aug 2026",
+   url:"https://www.cbsnews.com/texas/news/texas-data-center-hearing-residents-overflow-capitol-august-2026/"},
+  {loc:"Columbus, OH", lat:39.9612, lon:-82.9988, status:"older",
+   headline:"30+ residents testify on water use, pollution and transparency",
+   desc:"Joint Select Committee on Data Centers' second testimony hearing drew concerns about ~200 facilities operating statewide.",
+   source:"10TV (WBNS)", date:"background",
+   url:"https://www.10tv.com/article/news/local/ohio-residents-voice-water-pollution-concerns-data-center-committee-hearing/530-24bcc387-2a2f-4bf1-a165-9d5037dc6fd1"},
+  {loc:"Statesboro / Bulloch County, GA", lat:32.4488, lon:-81.7832, status:"older",
+   headline:"Commission kills data-center ban proposal on 4-3 tiebreaker",
+   desc:"Commission voted 4-3, chair breaking the tie, to kill a proposed ban on new data centers.",
+   source:"Statesboro Herald", date:"background",
+   url:"https://www.statesboroherald.com/local/county-commission-by-4-3-vote-with-chairs-tiebreaker-kills-proposal-for-data-center-ban/"},
+
+  // -------- OFFICIAL MEETING VIDEOS (background; none found within past 24h) --------
+  {loc:"Alamance County, NC", lat:36.0687, lon:-79.3928, status:"older", video:true,
+   headline:"Commissioners Meeting Live Stream — Public Hearing: Moratorium on Data Centers",
+   desc:"Official commissioners livestream of the Aug. 17 public hearing at the Historic Court House on a proposed 2-year moratorium.",
+   source:"Alamance County Government (YouTube)", date:"Aug 17, 2026",
+   url:"https://www.youtube.com/watch?v=xztYfAvTKqY"},
+  {loc:"Somerset Township, MI (Hillsdale Co.)", lat:41.9987, lon:-84.3766, status:"older", video:true,
+   headline:"Planning Commission Public Hearing — Moratorium on Data Centers",
+   desc:"Official township planning-commission recording of the Sept. 1 public hearing on a proposed data-center moratorium.",
+   source:"Somerset Township Government (YouTube)", date:"Sept 1, 2026",
+   url:"https://www.youtube.com/watch?v=FQz1NVrgZ5k"}
+];
+
+var map = L.map('map', {scrollWheelZoom:true}).setView([39.0, -95.0], 4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+}).addTo(map);
+
+var markers = [];
+var listCurrent = document.getElementById('list-current');
+var listOlder = document.getElementById('list-older');
+
+function badgeHtml(status){
+  return status === 'current'
+    ? '<span class="badge current">Current</span>'
+    : '<span class="badge older">Older</span>';
+}
+
+sites.forEach(function(s, i){
+  var color = s.status === 'current' ? '#2ea043' : '#d29922';
+  var marker = L.circleMarker([s.lat, s.lon], {
+    radius: 9, color: color, fillColor: color, fillOpacity: 0.85, weight: 2
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var tooltipHtml = '<div class="lf-tooltip">' + badgeHtml(s.status) +
+    '<b>' + s.loc + '</b><br>' + s.headline +
+    '<br><span style="color:#9aa7b2">' + s.desc + '</span>' +
+    '<br><span style="color:#9aa7b2">' + s.source + ' &middot; ' + s.date + '</span></div>';
+  marker.bindTooltip(tooltipHtml, {direction:'top', offset:[0,-6], opacity:1});
+
+  var popupHtml = '<b>' + s.loc + '</b><br>' + s.headline + '<br>' + s.desc +
+    '<br><i>' + s.source + ' &middot; ' + s.date + '</i>' +
+    '<br><a href="' + s.url + '" target="_blank" rel="noopener">Open source →</a>';
+  marker.bindPopup(popupHtml);
+
+  markers.push(marker);
+
+  var row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = '<div class="rloc">' + badgeHtml(s.status) + s.loc + (s.video ? ' 🎥' : '') + '</div>' +
+    '<div class="rhead">' + s.headline + '</div>' +
+    '<div class="rmeta">' + s.source + ' &middot; ' + s.date + '</div>';
+  row.addEventListener('click', function(){
+    map.flyTo([s.lat, s.lon], 8, {duration:0.8});
+    marker.openPopup();
   });
+  (s.status === 'current' ? listCurrent : listOlder).appendChild(row);
+});
 </script>
 </body>
 </html>
