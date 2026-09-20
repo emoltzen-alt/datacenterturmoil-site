@@ -6,36 +6,214 @@
 <title>Data Center Community Response — Map (last 24 hours)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
+  :root{
+    --bg:#0f1419; --card:#1a2129; --ink:#e6edf3; --muted:#9aa7b4;
+    --accent:#4ea1ff; --current:#2ea043; --older:#b08800; --line:#2a333d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink)}
+  #app{display:flex;height:100%;width:100%}
+  #map{flex:1 1 auto;height:100%}
+  #sidebar{width:340px;flex:0 0 340px;height:100%;overflow-y:auto;background:var(--bg);
+    border-left:1px solid var(--line);padding:14px 12px 40px}
+  #sidebar h1{font-size:16px;margin:2px 4px 4px}
+  #sidebar .sub{color:var(--muted);font-size:12px;margin:0 4px 14px}
+  .legend{display:flex;gap:14px;align-items:center;margin:0 4px 14px;font-size:12px;color:var(--muted)}
+  .legend .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .dot.cur{background:var(--current)}
+  .dot.old{background:var(--older)}
+  h2.group{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin:18px 6px 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .row{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:8px;padding:9px 11px;margin:0 4px 8px;cursor:pointer;transition:transform .08s}
+  .row:hover{border-color:var(--accent);transform:translateX(2px)}
+  .row.cur{border-left-color:var(--current)}
+  .row.old{border-left-color:var(--older)}
+  .row .loc{font-weight:700;font-size:13px}
+  .row .meta{color:var(--muted);font-size:11px;margin:2px 0 4px}
+  .row .desc{font-size:12px;color:var(--ink);opacity:.9}
+  .tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    padding:1px 6px;border-radius:20px;margin-left:6px;vertical-align:middle}
+  .tag.cur{background:var(--current);color:#02160a}
+  .tag.old{background:var(--older);color:#1a1400}
+  .note{color:var(--muted);font-size:12px;font-style:italic;background:var(--card);
+    border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin:8px 4px}
+  a.srclink{color:var(--accent);text-decoration:none}
+  a.srclink:hover{text-decoration:underline}
+  .tt{font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:240px}
+  .tt b{font-size:13.5px}
+  .tt .badge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;
+    padding:1px 6px;border-radius:20px;margin-left:6px}
+  .tt .badge.cur{background:#2ea043;color:#02160a}
+  .tt .badge.old{background:#b08800;color:#1a1400}
+  .tt .meta{color:#9aa7b4;font-size:11px;margin:3px 0}
   .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
   .leaflet-popup-content b{font-size:15px}
+  @media (max-width:760px){
+    #app{flex-direction:column}
+    #sidebar{width:100%;flex:0 0 45%;order:2;border-left:none;border-top:1px solid var(--line)}
+    #map{flex:0 0 55%;order:1}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="app">
+  <div id="map"></div>
+  <div id="sidebar">
+    <h1>Data Center Community Response</h1>
+    <div class="sub">Generated Sun, Sep 20, 2026 · window ≈ Sep 19–20, 2026 (weekend — little fresh local-gov't action), plus older background context.</div>
+    <div class="legend"><span><span class="dot cur"></span>Current (24h)</span><span><span class="dot old"></span>Older/Background</span></div>
+    <div id="rows"></div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
   var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
+    // CURRENT (past 24 hours)
+    {loc:"Michigan City, IN", lat:41.7075, lng:-86.8952, status:"current",
+     headline:"Council tables data-center moratorium ordinance 8–1",
+     desc:"Council attorney says planning dept./commission will help shape zoning changes before a vote; residents and environmental groups warn the delay opens the door to new projects.",
+     source:"WVPE (NPR Michiana)", date:"Sep 19, 2026",
+     url:"https://www.wvpe.org/wvpe-news/2026-09-19/michigan-city-data-center-moratorium-delay-draws-frustration-during-council-meeting"},
+    {loc:"Upper Merion Township, PA", lat:40.0879, lng:-75.3894, status:"current",
+     headline:"Developer sues township over rejected data-center campus",
+     desc:"Suit filed in Montgomery County court after supervisors unanimously rejected five site plans for a 4.6M-sq-ft King of Prussia data-center campus.",
+     source:"The Philadelphia Inquirer", date:"Sep 18, 2026",
+     url:"https://www.inquirer.com/news/pennsylvania/data-centers-upper-merion-township-lawsuit-20260918.html"},
+
+    // OLDER / BACKGROUND
+    {loc:"Colorado Springs, CO", lat:38.8339, lng:-104.8214, status:"older",
+     headline:"Raucous hearing, scuffle with police, final vote delayed",
+     desc:"Daylong hearing on the 'Project Taurus' data center near Garden of the Gods turned disorderly; police say three people were taken into custody. Council delayed the final vote.",
+     source:"The Colorado Sun", date:"Sep 17, 2026",
+     url:"https://coloradosun.com/2026/09/17/colorado-springs-data-center-final-vote-delay/"},
+    {loc:"Spokane County, WA", lat:47.6588, lng:-117.4260, status:"older",
+     headline:"Public hearing 'pandemonium' over data-center pause",
+     desc:"Commissioners held a legally required hearing on the county's 4-month emergency pause on large-scale data-center proposals amid continued resident anger over transparency.",
+     source:"The Spokesman-Review", date:"Sep 15, 2026",
+     url:"https://www.spokesman.com/stories/2026/sep/15/spokane-county-commission-meeting-site-of-public-h/"},
+    {loc:"Port Angeles, WA", lat:48.1181, lng:-123.4307, status:"older",
+     headline:"Public hearing on 6-month data-center moratorium",
+     desc:"Testimony split between residents wanting a permanent ban over water/environmental concerns and business groups urging narrower, standards-based regulation.",
+     source:"Peninsula Daily News", date:"Sep 17-18, 2026",
+     url:"https://www.peninsuladailynews.com/2026/09/18/public-provides-feedback-on-data-centers/"},
+    {loc:"South Whitehall Township, PA", lat:40.6379, lng:-75.5241, status:"older",
+     headline:"Residents demand public hearing on hyperscale project",
+     desc:"'Project Atlas' fight escalates; hundreds have turned out to community meetings and a township engineer previously withheld a recommendation on environmental grounds.",
+     source:"Hoodline", date:"Sep 17, 2026",
+     url:"https://hoodline.com/2026/09/south-whitehall-data-center-fight-grows-as-residents-demand-public-hearing/"},
+    {loc:"Franklin County, MO", lat:38.4495, lng:-91.0068, status:"older",
+     headline:"Commissioners approve rezoning despite resident outcry",
+     desc:"Rezoning approved for two data-center projects on farmland (Villa Ridge and south of Pacific), over objections about lost farmland, water and power impacts.",
+     source:"First Alert 4 (KMOV)", date:"Sep 15, 2026",
+     url:"https://www.firstalert4.com/2026/09/15/data-centers-approved-by-franklin-county-commissioners-tuesday-vote/"},
+    {loc:"Halifax County, NC (Enfield)", lat:36.1801, lng:-77.6797, status:"older",
+     headline:"Commissioners approve data-center economic development deal",
+     desc:"After a 3–3 deadlock, commissioners voted 5–1 to approve a revised economic development agreement for Quiet Data Centers' planned AI facility near Enfield.",
+     source:"Roanoke Rapids Daily Herald", date:"mid-Sep 2026",
+     url:"https://www.rrdailyherald.com/news/local/data-center-amendments-fail-on-3-3-commissioners-vote/article_82ffdaa1-da2d-5a5a-9ec8-c80b24e9b40b.html"},
+    {loc:"North Port, FL", lat:27.0442, lng:-82.2359, status:"older",
+     headline:"18-month moratorium advanced after 7-hour hearing",
+     desc:"More than 400 residents packed City Hall; commissioners voted 4–1 to advance the moratorium while also granting final approval to an already-pending project.",
+     source:"WGCU (NPR/PBS SW Florida)", date:"early Sep 2026",
+     url:"https://www.wgcu.org/government-politics/2026-09-04/seven-hours-400-comments-packed-city-hall-north-port-moves-to-halt-data-centers"},
+    {loc:"Alamance County, NC", lat:36.0710, lng:-79.3947, status:"older",
+     headline:"Unanimous 1-year data-center moratorium adopted",
+     desc:"Over a 3-hour hearing, more than three dozen residents spoke against data centers; commissioners adopted a full year-long pause, longer than the six months first proposed.",
+     source:"The Alamance News", date:"Aug 17, 2026",
+     url:"https://alamancenews.com/during-3-hour-public-hearing-more-than-three-dozen-residents-speak-out-against-data-centers-for-moratorium/"},
+    {loc:"Mona, UT (Juab County)", lat:39.8038, lng:-111.8555, status:"older",
+     headline:"Residents say $10B project 'waved through' in 4 minutes",
+     desc:"Residents demand more transparency and public input after a brief county-level hearing cleared the way for a large proposed data center.",
+     source:"Hoodline", date:"early Sep 2026",
+     url:"https://hoodline.com/2026/09/mona-residents-say-four-minute-hearing-waved-through-10b-data-center/"},
+    {loc:"Southaven, MS", lat:34.9890, lng:-90.0126, status:"older",
+     headline:"Residents allege noise/pollution from data-center power plant",
+     desc:"Homeowners near a gas-turbine plant supplying nearby AI data centers report constant noise and vibration; a resident petition to shut it down has 1,400+ signatures.",
+     source:"CBS News", date:"background (ongoing)",
+     url:"https://www.cbsnews.com/news/mississippi-elon-musk-xai-data-center-power-plant-noise/"},
+    {loc:"Detroit, MI", lat:42.3314, lng:-83.0458, status:"older",
+     headline:"Environmental groups renew call for moratorium",
+     desc:"Advocates push for a pause while the city finishes a permanent data-center ordinance; a council working group is due to deliver recommendations by year end.",
+     source:"Planet Detroit", date:"Sep 2026",
+     url:"https://planetdetroit.org/2026/09/detroit-data-center-moratorium-push/"},
+    {loc:"Cleveland, OH", lat:41.4993, lng:-81.6944, status:"older",
+     headline:"Three public hearings scheduled on data-center rules",
+     desc:"City Council, which already passed a 3-month moratorium, scheduled hearings across neighborhoods (Sep 24, Sep 29, Oct 7) to gather input on permanent regulations.",
+     source:"Signal Cleveland", date:"announced Sep 18, 2026",
+     url:"https://signalcleveland.org/clevelands-data-center-debate-comes-to-three-public-hearings/"},
+    {loc:"Somerset Township, MI (Hillsdale Co.)", lat:41.9298, lng:-84.3894, status:"older",
+     headline:"[Official meeting video] Planning Commission hearing on moratorium",
+     desc:"Full official recording of the township's Planning Commission public hearing on a proposed data-center moratorium.",
+     source:"Somerset Township (YouTube)", date:"Sep 1, 2026",
+     url:"https://www.youtube.com/watch?v=FQz1NVrgZ5k"}
   ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
+
+  var map = L.map('map', {scrollWheelZoom:true}).setView([39.2, -94.5], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
   }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
+
+  var markers = [];
+  var colors = {current:'#2ea043', older:'#b08800'};
+
+  sites.forEach(function(s, i){
+    var color = colors[s.status];
+    var m = L.circleMarker([s.lat, s.lng], {
+      radius: 9, color: color, fillColor: color, fillOpacity: 0.85, weight: 2
+    }).addTo(map);
+
+    var badgeLabel = s.status === 'current' ? 'CURRENT' : 'OLDER';
+    var tooltipHtml = '<div class="tt"><b>'+s.loc+'</b><span class="badge '+(s.status==='current'?'cur':'old')+'">'+badgeLabel+'</span>' +
+      '<div class="meta">'+s.source+' · '+s.date+'</div>' +
+      '<div style="font-weight:600;margin-bottom:3px">'+s.headline+'</div>' +
+      '<div>'+s.desc+'</div></div>';
+    m.bindTooltip(tooltipHtml, {direction:'top', offset:[0,-6], opacity:0.97});
+
+    var popupHtml = '<b>'+s.loc+'</b><br>'+s.headline+'<br><br>'+s.desc+
+      '<br><br><a href="'+s.url+'" target="_blank" rel="noopener">'+s.source+' →</a>';
+    m.bindPopup(popupHtml);
+
+    markers.push(m);
+    s._marker = m;
   });
+
+  function flyTo(s){
+    map.flyTo([s.lat, s.lng], 8, {duration: 0.8});
+    s._marker.openPopup();
+  }
+
+  var rowsEl = document.getElementById('rows');
+  var current = sites.filter(function(s){ return s.status === 'current'; });
+  var older = sites.filter(function(s){ return s.status !== 'current'; });
+
+  function renderGroup(title, arr){
+    var h = document.createElement('h2');
+    h.className = 'group';
+    h.textContent = title;
+    rowsEl.appendChild(h);
+    if(arr.length === 0){
+      var n = document.createElement('div');
+      n.className = 'note';
+      n.textContent = 'Nothing genuinely new in this window.';
+      rowsEl.appendChild(n);
+      return;
+    }
+    arr.forEach(function(s){
+      var row = document.createElement('div');
+      row.className = 'row ' + (s.status === 'current' ? 'cur' : 'old');
+      row.innerHTML = '<div class="loc">'+s.loc+'<span class="tag '+(s.status==='current'?'cur':'old')+'">'+(s.status==='current'?'Current':'Older')+'</span></div>' +
+        '<div class="meta">'+s.source+' · '+s.date+'</div>' +
+        '<div class="desc">'+s.headline+'</div>';
+      row.addEventListener('click', function(){ flyTo(s); });
+      rowsEl.appendChild(row);
+    });
+  }
+
+  renderGroup('Past 24 Hours (Current)', current);
+  renderGroup('Older / Background', older);
 </script>
 </body>
 </html>
