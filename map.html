@@ -1,41 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font-family:system-ui,sans-serif}#w{display:flex;height:100%}#s{width:330px;overflow:auto;padding:10px;box-sizing:border-box}#map{flex:1}.r{padding:8px;margin:6px 0;background:#161b22;border-radius:6px;cursor:pointer;font-size:13px;border-left:4px solid #d29922}.r.C{border-color:#3fb950}.r:hover{background:#21262d}.bd{font-size:10px;padding:1px 5px;border-radius:3px;color:#000;background:#d29922}.bd.C{background:#3fb950}.lg span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 8px}h3{margin:12px 0 4px}a{color:#0969da}@media(max-width:700px){#w{flex-direction:column-reverse}#s{width:auto;height:40%}}</style></head><body><div id="w"><div id="s"><b>Data Center Turmoil</b><div class="lg"><span style="background:#3fb950"></span>Current (24h)<span style="background:#d29922"></span>Older</div><small>Official meeting livestreams: none qualified in this window.</small><h3>Past 24 Hours (Current)</h3><div id="c"></div><h3>Older / Background</h3><div id="o"></div></div><div id="map"></div></div>
+<script>const D=[{"place": "Alachua, FL", "lat": 29.79, "lng": -82.49, "cur": true, "headline": "Alachua city commissioners push back discussion on data centers", "desc": "Commissioners delayed their data center discussion at the Sept 29 meeting; local reporting frames it as a postponement amid public interest.", "source": "WCJB", "date": "2026-09-29", "url": "https://www.wcjb.com/2026/09/29/alachua-city-commissioners-push-back-discussion-data-centers/"}, {"place": "Sioux County, IA", "lat": 42.99, "lng": -96.06, "cur": true, "headline": "Sioux County data center rules hearing set for Tuesday", "desc": "Public hearing on proposed data center regulations scheduled Sept 29, 9 a.m., Orange City (announced Sept 28; upcoming, outcome not yet reported).", "source": "KTIV", "date": "2026-09-28", "url": "https://www.ktiv.com/2026/09/28/sioux-county-data-center-rules-hearing-set-tuesday/"}, {"place": "Buffalo, NY", "lat": 42.89, "lng": -78.88, "cur": true, "headline": "Buffalo Common Council expected to pass 2-year data center moratorium", "desc": "Council vote on a 2-year moratorium (20+ MW data centers and crypto mining) expected at its Tuesday Sept 29 meeting; outcome not yet confirmed.", "source": "WGRZ / Spectrum News", "date": "2026-09-28", "url": "https://www.wgrz.com/article/news/local/buffalo/two-year-data-center-ban-in-buffalo-expected-to-pass-common-council-next-tuesday/71-cb231595-32af-4c96-ad1b-4b07c50de223"}, {"place": "Bow, NH", "lat": 43.14, "lng": -71.53, "cur": false, "headline": "Bow residents oppose data center, call for proactive steps", "desc": "Residents urged town officials to act before any data center is proposed.", "source": "Concord Monitor", "date": "2026-09-23", "url": "https://www.concordmonitor.com/2026/09/23/bow-residents-oppose-data-center/"}, {"place": "Woodbury County, IA", "lat": 42.39, "lng": -96.05, "cur": false, "headline": "Woodbury County residents voice data center concerns in Moville", "desc": "Resident after resident opposed data centers at a town hall on future regulations.", "source": "KTIV", "date": "2026-09-22", "url": "https://www.ktiv.com/2026/09/22/woodbury-county-residents-voice-data-center-concerns-moville/"}, {"place": "Americus, GA", "lat": 32.07, "lng": -84.23, "cur": false, "headline": "Americus City Council passes 30-day data center moratorium", "desc": "Council voted 5-1 for a 30-day moratorium.", "source": "Americus Times-Recorder", "date": "2026-09-24", "url": "https://americustimesrecorder.com/2026/09/24/americus-city-council-votes-for-data-center-moratorium/"}, {"place": "Mt. Orab, OH", "lat": 39.02, "lng": -83.92, "cur": false, "headline": "Mt. Orab residents pack meeting to oppose data center zoning plan", "desc": "Large turnout opposed a revised high-tech overlay zoning proposal.", "source": "FOX19", "date": "2026-09-17", "url": "https://www.fox19.com/2026/09/17/mt-orab-residents-pack-meeting-oppose-data-center-zoning-plan/"}, {"place": "Colorado Springs, CO", "lat": 38.83, "lng": -104.82, "cur": false, "headline": "Colorado Springs data center final vote delayed after raucous hearing", "desc": "Council delayed final vote after a contentious hearing.", "source": "Colorado Sun", "date": "2026-09-17", "url": "https://coloradosun.com/2026/09/17/colorado-springs-data-center-final-vote-delay/"}, {"place": "Spokane County, WA", "lat": 47.66, "lng": -117.43, "cur": false, "headline": "Spokane County Commission meeting site of public hearing pandemonium, again", "desc": "Public frustrated over participation and transparency in large data center regulations.", "source": "Spokesman-Review", "date": "2026-09-15", "url": "https://www.spokesman.com/stories/2026/sep/15/spokane-county-commission-meeting-site-of-public-h/"}, {"place": "Stokes County, NC", "lat": 36.4, "lng": -80.24, "cur": false, "headline": "Stokes County votes 3-2 to rezone ~1,800 acres for Project Delta", "desc": "Commissioners approved over uniform resident opposition citing water, noise, rural character; backers cite tax revenue.", "source": "WFDD / BPR", "date": "2026-09-14", "url": "https://www.wfdd.org/politics-government/2026-09-14/stokes-county-votes-clear-the-way-for-massive-controversial-data-center-in-walnut-cove"}, {"place": "Juab County (Mona), UT", "lat": 39.81, "lng": -111.86, "cur": false, "headline": "Mona residents question $10B data center approval after 4-minute hearing", "desc": "Residents say they had little input in the approval.", "source": "Hoodline / ABC4", "date": "2026-09", "url": "https://hoodline.com/2026/09/mona-residents-say-four-minute-hearing-waved-through-10b-data-center/"}, {"place": "Franklin County, MO", "lat": 38.42, "lng": -91.08, "cur": false, "headline": "Large data centers approved on Franklin County farmland despite outcry", "desc": "Commissioners approved proposals; residents say it will force them from their homes.", "source": "St. Louis Post-Dispatch / KSDK", "date": "2026-09", "url": "https://www.stltoday.com/news/local/business/article_7b5c48f0-54f9-44a3-8875-8bb02d7e2b18.html"}, {"place": "Effingham County, GA", "lat": 32.37, "lng": -81.34, "cur": false, "headline": "Residents sue Effingham County over data center zoning ordinance", "desc": "Suit alleges commissioners hid details of 'Project Camellia' before Aug 4 vote.", "source": "WTOC", "date": "2026-09-03", "url": "https://www.wtoc.com/2026/09/03/effingham-county-residents-sue-county-over-data-center-zoning-ordinance-demand-transparency/"}, {"place": "Mattoon, IL", "lat": 39.48, "lng": -88.37, "cur": false, "headline": "Mattoon passes large-scale data center moratorium", "desc": "Applies to developments over ~half an acre within 1.5 miles of city limits.", "source": "City of Mattoon", "date": "2026-09-03", "url": "https://mattoon.illinois.gov/city-news/city-council-passes-data-center-moratorium/"}];
+const map=L.map('map').setView([38.5,-96],4);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+D.forEach(d=>{const col=d.cur?'#3fb950':'#d29922',k=d.cur?'C':'O',bd=d.cur?'CURRENT':'OLDER';
+const m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#fff',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+m.bindTooltip(`<b>${esc(d.place)}</b> <span class="bd ${k}">${bd}</span><br>${esc(d.headline)}<br><small>${esc(d.desc)}<br>${esc(d.source)} · ${esc(d.date)}</small>`,{maxWidth:260});
+m.bindPopup(`<b>${esc(d.place)}</b><br>${esc(d.headline)}<br><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.source)} (${esc(d.date)})</a>`);
+const r=document.createElement('div');r.className='r '+k;r.innerHTML=`<span class="bd ${k}">${bd}</span> <b>${esc(d.place)}</b><br>${esc(d.headline)}`;r.onclick=()=>{map.flyTo([d.lat,d.lng],8);m.openPopup()};document.getElementById(d.cur?'c':'o').appendChild(r)});</script></body></html>
