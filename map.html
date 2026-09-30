@@ -1,41 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response Map — 2026-09-30</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif}#w{display:flex;height:100%}#s{width:340px;overflow:auto;padding:12px;box-sizing:border-box;background:#161b22}#map{flex:1}h3{margin:14px 0 6px}.r{padding:6px;border-bottom:1px solid #30363d;cursor:pointer}.r:hover{background:#21262d}.r small{color:#8b949e}.b{padding:1px 6px;border-radius:8px;font-size:11px;color:#000}.g{background:#2ea043}.a{background:#d29922}.lg span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 10px}a{color:#58a6ff}@media(max-width:700px){#w{flex-direction:column-reverse}#s{width:100%;height:40%}}</style></head><body><div id="w"><div id="s"><b style="font-size:16px">Data Center Community Response</b><div class="lg"><span style="background:#2ea043;margin-left:0"></span>Current (24h)<span style="background:#d29922"></span>Older</div><div style="color:#8b949e">Window ending 2026-09-30. Official meeting livestreams: none verified.</div><div id="l"></div></div><div id="map"></div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var D=[{"place": "Grady County, OK", "lat": 35.0, "lng": -97.94, "cur": true, "head": "Grady County commissioners vote against putting a county planning commission to voters", "desc": "Commissioners declined to let residents vote on a planning commission to regulate data centers; a commissioner said residents, particularly farmers, don't want to be zoned.", "src": "KOSU / KGOU", "date": "2026-09-29", "url": "https://www.kosu.org/local-news/2026-09-29/grady-county-votes-against-creating-planning-commission-to-regulate-data-centers"}, {"place": "Mesa County, CO", "lat": 39.06, "lng": -108.55, "cur": true, "head": "Mesa County approves 12-month data center moratorium", "desc": "Commissioners unanimously approved an immediate 12-month pause on land-use applications for data centers in unincorporated areas at the Sept. 29 hearing.", "src": "EIN Presswire", "date": "2026-09-29", "url": "https://www.einpresswire.com/article/946270688/commissioners-approve-data-center-moratorium"}, {"place": "Buffalo, NY", "lat": 42.89, "lng": -78.88, "cur": true, "head": "Buffalo council set to vote on two-year data center moratorium", "desc": "Council was scheduled to vote Sept. 29 on a proposed two-year moratorium; outcome not confirmed in sources found.", "src": "Strisker Data Centers Daily Notes", "date": "2026-09-29", "url": "https://writing.strisker.com/data-centers-daily-notes-september-29-2026/"}, {"place": "Beaufort County, NC", "lat": 35.47, "lng": -77.05, "cur": false, "head": "Beaufort County moratorium hearing postponed to October", "desc": "Vote on a one-year moratorium was pushed back; an informal public comment session was still held.", "src": "WITN", "date": "2026-09-13", "url": "https://www.witn.com/2026/09/13/beaufort-county-data-center-moratorium-hearing-postponed-officials-say/"}, {"place": "Guilford County, NC", "lat": 36.07, "lng": -79.79, "cur": false, "head": "Guilford commissioners schedule Oct. 15 hearing on up-to-180-day moratorium", "desc": "Board voted unanimously to set a legislative hearing on a possible pause on data center projects.", "src": "Rhino Times", "date": "2026-09-17", "url": "https://www.rhinotimes.com/news/guilford-commissioners-take-first-step-toward-data-center-moratorium/"}, {"place": "Denton, TX", "lat": 33.21, "lng": -97.13, "cur": false, "head": "Denton residents back temporary pause on new data centers", "desc": "Residents flooded a public hearing citing grid strain and noise.", "src": "Hoodline", "date": "2026-09", "url": "https://hoodline.com/2026/09/denton-residents-at-hearing-back-temporary-pause-on-new-data-centers/"}, {"place": "Okaloosa County, FL", "lat": 30.76, "lng": -86.57, "cur": false, "head": "Okaloosa commissioners vote down data center moratorium 3-2", "desc": "Vote followed public comment in which several commissioners said residents wanted a ban.", "src": "Get The Coast", "date": "2026-09", "url": "https://getthecoast.com/okaloosa-commissioners-vote-down-data-center-moratorium-in-3-2-vote/"}, {"place": "Arcadia (DeSoto County), FL", "lat": 27.22, "lng": -81.86, "cur": false, "head": "DeSoto County advances moratorium after public outcry", "desc": "County moves forward on a data center moratorium following resident pushback.", "src": "Bradenton Journal", "date": "2026-09", "url": "https://thebradentonjournal.substack.com/p/after-public-outcry-desoto-county"}, {"place": "Conyers (Rockdale County), GA", "lat": 33.67, "lng": -84.02, "cur": false, "head": "Rockdale residents rally against ~300-acre Project Rockforge", "desc": "Protest on Sept. 19 ahead of the Sept. 24 zoning hearing before commissioners.", "src": "Rockdale Citizen", "date": "2026-09-19", "url": "https://www.rockdalecitizen.com/news/residents-rally-against-proposed-rockdale-data-center/article_e3f6d8b5-613a-4a7f-99f2-02141d47cb51.html"}, {"place": "Edgerton, KS", "lat": 38.76, "lng": -94.99, "cur": false, "head": "Edgerton sues residents who petitioned against hyperscale data center", "desc": "Case before a Johnson County judge; El Dorado and Emporia also sued petitioners.", "src": "KSHB", "date": "2026-09", "url": "https://www.kshb.com/news/local-news/data-centers/small-kansas-towns-fight-against-data-center-heads-to-court-after-city-sues-citizens-following-petition"}, {"place": "Columbus (Franklin County), OH", "lat": 39.96, "lng": -83.0, "cur": false, "head": "Franklin County commissioners approve data centers", "desc": "Approval at the Sept. 15 Tuesday vote.", "src": "WKRC/FirstAlert4", "date": "2026-09-15", "url": "https://www.firstalert4.com/2026/09/15/data-centers-approved-by-franklin-county-commissioners-tuesday-vote/?outputType=amp"}, {"place": "Red Oak, TX", "lat": 32.52, "lng": -96.8, "cur": false, "head": "Red Oak council approves 800-acre Compass data center after packed meeting", "desc": "Residents cited transparency, noise, water, air quality and grid strain; council approved near midnight. Date not confirmed.", "src": "WFAA", "date": "undated", "url": "https://www.wfaa.com/article/news/local/red-oak-residents-pack-council-meeting-oppose-proposed-data-center-campus/287-dc2d997c-1af1-4167-aff8-22a4e7d8d3ef"}, {"place": "Piedmont, OK", "lat": 35.64, "lng": -97.75, "cur": false, "head": "Piedmont residents pack council over Cloverleaf data center rezoning", "desc": "Planning Commission had recommended denial; heavy opposition. Date not confirmed.", "src": "KOKH Fox 25", "date": "undated", "url": "https://okcfox.com/news/local/piedmont-residents-pack-city-council-meeting-to-oppose-proposed-data-center-rezoning"}, {"place": "Fort Worth, TX", "lat": 32.75, "lng": -97.33, "cur": false, "head": "Fort Worth council unanimously starts data center moratorium", "desc": "First steps toward a moratorium after unanimous vote.", "src": "Fort Worth Report", "date": "2026-08-12", "url": "https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"}, {"place": "Wrightstown, WI", "lat": 44.33, "lng": -88.17, "cur": false, "head": "Wrightstown voters reject data center in referendum", "desc": "Concerns over traffic, noise, power use and village character.", "src": "WBAY", "date": "2026-08-12", "url": "https://www.wbay.com/2026/08/12/wrightstown-residents-vote-no-data-center-referendum/"}];
+var map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var l=document.getElementById('l');
+[[true,'Past 24 Hours (Current)'],[false,'Older / Background']].forEach(function(g){
+ var h=document.createElement('h3');h.textContent=g[1];l.appendChild(h);
+ D.forEach(function(d){ if(d.cur!==g[0])return;
+  var col=d.cur?'#2ea043':'#d29922';
+  var m=L.circleMarker([d.lat,d.lng],{radius:9,color:col,fillColor:col,fillOpacity:.85,weight:2}).addTo(map);
+  var badge='<span class="b '+(d.cur?'g':'a')+'">'+(d.cur?'CURRENT':'OLDER')+'</span>';
+  m.bindTooltip('<div style="max-width:260px"><b>'+esc(d.place)+'</b> '+badge+'<br>'+esc(d.head)+'<br>'+esc(d.desc)+'<br><small>'+esc(d.src)+' · '+esc(d.date)+'</small></div>',{sticky:true});
+  m.bindPopup('<b>'+esc(d.place)+'</b><br>'+esc(d.head)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.src)+'</a> ('+esc(d.date)+')');
+  var r=document.createElement('div');r.className='r';r.innerHTML='<b>'+esc(d.place)+'</b><br>'+esc(d.head)+'<br><small>'+esc(d.date)+'</small>';
+  r.onclick=function(){map.flyTo([d.lat,d.lng],7);m.openPopup()};l.appendChild(r);
+ });});
+</script></body></html>
