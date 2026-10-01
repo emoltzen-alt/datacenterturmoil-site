@@ -1,41 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil Map — Oct 1, 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px -apple-system,Segoe UI,Arial,sans-serif}#app{display:flex;height:100%}#side{width:340px;overflow:auto;background:#1a2129;border-right:1px solid #2a333d;padding:12px}#map{flex:1}h1{font-size:17px;margin:0 0 6px}h2{font-size:13px;text-transform:uppercase;color:#9aa7b4;margin:14px 0 6px}.row{padding:8px;border:1px solid #2a333d;border-radius:6px;margin-bottom:6px;cursor:pointer}.row:hover{background:#222c36}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.cur{background:#2ea043}.old{background:#e0a800}.legend{font-size:13px;color:#9aa7b4}.note{font-size:12px;color:#9aa7b4;margin-top:14px}.badge{font-size:10px;padding:1px 6px;border-radius:9px;color:#fff}a{color:#4ea1ff}@media(max-width:700px){#app{flex-direction:column-reverse}#side{width:auto;height:40%}}</style></head><body><div id="app"><div id="side"><h1>Data Center Turmoil</h1><div class="legend"><span class="dot cur"></span>Current (24h) &nbsp; <span class="dot old"></span>Older / background · <a href="report.html">Report</a></div><div id="list"></div><div class="note">Official meeting livestreams: none qualified this run.</div></div><div id="map"></div></div>
+<script>const D=[{"place": "Grady County", "state": "OK", "lat": 35.02, "lng": -97.88, "status": "CURRENT", "headline": "Grady County commissioners vote down creating a planning commission to regulate data centers", "desc": "Commissioners declined to put a county planning-commission question to voters after Aligned Data Centers bought land in July; residents, especially farmers, were wary of being zoned. (Article published 9/30; vote reported as 'Monday'.)", "source": "KGOU", "date": "2026-09-30", "url": "https://www.kgou.org/oklahoma-news/2026-09-30/grady-county-votes-against-creating-planning-commission-to-regulate-data-centers"}, {"place": "Davidson", "state": "NC", "lat": 35.5, "lng": -80.85, "status": "OLDER", "headline": "Davidson commissioners divided on data centers, will revisit moratorium", "desc": "Commissioners remain split but will revisit a potential moratorium.", "source": "WFAE", "date": "2026-09-29", "url": "https://www.wfae.org/2026-09-29/davidson-commissioners-remain-divided-on-data-centers-but-will-revisit-potential-moratorium"}, {"place": "Taylor Township", "state": "PA", "lat": 40.45, "lng": -78.4, "status": "OLDER", "headline": "Taylor Township supervisors quizzed on data center at former mill site", "desc": "Residents packed the municipal building Tuesday night with questions on the Appvion-site proposal.", "source": "Altoona Mirror", "date": "2026-09", "url": "https://www.altoonamirror.com/news/local-news/2026/09/taylortwp-supervisors-datacenter-appvion-site-proposal-quizzed/"}, {"place": "Somerset County", "state": "PA", "lat": 40.01, "lng": -79.08, "status": "OLDER", "headline": "Residents push back on proposed data center rules at hearing", "desc": "Sept. 29 joint hearing; concerns focused on natural resources, environment and water supply.", "source": "WTAJ", "date": "2026-09-29", "url": "https://www.wtaj.com/news/local-news/somerset-county-residents-push-back-against-proposed-data-center-rules-at-hearing/"}, {"place": "Woodbury County", "state": "IA", "lat": 42.39, "lng": -96.05, "status": "OLDER", "headline": "Woodbury County residents voice data center concerns in Moville", "desc": "Resident after resident opposed, citing health, environment, water and whether jobs would last.", "source": "KTIV", "date": "2026-09-22", "url": "https://www.ktiv.com/2026/09/22/woodbury-county-residents-voice-data-center-concerns-moville/"}, {"place": "Lovejoy", "state": "GA", "lat": 33.43, "lng": -84.32, "status": "OLDER", "headline": "Lovejoy bans data center construction citywide", "desc": "Ban followed months of opposition to a 3.5M sq ft campus near two schools (date of vote not confirmed).", "source": "Search summary (Daily Notes)", "date": "2026-09", "url": "https://writing.strisker.com/data-centers-daily-notes-september-30-2026/"}, {"place": "Siskiyou County", "state": "CA", "lat": 41.73, "lng": -122.63, "status": "OLDER", "headline": "Dozens oppose data center at former Crystal Geyser plant", "desc": "Packed Board of Supervisors meeting over a possible Mount Shasta-area data center.", "source": "Action News Now", "date": "2026", "url": "https://www.actionnewsnow.com/news/dozens-speak-against-proposed-data-center-during-siskiyou-county-supervisors-meeting/article_9f88272e-846f-4e79-9f27-78a04a2fe3dc.html"}, {"place": "Memphis", "state": "TN", "lat": 35.15, "lng": -90.05, "status": "OLDER", "headline": "Memphis council moves on data center moratorium; residents sue over xAI turbine noise", "desc": "Revised 12-month moratorium up for final vote; residents filed a noise lawsuit over Musk's data center.", "source": "Action News 5 / NPR", "date": "2026-09-25", "url": "https://www.actionnews5.com/2026/09/25/city-leaders-break-down-revised-data-center-moratorium-ahead-final-vote/"}, {"place": "Douglas County", "state": "GA", "lat": 33.7, "lng": -84.75, "status": "OLDER", "headline": "Douglas County 700-acre data center draws pushback", "desc": "Residents cite noise, water use and utility rates ahead of a pivotal hearing.", "source": "FOX 5 Atlanta", "date": "2026", "url": "https://www.fox5atlanta.com/news/douglas-county-data-center-sparks-resident-pushback"}, {"place": "Richmond County", "state": "NC", "lat": 34.97, "lng": -79.75, "status": "OLDER", "headline": "Richmond County residents protest Amazon/Digital Realty plans", "desc": "Concerns over noise and air pollution ahead of a state hearing.", "source": "WSOC", "date": "2026", "url": "https://www.wsoctv.com/news/local/public-hearing-scheduled-over-richmond-county-data-center-noise-concerns/MXNHPOAM5NHSXCF7Q5TMR7OLGE/"}, {"place": "Edgerton / El Dorado / Emporia", "state": "KS", "lat": 38.4, "lng": -96.18, "status": "OLDER", "headline": "Kansas cities sue residents over anti-data-center petitions", "desc": "Three cities filed suits challenging citizen petitions to restrict large data centers.", "source": "KSHB", "date": "2026", "url": "https://www.kshb.com/news/local-news/data-centers/small-kansas-towns-fight-against-data-center-heads-to-court-after-city-sues-citizens-following-petition"}, {"place": "Montgomery / Andover / Monroe", "state": "NJ", "lat": 40.43, "lng": -74.67, "status": "OLDER", "headline": "Developers sue NJ towns over data center bans", "desc": "Developers challenge local prohibitions, blaming 'public hysteria'.", "source": "NJ Monitor", "date": "2026-08-20", "url": "https://newjerseymonitor.com/2026/08/20/nj-data-center-bans-courts/"}];
+const map=L.map('map').setView([38.5,-96],4);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const col=s=>s=='CURRENT'?'#2ea043':'#e0a800';const mk=[];
+D.forEach((d,i)=>{const m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#fff',weight:1.5,fillColor:col(d.status),fillOpacity:.9}).addTo(map);
+const b=`<span class="badge" style="background:${col(d.status)}">${d.status}</span>`;
+m.bindTooltip(`<div style="max-width:260px;white-space:normal"><b>${esc(d.place)}, ${d.state}</b> ${b}<br><b>${esc(d.headline)}</b><br>${esc(d.desc)}<br><i>${esc(d.source)} · ${d.date}</i></div>`);
+m.bindPopup(`<b>${esc(d.headline)}</b><br>${esc(d.place)}, ${d.state}<br><a href="${d.url}" target="_blank" rel="noopener">${esc(d.source)} →</a>`);mk[i]=m;});
+const list=document.getElementById('list');
+[['CURRENT','Past 24 Hours (Current)'],['OLDER','Older / Background']].forEach(([s,t])=>{list.insertAdjacentHTML('beforeend','<h2>'+t+'</h2>');
+D.forEach((d,i)=>{if(d.status!=s)return;const r=document.createElement('div');r.className='row';r.innerHTML=`<span class="dot ${s=='CURRENT'?'cur':'old'}"></span><b>${esc(d.place)}, ${d.state}</b><br>${esc(d.headline)}`;r.onclick=()=>{map.flyTo([d.lat,d.lng],8);mk[i].openPopup();};list.appendChild(r);});});
+</script></body></html>
