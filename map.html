@@ -1,41 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif}#wrap{display:flex;height:100%}#side{width:340px;overflow:auto;background:#161b22;border-right:1px solid #30363d;padding:12px}#map{flex:1}h1{font-size:17px;margin:0 0 8px}h2{font-size:13px;text-transform:uppercase;color:#8b949e;margin:14px 0 6px}.row{padding:8px;border-radius:6px;cursor:pointer;border:1px solid #30363d;margin-bottom:6px}.row:hover{background:#21262d}.row small{color:#8b949e}.lg{position:absolute;z-index:1000;bottom:20px;right:12px;background:#161b22;border:1px solid #30363d;padding:8px 12px;border-radius:8px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.b{font-size:11px;padding:1px 6px;border-radius:8px;color:#000}a{color:#58a6ff}.note{background:#2d2a14;border:1px solid #6e5f1a;border-radius:6px;padding:8px;font-size:13px}@media(max-width:700px){#wrap{flex-direction:column-reverse}#side{width:auto;height:40%}}</style></head><body>
+<div id="wrap"><div id="side"><h1>Data Center Community Response</h1><div class="note">Updated 2026-10-03. Official meeting livestreams: none verified/qualifying today.</div><div id="list"></div></div><div id="map"></div></div>
+<div class="lg"><div><span class="dot" style="background:#3fb950"></span>Current (24h)</div><div><span class="dot" style="background:#d29922"></span>Older / background</div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var D=[{"place": "Palm Springs", "st": "CA", "lat": 33.8303, "lon": -116.5453, "status": "OLDER", "headline": "Palm Springs council extends data center moratorium", "desc": "Council voted unanimously to extend the temporary moratorium on new data center applications and permits.", "src": "KESQ", "date": "2026-09-30", "url": "https://kesq.com/news/2026/09/30/palm-springs-city-council-approves-extending-data-center-moratorium/"}, {"place": "Bangor", "st": "ME", "lat": 44.8012, "lon": -68.7778, "status": "OLDER", "headline": "Bangor extends data center moratorium 180 days", "desc": "Councilors voted 8-0 to add another 180 days to the city's moratorium.", "src": "WABI", "date": "2026-09-29", "url": "https://www.wabi.tv/2026/09/29/bangor-city-council-votes-extend-data-center-moratorium/?outputType=amp"}, {"place": "Somerset County", "st": "PA", "lat": 40.0084, "lon": -79.0781, "status": "OLDER", "headline": "Somerset County residents demand ban at hearing", "desc": "At a joint planning commission/commissioners hearing on draft data center rules, residents demanded an outright ban citing water supply and environmental risks and questioned enforcement and the $1,000 filing fee.", "src": "WTAJ", "date": "2026-09-29", "url": "https://www.wtaj.com/news/local-news/somerset-county-residents-push-back-against-proposed-data-center-rules-at-hearing/"}, {"place": "Forward Township", "st": "PA", "lat": 40.2, "lon": -79.9, "status": "OLDER", "headline": "Forward Township residents pack meeting against data center", "desc": "Large turnout opposed 614 Prospect's plan for a complex roughly the size of 17 football fields (meeting reported as Thursday night, ~Oct 1; location approximate).", "src": "WPXI", "date": "2026-10-01", "url": "https://wpxi.com/news/local/forward-township-residents-turn-out-large-numbers-oppose-data-center-plan/BAYH2JB7TNDENIWEGQD35BQUZU"}, {"place": "Oakland", "st": "CA", "lat": 37.8044, "lon": -122.2712, "status": "OLDER", "headline": "Oakland committee approves 45-day moratorium; full council vote Oct. 6", "desc": "A council committee approved the proposed moratorium; the final vote is scheduled for Oct. 6.", "src": "NBC Bay Area", "date": "2026-09-30", "url": "https://www.nbcbayarea.com/news/local/oakland-data-center-moratorium-vote/4147127/"}, {"place": "Bow", "st": "NH", "lat": 43.1332, "lon": -71.5412, "status": "OLDER", "headline": "Bow residents urge action to prevent data center", "desc": "Residents oppose a proposal at the Merrimack Station site; Gov. Ayotte has said she opposes data centers in the state and plans to propose a moratorium.", "src": "Concord Monitor", "date": "2026-09-23", "url": "https://www.concordmonitor.com/2026/09/23/bow-residents-oppose-data-center/"}, {"place": "Mona", "st": "UT", "lat": 39.8133, "lon": -111.8219, "status": "OLDER", "headline": "Mona residents question $10B data center approval", "desc": "Residents say a four-minute hearing waved through the $10B project.", "src": "Hoodline", "date": "2026-09-30", "url": "https://hoodline.com/2026/09/mona-residents-say-four-minute-hearing-waved-through-10b-data-center/"}, {"place": "Imperial County", "st": "CA", "lat": 32.8476, "lon": -115.5694, "status": "OLDER", "headline": "Imperial residents rally against 330 MW data center", "desc": "Coalition 'NIMBY, Imperial!' with 2,000+ petition signers urges supervisors to reject the project over water use, safety and transparency.", "src": "Imperial Valley Press", "date": "2026-09-30", "url": "https://www.ivpressonline.com/news/imperial-residents-rally-against-proposed-330-mw-data-center/article_9bfa308d-6f66-49eb-8b05-cab241a04510.html"}, {"place": "Indianapolis", "st": "IN", "lat": 39.7684, "lon": -86.1581, "status": "OLDER", "headline": "Indianapolis moratorium through 2027 (council 23-1, MDC 6-0)", "desc": "Council voted Aug. 10 and the Metropolitan Development Commission Aug. 19 for a pause; three already-approved projects are exempt.", "src": "Mirror Indy / WFYI", "date": "2026-08-19", "url": "https://mirrorindy.org/indianapolis-data-center-moratorium-passes-metropolitan-development-commission/"}, {"place": "Fort Worth", "st": "TX", "lat": 32.7555, "lon": -97.3308, "status": "OLDER", "headline": "Fort Worth council unanimously advances 90-day moratorium", "desc": "First step toward a 90-day pause on data center construction.", "src": "Fort Worth Report", "date": "2026-08-12", "url": "https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"}, {"place": "Hood County", "st": "TX", "lat": 32.4443, "lon": -97.8264, "status": "OLDER", "headline": "Hood County commissioners reject moratorium 3-2", "desc": "Residents called for commissioner resignations after the vote; state lawmakers had warned counties lack moratorium authority.", "src": "CBS Texas", "date": "2026-02-25", "url": "https://www.cbsnews.com/texas/news/hood-county-commissioners-reject-data-center-moratorium-again-3-2-vote-residents-call-for-resignations/"}];
+var map=L.map('map').setView([39.0,-96.5],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var col={CURRENT:'#3fb950',OLDER:'#d29922'};
+function badge(s){return '<span class="b" style="background:'+col[s]+'">'+s+'</span>'}
+D.forEach(function(d){
+ d.m=L.circleMarker([d.lat,d.lon],{radius:9,color:'#fff',weight:1,fillColor:col[d.status],fillOpacity:.9}).addTo(map);
+ d.m.bindTooltip('<b>'+esc(d.place)+', '+esc(d.st)+'</b> '+badge(d.status)+'<br>'+esc(d.headline)+'<br><i>'+esc(d.desc)+'</i><br>'+esc(d.src)+' · '+esc(d.date),{maxWidth:300});
+ d.m.bindPopup('<b>'+esc(d.headline)+'</b><br>'+esc(d.place)+', '+esc(d.st)+'<br>'+esc(d.desc)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.src)+' ('+esc(d.date)+')</a>');
+});
+var list=document.getElementById('list');
+[['CURRENT','Past 24 Hours (Current)'],['OLDER','Older / Background']].forEach(function(g){
+ var h=document.createElement('h2');h.textContent=g[1];list.appendChild(h);
+ var items=D.filter(function(d){return d.status==g[0]});
+ if(!items.length){var n=document.createElement('div');n.className='row';n.textContent='None verified within 24 hours.';list.appendChild(n)}
+ items.forEach(function(d){var r=document.createElement('div');r.className='row';r.innerHTML='<b>'+esc(d.place)+', '+esc(d.st)+'</b><br>'+esc(d.headline)+'<br><small>'+esc(d.src)+' · '+esc(d.date)+'</small>';
+  r.onclick=function(){map.flyTo([d.lat,d.lon],8);d.m.openPopup()};list.appendChild(r)});
+});
+</script></body></html>
