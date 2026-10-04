@@ -1,41 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>html,body{margin:0;height:100%;background:#0f1218;color:#e6e9ef;font:14px system-ui,sans-serif}#app{display:flex;height:100%}#side{width:340px;overflow:auto;background:#171c26;border-right:1px solid #2a3140;padding:12px}#map{flex:1}h1{font-size:18px;margin:0 0 4px}h3{margin:16px 0 6px;font-size:14px}.row{padding:8px;border-radius:6px;cursor:pointer;border:1px solid #2a3140;margin-bottom:6px}.row:hover{background:#222a38}.row small{color:#8d97a8}.b{display:inline-block;padding:1px 6px;border-radius:8px;font-size:11px;color:#000;font-weight:700}.CURRENT{background:#3ddc84}.OLDER{background:#ffb02e}.leg{position:absolute;right:12px;bottom:24px;z-index:1000;background:#171c26;padding:8px 12px;border-radius:8px;border:1px solid #2a3140}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}a{color:#6cb6ff}.leaflet-tooltip{background:#171c26;color:#e6e9ef;border:1px solid #2a3140;white-space:normal;width:250px}.leaflet-popup-content-wrapper{background:#171c26;color:#e6e9ef}.leaflet-popup-tip{background:#171c26}@media(max-width:700px){#app{flex-direction:column-reverse}#side{width:auto;height:40%}}</style></head><body>
+<div id="app"><div id="side"><h1>Data Center Turmoil</h1><div style="color:#8d97a8">Updated 2026-10-04 · 24h window</div>
+<p style="color:#8d97a8;font-size:12px">No item verified within the past 24h. Official meeting livestreams: none qualified.</p>
+<h3>Past 24 Hours (Current)</h3><div id="cur"><small>None verified.</small></div><h3>Older / Background</h3><div id="old"></div></div><div id="map"></div></div>
+<div class="leg"><div><span class="dot" style="background:#3ddc84"></span>CURRENT (past 24h)</div><div><span class="dot" style="background:#ffb02e"></span>OLDER / background</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script><script>
+const DATA=[{"place": "Casa Grande, AZ", "lat": 32.88, "lng": -111.76, "status": "OLDER", "headline": "Commission approves massive data center; residents ask 'Why are we here?'", "desc": "Planning commission approved the Grande Valley Data Center at the city's first public hearing; residents voiced frustration at the process and outcome.", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Columbus County, NC", "lat": 34.32, "lng": -78.65, "status": "OLDER", "headline": "Commissioners to hold Oct. 5 hearing on data center moratorium", "desc": "90- and 120-day moratoria proposed; critics cite strain on power/water grids and loss of farmland.", "source": "Columbus County News / Border Belt", "date": "2026-10 (hearing Oct 5)", "url": "https://columbuscountynews.com/2026/10/public-hearing-monday-on-data-centers/"}, {"place": "Memphis, TN", "lat": 35.15, "lng": -90.05, "status": "OLDER", "headline": "Council faces final vote Oct. 6 on data center pause as rally planned", "desc": "Residents and advocates rally for a moratorium citing emissions, noise and Memphis Sand Aquifer water use.", "source": "Hoodline", "date": "2026-10 (vote Oct 6)", "url": "https://hoodline.com/2026/10/memphis-council-faces-final-vote-on-data-center-pause-as-rally-targets-musk/"}, {"place": "Posey County, IN", "lat": 37.95, "lng": -87.87, "status": "OLDER", "headline": "Commissioners unanimously approve data center in Posey County", "desc": "Approval of a data center believed tied to Amazon; residents raised air and noise pollution worries.", "source": "Tri-State Homepage", "date": "date unverified (recent)", "url": "https://www.tristatehomepage.com/news/local-news/posey-county/commissioners-unanimously-approve-data-center-in-posey-county/"}, {"place": "Somerset County, PA", "lat": 40.01, "lng": -79.08, "status": "OLDER", "headline": "Residents push back against proposed data center rules at hearing", "desc": "Residents objected to proposed county data center regulations at a public hearing.", "source": "WTAJ", "date": "date unverified (recent)", "url": "https://www.wtaj.com/news/local-news/somerset-county-residents-push-back-against-proposed-data-center-rules-at-hearing/"}, {"place": "Sangamon County (Waverly), IL", "lat": 39.8, "lng": -89.65, "status": "OLDER", "headline": "County defends hyperscale data center approval in court; Oct. 9 dismissal hearing", "desc": "Waverly residents living about a mile from the site sued to overturn the April zoning approval.", "source": "Illinois Times", "date": "2026-09", "url": "https://www.illinoistimes.com/news/county-board-defends-data-center-approval-in-court-2/"}, {"place": "Hood County, TX", "lat": 32.43, "lng": -97.77, "status": "OLDER", "headline": "Hood County again rejects moratorium; data center projects head to commissioners", "desc": "Ongoing debate over proposed projects and repeated refusal of a moratorium.", "source": "NBC DFW / AOL", "date": "2026", "url": "https://www.nbcdfw.com/news/local/hood-county-commissioners-set-to-discuss-proposed-data-center-projects-amid-ongoing-debate/4073892/"}, {"place": "Massena, NY", "lat": 44.93, "lng": -74.89, "status": "OLDER", "headline": "Town board clears path for controversial data center", "desc": "Board action advanced a contested data center project.", "source": "North Country Public Radio", "date": "2026-09-17", "url": "https://www.northcountrypublicradio.org/news/story/53966/20260917/massena-town-board-clears-a-path-for-controversial-data-center"}, {"place": "Newport, NC", "lat": 34.79, "lng": -76.86, "status": "OLDER", "headline": "Town council approves at-least-one-year data center moratorium", "desc": "Residents voiced support for the moratorium.", "source": "WITN", "date": "2026-09-16", "url": "https://www.witn.com/2026/09/16/residents-voice-support-newports-moratorium-approval-data-center/"}, {"place": "Leominster, MA", "lat": 42.52, "lng": -71.76, "status": "OLDER", "headline": "City council delays data center moratorium vote", "desc": "Residents raised AI and environmental concerns.", "source": "NewsLink Live", "date": "2026-09-22", "url": "https://newslinklive.com/2026/09/22/leominster-city-council-delays-data-center-moratorium-vote-as-residents-raise-concerns-about-ai-and-the-environment/"}, {"place": "Westover, WV", "lat": 39.64, "lng": -79.97, "status": "OLDER", "headline": "City council unanimously approves 6-month data center moratorium", "desc": "Residents continue to raise concerns about a proposed local data center.", "source": "WVAH/ABC 33/40", "date": "date unverified", "url": "https://abc3340.com/news/local/westover-city-council-unanimously-approves-6-month-moratorium-on-data-centers"}, {"place": "Effingham County, GA", "lat": 32.37, "lng": -81.34, "status": "OLDER", "headline": "Residents sue county over data center zoning ordinance", "desc": "Suit demands transparency over the zoning ordinance.", "source": "WTOC", "date": "2026-09-03", "url": "https://www.wtoc.com/2026/09/03/effingham-county-residents-sue-county-over-data-center-zoning-ordinance-demand-transparency/"}, {"place": "Fort Worth, TX", "lat": 32.75, "lng": -97.33, "status": "OLDER", "headline": "Council unanimously takes first step toward 90-day data center moratorium", "desc": "Residents packed chambers after months of public calls.", "source": "Fort Worth Report", "date": "2026-08-12", "url": "https://fortworthreport.org/2026/08/12/data-center-moratorium-takes-first-steps-after-fort-worth-city-councils-unanimous-vote/"}, {"place": "Grayslake (Lake County), IL", "lat": 42.34, "lng": -88.04, "status": "OLDER", "headline": "Residents sue to block 472-acre data center campus", "desc": "Lawsuit calls the project 'of unprecedented scale'.", "source": "Lake & McHenry Scanner", "date": "2026-08-08", "url": "https://www.lakemchenryscanner.com/2026/08/08/project-of-unprecedented-scale-lake-county-residents-file-lawsuit-to-block-472-acre-data-center-campus-in-grayslake/"}, {"place": "Lincoln County / Sioux Falls, SD", "lat": 43.55, "lng": -96.73, "status": "OLDER", "headline": "Data center debate fuels fiery joint meeting", "desc": "Heated exchanges at a joint county-city meeting.", "source": "Dakota News Now", "date": "2026-08-26", "url": "https://www.dakotanewsnow.com/2026/08/26/data-center-debate-fuels-fiery-lincoln-county-sioux-falls-joint-meeting/"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+DATA.forEach(d=>{const col=d.status==='CURRENT'?'#3ddc84':'#ffb02e';
+const m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#000',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+m.bindTooltip(`<b>${esc(d.place)}</b> <span class="b ${d.status}">${d.status}</span><br><b>${esc(d.headline)}</b><br>${esc(d.desc)}<br><small>${esc(d.source)} · ${esc(d.date)}</small>`);
+m.bindPopup(`<b>${esc(d.place)}</b><br>${esc(d.headline)}<br><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.source)} — read source</a>`);
+const r=document.createElement('div');r.className='row';r.innerHTML=`<span class="b ${d.status}">${d.status}</span> <b>${esc(d.place)}</b><br>${esc(d.headline)}<br><small>${esc(d.source)} · ${esc(d.date)}</small>`;
+r.onclick=()=>{map.flyTo([d.lat,d.lng],8);m.openPopup()};
+const box=document.getElementById(d.status==='CURRENT'?'cur':'old');if(d.status==='CURRENT')box.innerHTML='';box.appendChild(r)});
+</script></body></html>
