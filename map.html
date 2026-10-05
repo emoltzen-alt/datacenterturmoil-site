@@ -1,41 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
+<style>html,body{margin:0;height:100%;background:#0f1419;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#e6e9ee}#wrap{display:flex;height:100%}#side{width:320px;overflow:auto;background:#161c24;padding:12px;box-sizing:border-box}#map{flex:1}h1{font-size:16px;margin:0 0 6px}h2{font-size:13px;text-transform:uppercase;color:#8b97a7;margin:14px 0 6px}.row{padding:8px;border-radius:6px;cursor:pointer}.row:hover{background:#222b36}.row small{color:#8b97a7}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.badge{font-size:11px;padding:1px 6px;border-radius:8px;color:#000}.leaflet-tooltip{background:#161c24;color:#e6e9ee;border:1px solid #333;max-width:280px;white-space:normal}.leaflet-popup-content a{color:#0366d6}.legend{background:#161c24;padding:8px 10px;border-radius:6px;color:#e6e9ee}@media(max-width:700px){#wrap{flex-direction:column-reverse}#side{width:100%;height:40%}}</style></head><body>
+<div id="wrap"><div id="side"><h1>Data Center Community Response</h1><small>As of Oct 5, 2026. Official-meeting YouTube: none qualified.</small><h2>Past 24 Hours (Current)</h2><div id="cur"></div><h2>Older / Background</h2><div id="old"></div></div><div id="map"></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+var D=[{"place": "Beaufort County, NC", "lat": 35.5407, "lon": -77.0522, "st": "C", "headline": "Beaufort County commissioners hold hearing and vote on a one-year data center moratorium", "desc": "Residents raised noise, emissions and electricity-cost fears; several urged a moratorium longer than one year. Hearing was postponed from September to allow more input. Outcome not confirmed at time of writing.", "source": "WITN", "date": "2026-10-05", "url": "https://witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium"}, {"place": "Memphis, TN", "lat": 35.1495, "lon": -90.049, "st": "C", "headline": "Memphis council faces final vote on data center moratorium as rally targets xAI", "desc": "Indivisible Memphis rallies before the council's third and final reading (scheduled Oct 6), citing xAI Colossus water and air impacts. Pre-vote coverage; vote not yet held.", "source": "Hoodline", "date": "2026-10-05", "url": "https://hoodline.com/2026/10/memphis-council-faces-final-vote-on-data-center-pause-as-rally-targets-musk/"}, {"place": "Oakland, CA", "lat": 37.8044, "lon": -122.2712, "st": "O", "headline": "Oakland council to vote on 45-day data center moratorium (Oct 6)", "desc": "Life Enrichment Committee advanced the pause; full council vote scheduled for Tuesday. Upcoming, not yet decided.", "source": "Daily Californian", "date": "2026-10-04", "url": "https://www.dailycal.org/news/city/oakland-city-council-to-vote-on-data-center-moratorium/article_b4d4e7fc-66bb-4c67-adef-b703de46668a.html"}, {"place": "Lexington, KY", "lat": 38.0406, "lon": -84.5037, "st": "O", "headline": "Lexington council special committee hearing on data center zoning (Oct 6)", "desc": "Council scheduled a special Committee of the Whole session to consider data center zoning regulations. Upcoming.", "source": "Lexington Times", "date": "2026-08-19", "url": "https://lexingtonky.news/2026/08/19/lexington-council-to-hold-special-data-center-hearing-in-october/"}, {"place": "Casa Grande, AZ", "lat": 32.8795, "lon": -111.7574, "st": "O", "headline": "Casa Grande commission approves massive data center; residents ask 'Why are we here?'", "desc": "Commission approved the project over resident objections (about 3 days ago).", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Mifflin County, PA", "lat": 40.6126, "lon": -77.62, "st": "O", "headline": "Mifflin County zoning hearing on data center appeal postponed after big turnout", "desc": "Hearing moved to larger venue (Granville Fire Co. Event Center) and rescheduled for Oct 26.", "source": "Yahoo News", "date": "2026-10-01", "url": "https://www.yahoo.com/news/articles/mifflin-county-data-center-hearing-235315694.html"}, {"place": "Jesup, GA", "lat": 31.6074, "lon": -81.8854, "st": "O", "headline": "Jesup advances data center regulations despite pushback from packed crowd", "desc": "City moved ahead with regulations as a packed room pushed back.", "source": "WTOC", "date": "2026-09-30", "url": "https://www.wtoc.com/2026/09/30/jesup-advances-data-center-regulations-despite-pushback-packed-crowd/"}, {"place": "Grady County, OK", "lat": 35.0262, "lon": -97.937, "st": "O", "headline": "Grady County votes against creating planning commission to regulate data centers", "desc": "Commissioners declined to set up a planning body to oversee data centers.", "source": "KGOU", "date": "2026-09-30", "url": "https://kgou.org/oklahoma-news/2026-09-30/grady-county-votes-against-creating-planning-commission-to-regulate-data-centers"}, {"place": "Charles County, MD", "lat": 38.529, "lon": -76.975, "st": "O", "headline": "Charles County Planning Commission unanimously recommends denying data center zoning amendment", "desc": "After 3+ hours of testimony on utility costs, noise and farmland, with 'No data centers' chants.", "source": "The BayNet", "date": "2026-09", "url": "https://thebaynet.com/after-hours-of-testimony-and-no-data-centers-chants-charles-county-planning-commission-recommends-denial-of-data-center-zoning-amendment/"}, {"place": "Kansas City, MO", "lat": 39.0997, "lon": -94.5786, "st": "O", "headline": "KCMO Plan Commission denies downtown data center", "desc": "6-0 denial; 475 letters opposed, none in support. Residents vow to keep fighting.", "source": "KCUR", "date": "2026-08-10", "url": "https://www.kcur.org/housing-development-section/2026-08-10/kansas-city-officials-denied-a-plan-for-downtown-data-center-some-residents-vow-to-keep-fighting"}, {"place": "Mount Pleasant, WI", "lat": 42.7, "lon": -87.88, "st": "O", "headline": "Wisconsin residents file class-action over noise and light from Microsoft Fairwater data center", "desc": "Suit covers 1,000+ homes within 1.5 miles.", "source": "Tom's Hardware", "date": "2026-09", "url": "https://www.tomshardware.com/tech-industry/data-centers/wisconsin-residents-file-class-action-lawsuit-against-microsofts-worlds-most-powerful-ai-data-center-due-to-data-center-noise-plaintiffs-also-mention-construction-noise-and-extreme-light-pollution-from-usd7-3-billion-facility"}];
+var map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+D.forEach(function(d){var cur=d.st==='C',col=cur?'#2ecc71':'#f5a623',lbl=cur?'CURRENT':'OLDER';
+var mk=L.circleMarker([d.lat,d.lon],{radius:9,color:'#fff',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+mk.bindTooltip('<b>'+esc(d.place)+'</b> <span class="badge" style="background:'+col+'">'+lbl+'</span><br><b>'+esc(d.headline)+'</b><br>'+esc(d.desc)+'<br><small>'+esc(d.source)+' · '+esc(d.date)+'</small>');
+mk.bindPopup('<b>'+esc(d.place)+'</b><br>'+esc(d.headline)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.source)+' ('+esc(d.date)+')</a>');
+var r=document.createElement('div');r.className='row';r.innerHTML='<span class="dot" style="background:'+col+'"></span><b>'+esc(d.place)+'</b><br>'+esc(d.headline)+'<br><small>'+esc(d.source)+' · '+esc(d.date)+'</small>';
+r.onclick=function(){map.flyTo([d.lat,d.lon],8);mk.openPopup()};
+document.getElementById(cur?'cur':'old').appendChild(r)});
+var lg=L.control({position:'bottomright'});lg.onAdd=function(){var e=L.DomUtil.create('div','legend');e.innerHTML='<span class="dot" style="background:#2ecc71"></span>Current (24h)<br><span class="dot" style="background:#f5a623"></span>Older / background';return e};lg.addTo(map);
+</script></body></html>
