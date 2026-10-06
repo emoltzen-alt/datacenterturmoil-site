@@ -1,41 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body{height:100%;margin:0;background:#0f1218;color:#e6e9ef;font:14px system-ui,sans-serif}#app{display:flex;height:100%}#side{width:340px;overflow:auto;background:#141922;padding:12px;box-sizing:border-box}#map{flex:1}h1{font-size:18px;margin:0 0 8px}h2{font-size:13px;text-transform:uppercase;color:#8f9bb0;margin:16px 0 6px}.row{padding:8px;border-radius:6px;cursor:pointer;background:#1b2230;margin:4px 0}.row:hover{background:#243047}.row b{display:block}.row span{color:#8f9bb0;font-size:12px}.lg{position:absolute;z-index:1000;right:12px;bottom:24px;background:#141922ee;padding:8px 12px;border-radius:8px}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.badge{padding:1px 6px;border-radius:4px;font-size:11px;color:#000}.leaflet-tooltip.card{background:#141922;color:#e6e9ef;border:1px solid #2a3140;max-width:260px;white-space:normal}.leaflet-popup-content a{color:#0b63c5}@media(max-width:700px){#app{flex-direction:column-reverse}#side{width:auto;height:40%}}</style></head><body><div id="app"><div id="side"><h1>Data Center Turmoil</h1><div style="color:#8f9bb0">Updated 2026-10-06 · Official meeting livestreams: none qualified this run.</div><div id="list"></div></div><div id="map"></div></div>
+<div class="lg"><div><span class="dot" style="background:#2ecc71"></span>CURRENT (past 24h)</div><div><span class="dot" style="background:#f5a623"></span>OLDER / background</div></div>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+const D=[{"st": "CURRENT", "place": "Beaufort County", "state": "NC", "lat": 35.55, "lng": -77.05, "headline": "Commissioners hold hearing and vote on data center moratorium", "desc": "Residents voiced concerns about noise, emissions and electricity costs ahead of the commissioners' moratorium vote. Final outcome not confirmed in sources found.", "source": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium/"}, {"st": "CURRENT", "place": "Pitt County", "state": "NC", "lat": 35.61, "lng": -77.37, "headline": "Packed meeting; board moves toward one-year data center pause", "desc": "Standing-room-only public comment; the board unanimously agreed to move forward with discussing a one-year halt on development.", "source": "WCTI", "date": "2026-10-05", "url": "https://wcti12.com/news/local/pitt-commissioners-meet-tonight-with-data-center-zoning-regulations-on-the-agenda"}, {"st": "CURRENT", "place": "Columbus County", "state": "NC", "lat": 34.34, "lng": -78.7, "headline": "Public hearing on 90-day data center moratorium", "desc": "Commissioners heard comments on a 90-day pause; critics cite strain on power and water grids and loss of farmland.", "source": "Columbus County News", "date": "2026-10-05", "url": "https://columbuscountynews.com/2026/10/public-hearing-monday-on-data-centers/"}, {"st": "CURRENT", "place": "Memphis", "state": "TN", "lat": 35.15, "lng": -90.05, "headline": "Council faces third and final reading of data center moratorium", "desc": "Final council vote on a pause to study impacts and write permanent rules, amid rallies targeting xAI. Result not confirmed at time of writing.", "source": "Hoodline", "date": "2026-10-06", "url": "https://hoodline.com/2026/10/memphis-council-faces-final-vote-on-data-center-pause-as-rally-targets-musk/"}, {"st": "CURRENT", "place": "Kalamazoo", "state": "MI", "lat": 42.29, "lng": -85.59, "headline": "City commission reported to hold final data center moratorium vote", "desc": "WKZO reported a final vote on Oct 5. Other outlets report a one-year moratorium passed Aug 17, so this item is uncertain.", "source": "WKZO", "date": "2026-10-05", "url": "https://wkzo.com/2026/10/05/976615/"}, {"st": "OLDER", "place": "Casa Grande", "state": "AZ", "lat": 32.88, "lng": -111.76, "headline": "Commission approves massive data center; residents ask 'Why are we here?'", "desc": "Approval over resident objections.", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"st": "OLDER", "place": "Dixon", "state": "CA", "lat": 38.45, "lng": -121.82, "headline": "Council imposes 45-day moratorium on new data centers", "desc": "Unanimous vote at a special Wednesday meeting.", "source": "FOX40", "date": "2026-10-01", "url": "https://fox40.com/news/local-news/solano-county/dixon-data-center-moratorium/"}, {"st": "OLDER", "place": "Bangor", "state": "ME", "lat": 44.8, "lng": -68.77, "headline": "Council extends data center moratorium 180 days", "desc": "8-0 vote to extend the freeze.", "source": "WABI", "date": "2026-09-29", "url": "https://www.wabi.tv/2026/09/29/bangor-city-council-votes-extend-data-center-moratorium/?outputType=amp"}, {"st": "OLDER", "place": "Somerset County", "state": "PA", "lat": 40.01, "lng": -79.08, "headline": "Residents push back against proposed data center rules", "desc": "Packed hearing urging tighter restrictions; concerns about low-level noise, wildlife and natural beauty.", "source": "WTAJ", "date": "2026-09-29", "url": "https://www.wtaj.com/news/local-news/somerset-county-residents-push-back-against-proposed-data-center-rules-at-hearing/"}, {"st": "OLDER", "place": "Aurora", "state": "CO", "lat": 39.73, "lng": -104.83, "headline": "Residents gather to oppose nearby data center", "desc": "Neighbors shared concerns at a gathering.", "source": "Denver Gazette", "date": "2026-09-23", "url": "https://www.denvergazette.com/2026/09/23/aurora-residents-gather-to-share-data-center-concerns/"}, {"st": "OLDER", "place": "Hood County", "state": "TX", "lat": 32.44, "lng": -97.83, "headline": "Data center projects head to commissioners vote amid debate", "desc": "Ongoing local debate (date not verified).", "source": "NBC DFW", "date": "undated", "url": "https://www.nbcdfw.com/news/local/hood-county-commissioners-set-to-discuss-proposed-data-center-projects-amid-ongoing-debate/4073892/"}, {"st": "OLDER", "place": "Red Oak", "state": "TX", "lat": 32.52, "lng": -96.8, "headline": "800-acre data center approved after marathon protest meeting", "desc": "Council approved despite 150+ residents citing noise, water use and proximity to schools (date not verified).", "source": "FOX 4", "date": "undated", "url": "https://www.fox4news.com/news/red-oak-data-center-city-council-protest"}, {"st": "OLDER", "place": "Marietta", "state": "GA", "lat": 33.95, "lng": -84.55, "headline": "Moratorium through Dec. 31 after public outcry", "desc": "Council froze new data center rezonings.", "source": "FOX 5 Atlanta", "date": "undated", "url": "https://www.fox5atlanta.com/news/marietta-data-center-rezoning-freeze-approved-after-massive-public-outcry"}, {"st": "OLDER", "place": "Festus", "state": "MO", "lat": 38.22, "lng": -90.4, "headline": "Residents sue city over $6B data center", "desc": "Four incumbents unseated after the project drew outcry.", "source": "KSDK", "date": "undated", "url": "https://www.ksdk.com/article/news/local/residents-file-lawsuit-against-city-of-festus-over-6b-data-center-project/63-539fb805-5f08-4e2e-b8c3-1e3551ad4cd0"}, {"st": "OLDER", "place": "Farmington", "state": "MN", "lat": 44.64, "lng": -93.14, "headline": "Residents sue to stop $5B data center park", "desc": "Residents say they were 'completely ignored'.", "source": "Yahoo News", "date": "undated", "url": "https://www.yahoo.com/news/were-completely-ignored-farmington-residents-224600852.html"}, {"st": "OLDER", "place": "Calvert County", "state": "MD", "lat": 38.54, "lng": -76.58, "headline": "Six-month moratorium after Amazon pullout", "desc": "Commissioners unanimously passed the pause.", "source": "FOX 5 DC", "date": "undated", "url": "https://www.fox5dc.com/news/calvert-county-commissioners-unanimously-pass-6-month-data-center-moratorium"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const col=s=>s==='CURRENT'?'#2ecc71':'#f5a623';
+const e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const list=document.getElementById('list');
+['CURRENT','OLDER'].forEach(st=>{
+ const h=document.createElement('h2');h.textContent=st==='CURRENT'?'Past 24 Hours (Current)':'Older / Background';list.appendChild(h);
+ D.filter(d=>d.st===st).forEach(d=>{
+  const m=L.circleMarker([d.lat,d.lng],{radius:8,color:'#fff',weight:1,fillColor:col(st),fillOpacity:.9}).addTo(map);
+  m.bindTooltip('<b>'+e(d.place)+', '+d.state+'</b> <span class="badge" style="background:'+col(st)+'">'+st+'</span><br>'+e(d.headline)+'<br><i>'+e(d.desc)+'</i><br>'+e(d.source)+' · '+d.date,{className:'card'});
+  m.bindPopup('<b>'+e(d.place)+', '+d.state+'</b><br>'+e(d.headline)+'<br><a href="'+d.url+'" target="_blank" rel="noopener">'+e(d.source)+' ↗</a>');
+  const r=document.createElement('div');r.className='row';r.innerHTML='<b>'+e(d.place)+', '+d.state+'</b>'+e(d.headline)+'<br><span>'+e(d.source)+' · '+d.date+'</span>';
+  r.onclick=()=>{map.flyTo([d.lat,d.lng],8);m.openPopup();};list.appendChild(r);
+ });
+});
+</script></body></html>
