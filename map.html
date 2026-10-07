@@ -1,41 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><style>
+html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+#side{position:absolute;top:0;left:0;bottom:0;width:320px;overflow:auto;background:#161b22;border-right:1px solid #30363d;z-index:1000;padding:10px}
+#map{position:absolute;top:0;left:320px;right:0;bottom:0}
+h1{font-size:16px;margin:0 0 6px}h2{font-size:13px;margin:14px 0 4px;color:#8b949e;text-transform:uppercase}
+.row{padding:6px 8px;border:1px solid #30363d;border-radius:6px;margin:4px 0;cursor:pointer}.row:hover{background:#21262d}.row small{color:#8b949e}
+.b{font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;color:#0f1419}.CURRENT{background:#2ea043}.OLDER{background:#d29922}
+.legend{position:absolute;bottom:20px;right:10px;z-index:1000;background:#161b22;border:1px solid #30363d;padding:8px 10px;border-radius:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.tip{max-width:260px;white-space:normal}.leaflet-popup-content a{color:#0366d6}
+@media(max-width:700px){#side{position:relative;width:auto;height:35%}#map{left:0;top:35%}}
+</style></head><body>
+<div id="side"><h1>Data Center Community Response</h1><div style="color:#8b949e">Window ending Oct 7, 2026 13:27 UTC</div><div id="list"></div>
+<h2>Official Meeting Videos</h2><div style="color:#8b949e">None qualified (no official government meeting livestreams found).</div></div>
 <div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<div class="legend"><div><span class="dot" style="background:#2ea043"></span>Current (past 24h)</div><div><span class="dot" style="background:#d29922"></span>Older / background</div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var items=[{"s": "CURRENT", "place": "Loudoun County, VA", "loc": "Leesburg, VA", "lat": 39.1157, "lng": -77.5636, "head": "Supervisors decline to rescind data center grandfathering", "desc": "At the Oct 6 meeting the Board heard staff on rescinding the 2025 grandfathering resolution but did not act; a $200K independent review of grandfathered projects was tabled 7-2 amid litigation-cost warnings.", "src": "Loudoun Wildlife Conservancy / FOX5 DC", "date": "2026-10-06", "url": "https://loudounwildlife.org/2026/10/54835/"}, {"s": "CURRENT", "place": "Imperial County, CA", "loc": "El Centro, CA", "lat": 32.792, "lng": -115.5631, "head": "Supervisors repeal data center moratorium under court order", "desc": "On Oct 6 the Board approved an urgency ordinance repealing its moratorium ordinances in compliance with a court order; enforcement has ceased, with a possible ballot measure still discussed.", "src": "Imperial County", "date": "2026-10-06", "url": "https://imperialcounty.org/2026/10/moratoriumordinance2026/"}, {"s": "OLDER", "place": "Mendocino County, CA", "loc": "Ukiah, CA", "lat": 39.1502, "lng": -123.2078, "head": "Supervisors extend data center moratorium to 2028", "desc": "Board voted 4-1 to extend the moratorium to August 2028 with a 3-megawatt exception. Exact meeting date not confirmed within 24h, so listed as background.", "src": "The Mendocino Voice", "date": "2026-10 (day unconfirmed)", "url": "https://mendovoice.com/2026/10/mendocino-county-supervisors-extend-data-center-moratorium-to-2028-with-a-3-megawatt-exception/"}, {"s": "OLDER", "place": "Jesup, GA", "loc": "Jesup, GA", "lat": 31.6074, "lng": -81.8854, "head": "Jesup advances data center rules despite packed-crowd pushback", "desc": "City moved ahead with data center regulations as a packed room objected.", "src": "WTOC", "date": "2026-09-30", "url": "https://www.wtoc.com/2026/09/30/jesup-advances-data-center-regulations-despite-pushback-packed-crowd/"}, {"s": "OLDER", "place": "Franklin County, MO", "loc": "Union, MO", "lat": 38.4495, "lng": -91.0098, "head": "Commissioners approve data center rezonings; residents in uproar", "desc": "Approved regulations plus two rezonings (Diamond Farms, Pacific/Crooked Creek) before a packed gym with ~70 public commenters.", "src": "KSDK / FOX 2", "date": "2026-09-15", "url": "https://www.ksdk.com/article/news/politics/franklin-county-residents-in-an-uproar-after-commissioners-vote-to-approve-data-center-developments-at-tuesdays-meeting/63-e5c824ff-619b-4bcf-840c-b15501c06e11"}, {"s": "OLDER", "place": "Colleton County, SC", "loc": "Walterboro, SC", "lat": 32.9177, "lng": -80.6679, "head": "County approves data center rules despite pushback", "desc": "Dozens of residents could not enter the capacity-limited meeting and some speakers did not get to comment.", "src": "Live 5 News", "date": "2026-09-15", "url": "https://www.live5news.com/2026/09/15/colleton-county-approves-controversial-data-center-rules-despite-pushback/"}, {"s": "OLDER", "place": "Spartanburg County, SC", "loc": "Spartanburg, SC", "lat": 34.9496, "lng": -81.932, "head": "County weighs one-year data center moratorium", "desc": "Council held a special Public Safety Committee meeting on a proposed one-year moratorium.", "src": "FOX Carolina", "date": "2026-09-09", "url": "https://www.foxcarolina.com/2026/09/09/spartanburg-county-hold-special-meeting-controversial-data-centers/"}, {"s": "OLDER", "place": "Baltimore County, MD", "loc": "Towson, MD", "lat": 39.4015, "lng": -76.6019, "head": "Overflow crowd tells Planning Board to reject large data centers", "desc": "Protesters gathered outside; residents fear a facility in Dundalk.", "src": "WYPR", "date": "2026-09-03", "url": "https://www.wypr.org/wypr-news/2026-09-03/residents-tell-baltimore-county-to-reject-large-data-centers"}, {"s": "OLDER", "place": "Pinal County, AZ", "loc": "Florence, AZ", "lat": 33.0314, "lng": -111.3873, "head": "Supervisors reject massive data center rezoning 4-1", "desc": "Neighbors filled five overflow rooms citing water, air quality, noise, wildlife and property values.", "src": "KOLD", "date": "2026-08-27", "url": "https://www.kold.com/2026/08/27/pinal-county-board-rejects-massive-data-center-project/"}, {"s": "OLDER", "place": "Upper Merion Township, PA", "loc": "King of Prussia, PA", "lat": 40.0937, "lng": -75.383, "head": "Developer sues township over stalled data center approval", "desc": "MLP Ventures sued; a court order put a scheduled township vote on hold.", "src": "Northeast Times", "date": "2026-08-13", "url": "https://northeasttimes.com/2026/08/13/developer-sues-upper-merion-township-to-clear-path/"}, {"s": "OLDER", "place": "Monroe Township, NJ", "loc": "Monroe, NJ", "lat": 40.3149, "lng": -74.429, "head": "Developer sues after township bans/denies data center", "desc": "Hexa Builders sued June 5 after ordinances and a denial following months of outcry.", "src": "Philadelphia Inquirer", "date": "2026-07-17", "url": "https://www.inquirer.com/south-jersey/monroe-new-jersey-data-center-ban-lawsuit-20260717.html"}];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var map=L.map('map').setView([39.0,-96.0],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+var list=document.getElementById('list');
+[['CURRENT','Past 24 Hours (Current)'],['OLDER','Older / Background']].forEach(function(g){
+ var h=document.createElement('h2');h.textContent=g.concat?g[1]:'';list.appendChild(h);
+ items.filter(function(i){return i.s===g[0]}).forEach(function(i){
+  var col=i.s==='CURRENT'?'#2ea043':'#d29922';
+  var m=L.circleMarker([i.lat,i.lng],{radius:i.s==='CURRENT'?10:7,color:col,fillColor:col,fillOpacity:.85,weight:2}).addTo(map);
+  m.bindTooltip('<div class="tip"><b>'+esc(i.place)+'</b> <span class="b '+i.s+'">'+i.s+'</span><br><b>'+esc(i.head)+'</b><br>'+esc(i.loc)+'<br>'+esc(i.desc)+'<br><i>'+esc(i.src)+' · '+esc(i.date)+'</i></div>',{sticky:true});
+  m.bindPopup('<b>'+esc(i.place)+'</b><br>'+esc(i.head)+'<br><a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.src)+' — source</a>');
+  var r=document.createElement('div');r.className='row';r.innerHTML='<span class="b '+i.s+'">'+i.s+'</span> <b>'+esc(i.place)+'</b><br><small>'+esc(i.head)+'</small>';
+  r.onclick=function(){map.flyTo([i.lat,i.lng],8);m.openPopup()};list.appendChild(r);
+ });
+});
+</script></body></html>
