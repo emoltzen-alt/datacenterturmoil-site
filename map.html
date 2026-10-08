@@ -1,41 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>html,body{margin:0;height:100%;background:#0d1117;color:#e6edf3;font:14px system-ui,sans-serif}#app{display:flex;height:100%}#side{width:340px;overflow:auto;padding:12px;box-sizing:border-box;background:#161b22}#map{flex:1}
+h1{font-size:18px;margin:0 0 8px}h3{margin:14px 0 6px;font-size:14px}.row{padding:8px;border-bottom:1px solid #30363d;cursor:pointer}.row:hover{background:#21262d}.row small{color:#8b949e}
+.lg{display:flex;gap:12px;margin-bottom:6px}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px}.b{padding:1px 6px;border-radius:8px;font-size:11px;color:#000}
+.tt{max-width:260px;white-space:normal}.leaflet-popup-content a{color:#0366d6}@media(max-width:700px){#app{flex-direction:column-reverse}#side{width:100%;height:40%}}</style></head><body><div id="app"><div id="side"><h1>Data Center Turmoil</h1>
+<div class="lg"><span><span class="dot" style="background:#2ea043"></span>Current (24h)</span><span><span class="dot" style="background:#f0a020"></span>Older</span></div>
+<div style="color:#8b949e">Updated 2026-10-08. Official meeting livestreams: none qualified this run.</div><div id="list"></div></div><div id="map"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script><script>
+const D=[{"place": "Memphis, TN", "lat": 35.1495, "lng": -90.049, "status": "CURRENT", "headline": "Memphis council postpones data center moratorium vote amid chaos", "desc": "Council voted 7-5 to delay a 12-month moratorium vote; protesters with bullhorns erupted and a recess was called. Vote now eyed for Oct. 20.", "source": "WTOC / Fox News", "date": "2026-10-07", "url": "https://wtoc.com/2026/10/07/data-center-moratorium-vote-postponed-after-fight-protests"}, {"place": "Oakland, CA", "lat": 37.8044, "lng": -122.2712, "status": "CURRENT", "headline": "Oakland council unanimously approves 45-day data center moratorium", "desc": "7-0 vote pauses new land-use approvals while the city studies electricity, water, air quality, noise and backup generators.", "source": "NBC Bay Area / East Bay Insiders", "date": "2026-10-07", "url": "https://www.nbcbayarea.com/news/local/oakland-city-council-data-center-vote/4153917/"}, {"place": "Granbury, TX", "lat": 32.4421, "lng": -97.7945, "status": "OLDER", "headline": "Granbury recall election on hold after lawsuit", "desc": "Over 1,300 signatures sought to recall the mayor and four council members over data center concerns; residents walked out of last week's meeting; a lawsuit paused scheduling.", "source": "FOX 4", "date": "2026-10", "url": "https://www.fox4news.com/news/lawsuit-prevents-granbury-from-scheduling-recall-election-over-data-center-controversy"}, {"place": "Casa Grande, AZ", "lat": 32.8795, "lng": -111.7574, "status": "OLDER", "headline": "Casa Grande commission approves massive data center despite opposition", "desc": "Residents asked 'Why are we here?' as the Grande Valley campus with gas and battery facilities was approved.", "source": "KJZZ", "date": "2026-10-02", "url": "https://kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Florence (Pinal County), AZ", "lat": 33.0314, "lng": -111.3873, "status": "OLDER", "headline": "Pinal County supervisors reject La Osa data center/gas plant rezoning", "desc": "Board voted 4-1 against eleven data center buildings with a 500 MW gas plant, despite an ~80% scale-back.", "source": "Wikipedia / news roundup", "date": "2026", "url": "https://en.wikipedia.org/wiki/Opposition_to_AI_data_centers"}, {"place": "Towson (Baltimore County), MD", "lat": 39.4015, "lng": -76.6019, "status": "OLDER", "headline": "Baltimore County Planning Board hears data center impacts; 50+ speakers mostly opposed", "desc": "Nearly two hours of public comment; a year-long county moratorium remains in place.", "source": "CBS Baltimore", "date": "2026-09", "url": "https://www.cbsnews.com/baltimore/news/baltimore-county-residents-speak-out-against-data-centers/"}, {"place": "Mona (Juab County), UT", "lat": 39.8133, "lng": -111.8221, "status": "OLDER", "headline": "Mona residents question $10B data center approved after four-minute hearing", "desc": "Commission chair apologized that residents felt not properly notified.", "source": "Hoodline / ABC4", "date": "2026-09", "url": "https://hoodline.com/2026/09/mona-residents-say-four-minute-hearing-waved-through-10b-data-center/"}, {"place": "Jeffersonville (Twiggs County), GA", "lat": 32.8007, "lng": -83.3454, "status": "OLDER", "headline": "Residents sue Twiggs County over $2B data center rezoning", "desc": "Suit alleges ignored zoning rules and notice defects in the Sept. 18 rezoning of ~300 acres.", "source": "GovTech", "date": "2026-09", "url": "https://www.govtech.com/products/residents-sue-georgia-county-over-data-center-plans"}, {"place": "Statesboro, GA", "lat": 32.4488, "lng": -81.7832, "status": "OLDER", "headline": "Statesboro mayor breaks tie to approve Burkhalter Road data center rezoning", "desc": "Residents cited water, bills, noise and wildlife; vote tally reported inconsistently across outlets.", "source": "Grice Connect / WTOC", "date": "2026-08", "url": "https://www.griceconnect.com/local-government/mayor-breaks-tie-as-statesboro-council-approves-burkhalter-road-rezoning-12680718"}, {"place": "Walls (DeSoto County), MS", "lat": 34.9532, "lng": -90.147, "status": "OLDER", "headline": "Walls Planning Commission denies ~1,200-acre rezoning", "desc": "Packed hearing; residents questioned who would pay for substation, line and water upgrades.", "source": "DeSoto County News", "date": "2026", "url": "https://desotocountynews.com/desoto-county-news/walls-rezoning-data-center-denied/"}, {"place": "Normal, IL", "lat": 40.5142, "lng": -88.9906, "status": "OLDER", "headline": "Normal council weighs extending data center ban to May 2027", "desc": "Outcome not confirmed in sources found.", "source": "Yahoo News", "date": "2026-09", "url": "https://www.yahoo.com/news/politics/articles/normal-council-vote-data-center-222335230.html"}, {"place": "St. Louis County, MO", "lat": 38.642, "lng": -90.3237, "status": "OLDER", "headline": "St. Louis County residents demand ban at zoning-rules hearing", "desc": "Show of hands: 3 for the rules, 15 against; many asked for a temporary or permanent ban.", "source": "STLPR", "date": "2026-08-11", "url": "https://www.stlpr.org/government-politics-issues/2026-08-11/we-dont-want-them-st-louis-county-residents-push-back-on-zoning-rules-data-center-projects"}, {"place": "Wilmington, OH", "lat": 39.4453, "lng": -83.8285, "status": "OLDER", "headline": "Homeowners sue over proposed $4B AWS data center approval", "desc": "A federal judge found officials violated state public-meetings requirements; city denies wrongdoing.", "source": "Bloomberg Law", "date": "2026", "url": "https://news.bloomberglaw.com/litigation/data-center-foes-newest-tack-sue-locals-over-approval-process-100"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const col=s=>s==='CURRENT'?'#2ea043':'#f0a020';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const badge=s=>`<span class="b" style="background:${col(s)}">${s}</span>`;
+const list=document.getElementById('list');
+[['CURRENT','Past 24 Hours (Current)'],['OLDER','Older / Background']].forEach(([st,t])=>{
+ list.insertAdjacentHTML('beforeend',`<h3>${t}</h3>`);
+ D.filter(d=>d.status===st).forEach(d=>{
+  const m=L.circleMarker([d.lat,d.lng],{radius:8,color:'#fff',weight:1,fillColor:col(d.status),fillOpacity:.9}).addTo(map);
+  m.bindTooltip(`<div class="tt"><b>${esc(d.place)}</b> ${badge(d.status)}<br><b>${esc(d.headline)}</b><br>${esc(d.desc)}<br><i>${esc(d.source)}, ${esc(d.date)}</i></div>`);
+  m.bindPopup(`<b>${esc(d.headline)}</b><br>${esc(d.place)}<br><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.source)}</a> (${esc(d.date)})`);
+  const r=document.createElement('div');r.className='row';r.innerHTML=`<b>${esc(d.place)}</b><br>${esc(d.headline)}<br><small>${esc(d.source)} &middot; ${esc(d.date)}</small>`;
+  r.onclick=()=>{map.flyTo([d.lat,d.lng],8);m.openPopup()};list.appendChild(r);
+ });
+});
+</script></body></html>
