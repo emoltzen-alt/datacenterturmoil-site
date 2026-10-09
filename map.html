@@ -1,41 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil - Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body{margin:0;height:100%;background:#0f1218;color:#e6e8ec;font:14px system-ui,sans-serif}#w{display:flex;height:100%}#s{width:340px;overflow:auto;padding:12px;box-sizing:border-box;background:#151a22}#map{flex:1}
+.r{padding:8px;border-bottom:1px solid #2a3140;cursor:pointer}.r:hover{background:#202838}h3{margin:12px 0 4px}.b{font-size:11px;padding:1px 6px;border-radius:8px;color:#000}.C{background:#2ecc71}.O{background:#f5a623}
+#lg{position:absolute;right:10px;bottom:20px;z-index:1000;background:#151a22;padding:8px 10px;border-radius:6px}.d{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}a{color:#6cb6ff}
+@media(max-width:700px){#w{flex-direction:column-reverse}#s{width:100%;height:40%}}</style></head><body>
+<div id="w"><div id="s"><h2>Data Center Turmoil</h2><div id="lst"></div><p style="color:#9aa3b2">Official meeting livestreams: none qualified.</p></div><div id="map"></div></div>
+<div id="lg"><span class="d" style="background:#2ecc71"></span>Current (24h)<br><span class="d" style="background:#f5a623"></span>Older</div>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+const D=[{"place": "Lexington-Fayette, KY", "lat": 38.04, "lng": -84.5, "cur": true, "headline": "Lexington council votes 11-0 to extend data center moratorium to Oct 31, 2027", "desc": "Reported 11-0 vote on Oct 8 to extend the pause on plans, rezonings and permits; residents pushed for a broader ban on large data centers. Single secondary source (community news roundup) - not independently confirmed.", "source": "The Lexington Times (lexingtonky.news)", "date": "2026-10-09", "url": "https://lexingtonky.news/2026/10/09/lex-reddit-roundup-2026-10-09/"}, {"place": "Indio, CA", "lat": 33.72, "lng": -116.22, "cur": false, "headline": "Indio council weighs final one-year moratorium extension (through Oct 2027)", "desc": "Council took up the extension Oct 7 while staff draft permanent rules; outcome not found in coverage.", "source": "NBC Palm Springs", "date": "2026-10-07", "url": "https://www.nbcpalmsprings.com/local-and-community/2026/10/07/indio-city-council-to-consider-extending-data-center-moratorium-through-2027"}, {"place": "Memphis, TN", "lat": 35.15, "lng": -90.05, "cur": false, "headline": "Memphis moratorium vote delayed to Oct 20 amid protests and lobby fight", "desc": "Council voted 7-5 to postpone a year-long pause; protesters angry over xAI/SpaceXAI facilities (power, water, air) chanted and police cleared the chamber.", "source": "WSMV", "date": "2026-10-07", "url": "https://www.wsmv.com/2026/10/07/data-center-moratorium-vote-postponed-after-fight-protests/"}, {"place": "Beaufort County, SC", "lat": 32.43, "lng": -80.67, "cur": false, "headline": "Planning commission recommends data center moratorium, asks for 12 months", "desc": "Recommendation goes to County Council, which needs three readings and a hearing.", "source": "WTOC", "date": "2026-10-06", "url": "https://www.wtoc.com/2026/10/06/beaufort-co-planning-commission-recommends-temporary-moratorium-data-centers/"}, {"place": "Casa Grande, AZ", "lat": 32.88, "lng": -111.76, "cur": false, "headline": "Casa Grande commission approves massive data center; residents ask 'Why are we here?'", "desc": "Approval over resident objections.", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Candler County, GA", "lat": 32.4, "lng": -82.07, "cur": false, "headline": "Candler County commissioners hear public comment on data centers", "desc": "Residents voiced views to commissioners.", "source": "WTOC", "date": "2026-09-22", "url": "https://wtoc.com/2026/09/22/candler-county-commissioners-hear-public-comment-data-centers"}, {"place": "Pinal County (Eloy), AZ", "lat": 32.76, "lng": -111.55, "cur": false, "headline": "Pinal supervisors reject massive data center 4-1", "desc": "Neighbors packed meetings over water, air, noise and gas plants.", "source": "KOLD", "date": "2026-08-27", "url": "https://www.kold.com/2026/08/27/pinal-county-board-rejects-massive-data-center-project/"}, {"place": "Forsyth County, NC", "lat": 36.1, "lng": -80.24, "cur": false, "headline": "Forsyth commission votes down Rural Hall hyperscale campus", "desc": "After six months and 400+ emails, rejected over environment, noise, property values.", "source": "WUNC", "date": "2026-07-30", "url": "https://www.wunc.org/2026-07-30/forsyth-commission-votes-down-rural-hall-data-center-proposal"}, {"place": "Calvert County, MD", "lat": 38.54, "lng": -76.58, "cur": false, "headline": "Calvert approves 6-month data center moratorium after Amazon pullout", "desc": "Unanimous moratorium days after Amazon dropped Calvert Cliffs plans.", "source": "WJLA", "date": "2026-03-01", "url": "https://wjla.com/news/local/story/calvert-county-board-commissioners-hearing-vote-six-month-data-center-moratorium-amazon-abandons-build-cliffs-nuclear-power-plant-community-concerns-political-shift-maryland"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mk=D.map(x=>{const col=x.cur?'#2ecc71':'#f5a623';
+const m=L.circleMarker([x.lat,x.lng],{radius:9,color:'#fff',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+m.bindTooltip(`<b>${esc(x.place)}</b> <span class="b ${x.cur?'C':'O'}">${x.cur?'CURRENT':'OLDER'}</span><br>${esc(x.headline)}<br>${esc(x.desc)}<br><i>${esc(x.source)}, ${x.date}</i>`,{maxWidth:300});
+m.bindPopup(`<b>${esc(x.headline)}</b><br>${esc(x.place)}<br><a href="${x.url}" target="_blank" rel="noopener">${esc(x.source)} (${x.date})</a>`);return m;});
+const l=document.getElementById('lst');
+[[true,'Past 24 Hours (Current)'],[false,'Older / Background']].forEach(([c,t])=>{l.insertAdjacentHTML('beforeend','<h3>'+t+'</h3>');
+D.forEach((x,i)=>{if(x.cur!==c)return;const d=document.createElement('div');d.className='r';d.innerHTML=`<span class="b ${c?'C':'O'}">${c?'CURRENT':'OLDER'}</span> <b>${esc(x.place)}</b><br>${esc(x.headline)}`;d.onclick=()=>{map.flyTo([x.lat,x.lng],7);mk[i].openPopup();};l.appendChild(d);});});
+</script></body></html>
