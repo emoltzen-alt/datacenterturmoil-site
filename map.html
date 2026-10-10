@@ -1,41 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>html,body{margin:0;height:100%;background:#0f1218;color:#dde3ee;font:14px system-ui,sans-serif}#w{display:flex;height:100%}#sb{width:340px;overflow:auto;padding:12px;box-sizing:border-box;background:#141923}#map{flex:1}h1{font-size:18px;margin:0 0 4px}h3{margin:14px 0 6px;font-size:14px}.r{padding:8px;border-radius:6px;cursor:pointer;border:1px solid #2a3140;margin-bottom:6px}.r:hover{background:#1d2431}.r small{color:#8c97aa}a{color:#6cb6ff}.lg{position:absolute;z-index:1000;right:12px;bottom:24px;background:#141923;padding:8px 12px;border-radius:6px;border:1px solid #2a3140}.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.b{padding:1px 6px;border-radius:4px;font-size:11px;color:#000}.leaflet-tooltip{background:#141923;color:#dde3ee;border:1px solid #2a3140;max-width:260px;white-space:normal}@media(max-width:700px){#w{flex-direction:column-reverse}#sb{width:100%;height:40%}}</style></head><body>
+<div id="w"><div id="sb"><h1>Data Center Turmoil</h1><small>Updated 2026-10-10 · <a href="report.html">Full report</a></small><div id="list"></div><p><small>Official meeting livestreams: none qualified in this window.</small></p></div><div id="map"></div></div>
+<div class="lg"><div><span class="d" style="background:#3ddc84"></span>Current (24h)</div><div><span class="d" style="background:#ffb347"></span>Older / background</div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+const DATA=[{"place": "Taylor, TX", "lat": 30.5708, "lng": -97.4095, "cur": true, "head": "Taylor council annexes 664-acre data center and power plant site", "desc": "Council voted unanimously Oct 8 to annex the site over many residents' objections; a neighbors' lawsuit claiming the land is restricted parkland has temporarily blocked the developers.", "src": "KUT", "date": "2026-10-09", "url": "https://www.kut.org/energy-environment/2026-10-09/taylor-tx-annex-data-center-power-plant"}, {"place": "Memphis, TN", "lat": 35.1495, "lng": -90.049, "cur": true, "head": "Memphis council passes data center zoning standards; moratorium vote delayed to Oct 20", "desc": "Council approved zoning standards on first reading and voted 7-5 to delay a 12-month moratorium vote after a chaotic, protester-disrupted meeting in which police cleared the chamber (event reported Oct 9; meeting itself may predate the 24h window).", "src": "Tri-State Defender", "date": "2026-10-09", "url": "https://tri-statedefender.com/memphis-city-council-approves-data-center-zoning-standards-on-first-vote/10/09/"}, {"place": "Nye County (Pahrump), NV", "lat": 36.2083, "lng": -115.9839, "cur": true, "head": "Nye County residents clash with commissioners over data center ordinance", "desc": "Commissioners adopted limits on water use, residential distance and noise but stopped short of a ban; some residents left dissatisfied and wanted an outright prohibition (meeting Thu Oct 8).", "src": "News3LV", "date": "2026-10-09", "url": "https://news3lv.com/news/local/nye-county-residents-clash-with-commissioners-over-new-data-center-ordinance"}, {"place": "Tulsa County, OK", "lat": 36.154, "lng": -95.9928, "cur": true, "head": "Tulsa County commissioner wants outside technical help to check data center promises", "desc": "Growing scrutiny of developer claims on water, power and jobs as a commissioner seeks independent technical review.", "src": "KTUL", "date": "2026-10-10", "url": "https://ktul.com/news/local/who-checks-data-center-promises-tulsa-county-commissioner-wants-outside-technical-help-10-10-2026"}, {"place": "Raleigh, NC", "lat": 35.7796, "lng": -78.6382, "cur": false, "head": "Raleigh approves six-month data center moratorium", "desc": "Council voted 7-1 for a pause on construction and site approvals through April 6.", "src": "Spectrum News", "date": "2026-10-07", "url": "https://spectrumlocalnews.com/nc/charlotte/news/2026/10/07/ral-city-council-approves-6-month-data-center-moratorium"}, {"place": "Beaufort County, NC", "lat": 35.5468, "lng": -77.0522, "cur": false, "head": "Beaufort County commissioners approve 1-year data center pause", "desc": "Commissioners voted 6-1 after a public hearing.", "src": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-voted-1-year-pause-data-center-development/"}, {"place": "Brighton, CO", "lat": 39.9853, "lng": -104.8205, "cur": false, "head": "Brighton backs year-long moratorium as 155-acre project withdrawn", "desc": "Council doubled a proposed six-month pause to one year the same night the application was withdrawn.", "src": "CBS Colorado", "date": "2026-10-06", "url": "https://www.cbsnews.com/colorado/news/colorado-brighton-city-council-data-center-moratorium-proposed-project-withdrawn/"}, {"place": "Lexington, KY", "lat": 38.0406, "lng": -84.5037, "cur": false, "head": "Lexington extends data center moratorium through Oct. 2027", "desc": "Urban County Council voted 11-0 to extend the ban.", "src": "LEX18", "date": "2026-10", "url": "https://lex18.com/news/local-news/lexington-extends-data-center-moratorium"}, {"place": "Casa Grande, AZ", "lat": 32.8795, "lng": -111.7574, "cur": false, "head": "Casa Grande commission approves massive data center despite opposition", "desc": "Vote was 6-1; nearly all speakers opposed, with residents asking 'Why are we here?'", "src": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Iron County (Cedar City), UT", "lat": 37.6775, "lng": -113.0619, "cur": false, "head": "Iron County data center rules go to hearing as residents, tribal leaders seek delay", "desc": "Planning Commission hearing set for Oct 8 on a 33-page revised proposal released less than two days earlier; outcome not found.", "src": "St George News", "date": "2026-10-07", "url": "https://www.stgeorgeutah.com/news/iron-county-data-center-rules-to-face-public-hearing-as-residents-tribal-leaders-seek-delay/article_bd4c3ff9-a8be-4e25-b6af-fb06c8384603.html"}, {"place": "Anne Arundel County, MD", "lat": 38.9784, "lng": -76.4922, "cur": false, "head": "Anne Arundel votes 7-0 for moratorium through January 2028", "desc": "Council paused new data center development.", "src": "Search summary (WebSearch)", "date": "2026-10", "url": "https://dcmap.us/insights/policy/"}, {"place": "Baltimore County, MD", "lat": 39.4015, "lng": -76.6019, "cur": false, "head": "Residents pack Baltimore County hearing on data centers", "desc": "Most speakers opposed; union members backed jobs. County has a year-long moratorium.", "src": "CBS Baltimore", "date": "2026-09", "url": "https://www.cbsnews.com/baltimore/news/baltimore-county-residents-speak-out-against-data-centers/"}, {"place": "Stafford County, VA", "lat": 38.4221, "lng": -77.4083, "cur": false, "head": "Stafford residents oppose data centers near Rappahannock River", "desc": "Planning commission vote expected Oct 14.", "src": "WJLA", "date": "2026-10", "url": "https://wjla.com/news/instagram/stafford-residents-massive-data-centers-rappahannock-river"}, {"place": "Adair County, IA", "lat": 41.3114, "lng": -94.46, "cur": false, "head": "Adair County hears residents on data center ordinance", "desc": "Noise, water, electricity and land-loss concerns; follow-up hearing Oct 14.", "src": "Citizen Portal", "date": "2026-09-23", "url": "https://citizenportal.ai/articles/10422494/Iowa/Adair-County/Adair-County-board-hears-residents-concerns-at-public-hearing-on-proposed-data-center-ordinance"}, {"place": "Franklin County, MO", "lat": 38.4448, "lng": -91.0085, "cur": false, "head": "Franklin County residents push back on 1,000+ acre rezonings", "desc": "140+ signed up to speak; air, soil and water concerns.", "src": "KSDK", "date": "2026-09", "url": "https://www.ksdk.com/article/news/local/franklin-co-residents-push-back-data-center-proposals-during-hearing/63-6381dc12-8aa3-44d7-96db-743a8bf88d28"}, {"place": "Mona (Juab County), UT", "lat": 39.8147, "lng": -111.8522, "cur": false, "head": "Mona residents question $10B data center approved in four-minute hearing", "desc": "Residents say notice was inadequate; commission chair apologized.", "src": "Hoodline", "date": "2026-09", "url": "https://hoodline.com/2026/09/mona-residents-say-four-minute-hearing-waved-through-10b-data-center/"}, {"place": "Dixon, CA", "lat": 38.4455, "lng": -121.8233, "cur": false, "head": "Dixon imposes 45-day data center moratorium", "desc": "Council acted Sept 30.", "src": "FOX40", "date": "2026-09-30", "url": "https://fox40.com/news/local-news/solano-county/dixon-data-center-moratorium/"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const col=c=>c?'#3ddc84':'#ffb347',badge=c=>`<span class="b" style="background:${col(c)}">${c?'CURRENT':'OLDER'}</span>`;
+const list=document.getElementById('list');
+[[true,'Past 24 Hours (Current)'],[false,'Older / Background']].forEach(([cur,t])=>{
+ list.insertAdjacentHTML('beforeend','<h3>'+t+'</h3>');
+ DATA.filter(x=>x.cur===cur).forEach(x=>{
+  const m=L.circleMarker([x.lat,x.lng],{radius:8,color:'#000',weight:1,fillColor:col(x.cur),fillOpacity:.9}).addTo(map);
+  m.bindTooltip(`<b>${esc(x.place)}</b> ${badge(x.cur)}<br><b>${esc(x.head)}</b><br>${esc(x.desc)}<br><small>${esc(x.src)} · ${esc(x.date)}</small>`);
+  m.bindPopup(`<b>${esc(x.head)}</b><br>${esc(x.place)}<br><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.src)} — source</a>`);
+  const r=document.createElement('div');r.className='r';r.innerHTML=`<b>${esc(x.place)}</b> ${badge(x.cur)}<br>${esc(x.head)}<br><small>${esc(x.src)} · ${esc(x.date)}</small>`;
+  r.onclick=()=>{map.flyTo([x.lat,x.lng],8);m.openPopup()};list.appendChild(r);
+ });
+});
+</script></body></html>
