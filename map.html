@@ -1,41 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map (Oct 11, 2026)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif}#wrap{display:flex;height:100%}#side{width:320px;overflow:auto;padding:12px;background:#151b23}#map{flex:1}h3{margin:14px 0 6px}.row{padding:6px;border-bottom:1px solid #2d3748;cursor:pointer}.row:hover{background:#1f2937}.row small{color:#8b98a5}#legend{position:absolute;bottom:20px;right:10px;z-index:1000;background:#151b23ee;padding:8px 12px;border-radius:8px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.b{padding:1px 6px;border-radius:4px;font-size:11px;color:#000}a{color:#0969da}@media(max-width:700px){#wrap{flex-direction:column-reverse}#side{width:auto;height:40%}}</style></head><body>
+<div id="wrap"><div id="side"><h2 style="margin:0">Data Center Response</h2><small>Window ending Oct 11, 2026</small><h3>Past 24 Hours (Current)</h3><div><small>No items verified within 24 hours.</small></div><h3>Older / Background</h3><div id="old"></div><h3>Official Meeting Videos</h3><small>None qualify (no official government livestream identified).</small></div><div id="map"></div></div>
+<div id="legend"><div><span class="dot" style="background:#22c55e"></span>CURRENT (24h)</div><div><span class="dot" style="background:#f59e0b"></span>OLDER</div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+var data=[{"place": "Memphis, TN", "lat": 35.1495, "lng": -90.049, "status": "OLDER", "headline": "Memphis council moratorium vote postponed to Oct 20 after chaos", "desc": "Council voted 7-5 to delay a 12-month moratorium after protesters chanted, a lobby fight broke out and police cleared the chamber.", "source": "Fox News / WSMV", "date": "Oct 6-7, 2026", "url": "https://www.foxnews.com/politics/memphis-city-council-devolves-chaos-data-center-moratorium-vote-postponed"}, {"place": "Raleigh, NC", "lat": 35.7796, "lng": -78.6382, "status": "OLDER", "headline": "Raleigh council approves 6-month data center moratorium", "desc": "Council voted 7-1 to pause new data center site approvals for six months.", "source": "Spectrum News", "date": "Oct 7, 2026", "url": "https://spectrumlocalnews.com/nc/charlotte/news/2026/10/07/ral-city-council-approves-6-month-data-center-moratorium"}, {"place": "Beaufort County, NC", "lat": 35.466, "lng": -76.993, "status": "OLDER", "headline": "Beaufort County approves 1-year data center pause", "desc": "Commissioners voted 6-1 for a one-year moratorium after a public hearing.", "source": "WITN", "date": "Oct 5, 2026", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-voted-1-year-pause-data-center-development/"}, {"place": "Pitt County, NC", "lat": 35.596, "lng": -77.372, "status": "OLDER", "headline": "Pitt County moves toward 1-year moratorium after packed meeting", "desc": "Commissioners unanimously directed staff to draft a one-year moratorium policy after residents spoke out.", "source": "WCTI / WITN", "date": "Oct 5-6, 2026", "url": "https://www.witn.com/2026/10/06/pitt-county-residents-speak-out-data-centers/"}, {"place": "Newport Township, PA", "lat": 41.176, "lng": -76.083, "status": "OLDER", "headline": "Hundreds oppose data center at tense commissioners meeting", "desc": "Hundreds of residents opposed a proposed data center; the developer issued a statement defending it.", "source": "Times Leader", "date": "Oct 5, 2026", "url": "https://timesleader.com/news/1761893/newport-twp-data-center-developer-responds-to-residents-concerns"}, {"place": "Casa Grande, AZ", "lat": 32.8795, "lng": -111.7574, "status": "OLDER", "headline": "Casa Grande commission approves massive data center over protests", "desc": "Commission voted 6-1 to approve Grande Valley Data Center as residents protested.", "source": "KJZZ", "date": "Oct 2, 2026", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Pima County, AZ", "lat": 32.2226, "lng": -110.9747, "status": "OLDER", "headline": "Pima County data center zoning rules draw noise/water concerns", "desc": "Residents raised noise, water and siting concerns at a public video meeting; final vote set for December.", "source": "Hoodline", "date": "Oct 8-10, 2026", "url": "https://hoodline.com/2026/10/pima-county-s-data-center-rules-target-new-projects-but-legacy-zoning-remains-unsettled"}, {"place": "Indianapolis, IN", "lat": 39.7684, "lng": -86.1581, "status": "OLDER", "headline": "Residents oppose Metrobloks data center in Martindale-Brightwood", "desc": "Residents at a heated session say the project is advancing without community approval.", "source": "WISH-TV", "date": "This week (date unconfirmed)", "url": "https://www.wishtv.com/news/local-news/indianapolis-residents-protest-proposed-data-center-at-heated-meeting/"}, {"place": "Davidson County, NC", "lat": 35.814, "lng": -80.203, "status": "OLDER", "headline": "Davidson commissioners to revisit 4-month moratorium Oct 26", "desc": "Commissioners remain divided; moratorium on agenda for Oct 26.", "source": "WUNC", "date": "Sep 29, 2026", "url": "https://www.wunc.org/2026-09-29/davidson-commissioners-remain-divided-on-data-centers-but-will-revisit-potential-moratorium"}, {"place": "Spartanburg County, SC", "lat": 34.9496, "lng": -81.932, "status": "OLDER", "headline": "Spartanburg County special meeting on data centers", "desc": "Council weighing a one-year moratorium; residents cite noise, water, power and health.", "source": "Fox Carolina", "date": "Sep 9, 2026", "url": "https://www.foxcarolina.com/2026/09/09/spartanburg-county-hold-special-meeting-controversial-data-centers/"}, {"place": "Baltimore County, MD", "lat": 39.4015, "lng": -76.6019, "status": "OLDER", "headline": "Overflow crowd urges Baltimore County to reject large data centers", "desc": "Planning Board hearing drew an overflow crowd opposed to large facilities.", "source": "WYPR", "date": "Sep 3, 2026", "url": "https://www.wypr.org/wypr-news/2026-09-03/residents-tell-baltimore-county-to-reject-large-data-centers"}];
+var map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+data.forEach(function(d){
+ var col=d.status==='CURRENT'?'#22c55e':'#f59e0b';
+ var m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#fff',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+ m.bindTooltip('<b>'+esc(d.place)+'</b> <span class="b" style="background:'+col+'">'+d.status+'</span><br>'+esc(d.headline)+'<br>'+esc(d.desc)+'<br><small>'+esc(d.source)+' · '+esc(d.date)+'</small>',{maxWidth:280});
+ m.bindPopup('<b>'+esc(d.place)+'</b><br>'+esc(d.headline)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.source)+' ('+esc(d.date)+')</a>');
+ var r=document.createElement('div');r.className='row';r.innerHTML='<b>'+esc(d.place)+'</b><br>'+esc(d.headline)+'<br><small>'+esc(d.date)+'</small>';
+ r.onclick=function(){map.flyTo([d.lat,d.lng],8);m.openPopup()};
+ document.getElementById('old').appendChild(r);
+});
+</script></body></html>
