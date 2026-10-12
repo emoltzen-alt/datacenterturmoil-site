@@ -1,41 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px/1.4 -apple-system,Segoe UI,Arial,sans-serif}#wrap{display:flex;height:100%}#side{width:340px;overflow:auto;background:#161b22;padding:10px;box-sizing:border-box}#map{flex:1}h3{margin:12px 0 6px;font-size:13px;text-transform:uppercase;color:#8b949e}.row{padding:7px;border-radius:6px;cursor:pointer}.row:hover{background:#21262d}.row small{color:#8b949e}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.legend{position:absolute;bottom:20px;right:10px;z-index:1000;background:#161b22;padding:8px 12px;border-radius:6px;border:1px solid #30363d}.badge{padding:1px 6px;border-radius:8px;font-size:11px;color:#000}.tt{max-width:260px;white-space:normal}@media(max-width:700px){#wrap{flex-direction:column-reverse}#side{width:100%;height:40%}}</style></head><body>
+<div id="wrap"><div id="side"><b>Data Center Community Response</b><br><small>Oct 12, 2026 · No official meeting livestreams qualified this run.</small><div id="list"></div></div><div id="map"></div></div>
+<div class="legend"><span class="dot" style="background:#2ea043"></span>Current (24h)<br><span class="dot" style="background:#f0a020"></span>Older / background</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var D=[{"place": "Charlotte, NC", "lat": 35.2271, "lng": -80.8431, "cur": true, "head": "Charlotte holds data center hearing; council weighs extending pause", "desc": "Council hearing scheduled Oct 12 on data centers and a possible extension of the current pause, which expires Nov 5. Outcome not yet confirmed.", "src": "Search roundup (local NC coverage)", "date": "2026-10-12", "url": "https://www.wsoctv.com/news/local/kings-mountain-hold-public-hearing-future-data-centers/XWR5LHDPSZGKJBEC3TSUAKETM4/"}, {"place": "Iron County, UT", "lat": 37.6775, "lng": -113.0619, "cur": true, "head": "Iron County Commission takes up data center rules as residents, tribal leaders seek delay", "desc": "Commission agenda item Oct 12 is discussion only (no vote) after a contested Planning Commission hearing Oct 8.", "src": "St. George News", "date": "2026-10-12", "url": "https://www.stgeorgeutah.com/news/iron-county-data-center-rules-to-face-public-hearing-as-residents-tribal-leaders-seek-delay/article_bd4c3ff9-a8be-4e25-b6af-fb06c8384603.html"}, {"place": "Raleigh, NC", "lat": 35.7796, "lng": -78.6382, "cur": false, "head": "Raleigh council passes six-month data center moratorium", "desc": "Council voted 7-1 on Oct 6 for a pause on large data centers; critics say it does not go far enough.", "src": "CBS17", "date": "2026-10-06", "url": "https://www.cbs17.com/news/local-news/wake-county-news/raleigh-city-council-approves-6-month-moratorium-on-large-data-centers/"}, {"place": "Beaufort County, NC", "lat": 35.4, "lng": -76.85, "cur": false, "head": "Beaufort County approves one-year data center pause", "desc": "Commissioners approved a 1-year moratorium Oct 5; residents cited noise, emissions and electricity costs.", "src": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium/"}, {"place": "Pitt County, NC", "lat": 35.6, "lng": -77.37, "cur": false, "head": "Pitt County residents speak out on data centers", "desc": "Commissioners directed staff to draft a one-year moratorium policy pending a public hearing.", "src": "WITN", "date": "2026-10-06", "url": "https://www.witn.com/2026/10/06/pitt-county-residents-speak-out-data-centers/"}, {"place": "Memphis, TN", "lat": 35.1495, "lng": -90.049, "cur": false, "head": "Memphis council delays data center moratorium vote to Oct 20", "desc": "Council voted 7-5 to postpone a 12-month moratorium after a chaotic meeting; regulations passed first reading.", "src": "Fox News / WREG", "date": "2026-10", "url": "https://www.foxnews.com/politics/memphis-city-council-devolves-chaos-data-center-moratorium-vote-postponed"}, {"place": "Shalersville Township, OH", "lat": 41.1, "lng": -81.35, "cur": false, "head": "Shalersville zoning fight over 750 MW data center", "desc": "Township holds three October hearings on whether the project fits light-industrial zoning.", "src": "Hoodline", "date": "2026-10", "url": "https://hoodline.com/2026/10/shalersville-zoning-fight-over-750-megawatt-data-center-heads-to-key-hearings/"}, {"place": "Pierce Township, OH", "lat": 39.07, "lng": -84.25, "cur": false, "head": "Residents pack Pierce Township zoning meeting", "desc": "Residents oppose a data center; a moratorium is in place until May 31, 2027.", "src": "FOX19", "date": "2026-10-07", "url": "https://www.fox19.com/2026/10/07/pierce-township-residents-pack-zoning-meeting-over-data-center-concerns/"}, {"place": "Lower Towamensing Twp, PA", "lat": 40.82, "lng": -75.6, "cur": false, "head": "Carbon County data center curative-amendment hearing postponed", "desc": "Applicant requested delay; hearing continued to week of Dec 14. Opposition group Save Carbon County drew ~100.", "src": "TNOnline", "date": "2026-10-07", "url": "https://www.tnonline.com/20261007/data-center-hearing-on-hold/"}, {"place": "Lexington, KY", "lat": 38.0406, "lng": -84.5037, "cur": false, "head": "Lexington council revisits data centers before moratorium ends Oct 31", "desc": "Council drafting rules; public hearing on proposed regulations.", "src": "Lexington Times", "date": "2026-10-04", "url": "https://lexingtonky.news/2026/10/04/data-centers-are-back-before-council-this-week-5-things-worth-watching/"}, {"place": "Pahrump, NV (Nye County)", "lat": 36.2083, "lng": -115.9839, "cur": false, "head": "Nye County commissioners send Pahrump data center to voters after marathon meeting", "desc": "Six-plus hours of public comment; compromise to put the issue to voters.", "src": "News3LV", "date": "2026", "url": "https://news3lv.com/news/local/story/nye-county-commissioners-reach-compromise-after-marathon-meeting-on-pahrump-data-center"}, {"place": "Paulding County, GA", "lat": 33.92, "lng": -84.87, "cur": false, "head": "Paulding meetings overflow as residents demand moratorium", "desc": "Standing-room-only commission meetings; residents say a text amendment bypassed hearing requirements.", "src": "Fox 5 Atlanta", "date": "2026", "url": "https://www.fox5atlanta.com/news/paulding-public-meetings-overflow-residents-fight-data-centers"}, {"place": "St. Louis, MO", "lat": 38.627, "lng": -90.1994, "cur": false, "head": "Opponents sue to halt midtown data center", "desc": "Suit filed after Board of Adjustment rejected appeals of a conditional use permit.", "src": "St. Louis Public Radio", "date": "2026-08-29", "url": "https://www.stlpr.org/government-politics-issues/2026-08-29/opponents-st-louis-data-center-take-fight-court"}, {"place": "Upper Merion Twp, PA", "lat": 40.09, "lng": -75.37, "cur": false, "head": "Upper Merion board denies hyperscale campus", "desc": "Supervisors rejected a five-building plan to cheers from residents; developer had sued.", "src": "WHYY", "date": "2026", "url": "https://whyy.org/articles/upper-merion-board-king-of-prussia-data-center/"}, {"place": "Red Oak, TX", "lat": 32.5168, "lng": -96.8039, "cur": false, "head": "Red Oak approves 800-acre data center despite protests", "desc": "Residents cited noise, grid strain and proximity to schools.", "src": "FOX 4", "date": "2026", "url": "https://www.fox4news.com/news/red-oak-data-center-city-council-protest"}, {"place": "Adelanto, CA", "lat": 34.5828, "lng": -117.4092, "cur": false, "head": "Adelanto planning commission rejects data center amendment 3-2", "desc": "Residents raised water, infrastructure and transparency concerns.", "src": "IECN", "date": "2026", "url": "https://iecn.com/adelanto-high-desert-residents-oppose-data-center/"}];
+var map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+D.forEach(function(d){var c=d.cur?'#2ea043':'#f0a020';
+ d.m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#fff',weight:1,fillColor:c,fillOpacity:.9}).addTo(map);
+ d.m.bindTooltip('<div class="tt"><b>'+esc(d.place)+'</b> <span class="badge" style="background:'+c+'">'+(d.cur?'CURRENT':'OLDER')+'</span><br>'+esc(d.head)+'<br>'+esc(d.desc)+'<br><i>'+esc(d.src)+' · '+esc(d.date)+'</i></div>');
+ d.m.bindPopup('<b>'+esc(d.place)+'</b><br>'+esc(d.head)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.src)+' ('+esc(d.date)+')</a>');});
+var list=document.getElementById('list');
+[[true,'Past 24 Hours (Current)'],[false,'Older / Background']].forEach(function(g){var h=document.createElement('h3');h.textContent=g[1];list.appendChild(h);
+ D.filter(function(d){return d.cur===g[0]}).forEach(function(d){var r=document.createElement('div');r.className='row';r.innerHTML='<span class="dot" style="background:'+(d.cur?'#2ea043':'#f0a020')+'"></span><b>'+esc(d.place)+'</b><br><small>'+esc(d.head)+'</small>';
+  r.onclick=function(){map.flyTo([d.lat,d.lng],8);d.m.openPopup()};list.appendChild(r)})});
+</script></body></html>
