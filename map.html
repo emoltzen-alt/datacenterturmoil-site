@@ -1,41 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<style>html,body{margin:0;height:100%;background:#0f1419;font:14px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#e6e6e6}
+#side{position:absolute;left:0;top:0;bottom:0;width:320px;overflow:auto;background:#141b22;z-index:1000;padding:10px;box-sizing:border-box}
+#map{position:absolute;left:320px;right:0;top:0;bottom:0}
+.row{padding:6px 8px;margin:3px 0;background:#1a2129;border-radius:5px;cursor:pointer}.row:hover{background:#243040}
+h3{margin:12px 0 4px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.badge{padding:1px 6px;border-radius:8px;color:#000;font-size:11px;font-weight:700}
+.legend{background:#141b22;padding:8px;border-radius:6px;color:#e6e6e6}
+@media(max-width:700px){#side{position:static;width:auto;max-height:35%}#map{position:absolute;left:0;top:35%}}</style></head><body>
+<div id="side"><b>Data Center Community Response</b><br><small>Updated 2026-10-14. No official meeting livestreams qualified in this window.</small><div id="list"></div></div><div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var items=[{"place": "Weld County, CO", "lat": 40.4233, "lng": -104.7091, "status": "CURRENT", "headline": "Landowner alleges commissioners bent rules for data center", "desc": "A lawsuit filed Oct 6 alleges Weld County commissioners bent rules approving a GlobalAI data center; residents have started a petition drive to force a public vote.", "source": "KUNC", "date": "2026-10-13", "url": "https://www.kunc.org/news/2026-10-13/landowner-alleges-weld-county-commissioners-bent-rules-for-data-center-project"}, {"place": "Westfield, MA", "lat": 42.1251, "lng": -72.7495, "status": "CURRENT", "headline": "Westfield data center permit extension vote on Tuesday agenda", "desc": "Planning board was slated to vote Oct 13 on extending permits for the Servistar data center project, a month after residents packed city hall to protest. Outcome not confirmed.", "source": "WAMC", "date": "2026-10-13", "url": "https://www.wamc.org/news/2026-10-13/long-awaited-westfield-data-center-permit-extension-vote-on-tuesday-agenda"}, {"place": "Hubbard Township, OH", "lat": 41.1565, "lng": -80.5693, "status": "CURRENT", "headline": "Hubbard Township residents oppose data centers, proposed zoning resolution", "desc": "Residents voiced opposition to data centers and the proposed zoning resolution; a further hearing is set for Oct 27. Publication date approximate (reported as 'today').", "source": "WFMJ", "date": "2026-10-14 (approx.)", "url": "https://www.wfmj.com/news/local-news/hubbard-township-residents-oppose-data-centers-proposed-zoning-resolution/article_1c4846c6-89ea-4101-9b58-870df0504904.html"}, {"place": "Monticello, MN", "lat": 45.3055, "lng": -93.7942, "status": "OLDER", "headline": "Monticello data center advances amid lingering questions", "desc": "Residents pressed the Planning Commission at an Oct 6 hearing on substation size, power availability and backup-generator emissions.", "source": "Monticello Times", "date": "2026-10-06", "url": "https://www.hometownsource.com/monticello_times/monticello-data-center-advances-amid-lingering-questions/article_a80c872a-18d5-441f-9b60-f48dca6eb852.html"}, {"place": "Beaufort County, NC", "lat": 35.4685, "lng": -76.9, "status": "OLDER", "headline": "Commissioners hold hearing and vote on data center moratorium", "desc": "Residents cited noise, emissions and electricity costs at the moratorium hearing.", "source": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium/"}, {"place": "Kalamazoo, MI", "lat": 42.2917, "lng": -85.5872, "status": "OLDER", "headline": "Kalamazoo city commission final vote on data center moratorium", "desc": "City commission scheduled its final vote on a data center moratorium.", "source": "WKZO", "date": "2026-10-05", "url": "https://wkzo.com/2026/10/05/976615/"}, {"place": "Brighton / Weld County, CO", "lat": 39.9853, "lng": -104.8205, "status": "OLDER", "headline": "Colorado data center fight heads to Brighton as opposition grows", "desc": "Opposition spreads from Weld County to Brighton.", "source": "Colorado Sun", "date": "2026-10-05", "url": "https://coloradosun.com/2026/10/05/colorado-data-center-fight-brighton-weld-county/"}, {"place": "Casa Grande, AZ", "lat": 32.8795, "lng": -111.7574, "status": "OLDER", "headline": "Commission approves massive data center 6-1 as residents object", "desc": "Nearly all public speakers opposed; the commission approved anyway.", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Colleton County, SC", "lat": 32.9, "lng": -80.67, "status": "OLDER", "headline": "Colleton County approves data center rules despite pushback", "desc": "Dozens of residents could not get into the capacity-limited meeting.", "source": "Live 5 News", "date": "2026-09-15", "url": "https://www.live5news.com/2026/09/15/colleton-county-approves-controversial-data-center-rules-despite-pushback/"}, {"place": "Spartanburg County, SC", "lat": 34.9496, "lng": -81.932, "status": "OLDER", "headline": "Special meeting on controversial data centers", "desc": "County weighed a one-year moratorium; residents cited noise, water, power and health.", "source": "Fox Carolina", "date": "2026-09-09", "url": "https://www.foxcarolina.com/2026/09/09/spartanburg-county-hold-special-meeting-controversial-data-centers/"}, {"place": "Baltimore County, MD", "lat": 39.4, "lng": -76.6, "status": "OLDER", "headline": "Residents tell Baltimore County to reject large data centers", "desc": "Overflow crowd at Planning Board hearing opposed large facilities.", "source": "WYPR", "date": "2026-09-03", "url": "https://www.wypr.org/wypr-news/2026-09-03/residents-tell-baltimore-county-to-reject-large-data-centers"}, {"place": "Guadalupe County, TX", "lat": 29.5694, "lng": -97.9647, "status": "OLDER", "headline": "Data centers draw backlash, lawsuit in Guadalupe County", "desc": "Residents sued commissioners over alleged open-meetings and conflict-of-interest violations in data center approvals.", "source": "KSAT", "date": "2026-07-24", "url": "https://www.ksat.com/news/local/2026/07/24/data-centers-draw-backlash-lawsuit-in-guadalupe-county-as-residents-raise-transparency-concerns/"}];
+var G="#2ecc71",A="#f5a623";
+var map=L.map('map').setView([39.5,-98.35],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function card(d){var c=d.status=="CURRENT"?G:A;return '<b>'+esc(d.place)+'</b> <span class="badge" style="background:'+c+'">'+d.status+'</span><br><b>'+esc(d.headline)+'</b><br>'+esc(d.desc)+'<br><small>'+esc(d.source)+' · '+esc(d.date)+'</small>'}
+items.forEach(function(d){var c=d.status=="CURRENT"?G:A;
+d.m=L.circleMarker([d.lat,d.lng],{radius:9,color:'#fff',weight:1,fillColor:c,fillOpacity:.9}).addTo(map);
+d.m.bindTooltip('<div style="max-width:260px;color:#111">'+card(d)+'</div>');
+d.m.bindPopup('<div style="max-width:260px;color:#111">'+card(d)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Source: '+esc(d.source)+'</a></div>');});
+var list=document.getElementById('list');
+[["CURRENT","Past 24 Hours (Current)",G],["OLDER","Older / Background",A]].forEach(function(g){
+var h=document.createElement('h3');h.textContent=g[1];list.appendChild(h);
+items.filter(function(d){return d.status==g[0]}).forEach(function(d){var r=document.createElement('div');r.className='row';
+r.innerHTML='<span class="dot" style="background:'+g[2]+'"></span><b>'+esc(d.place)+'</b><br><small>'+esc(d.headline)+' ('+esc(d.date)+')</small>';
+r.onclick=function(){map.flyTo([d.lat,d.lng],8);d.m.openPopup()};list.appendChild(r)})});
+var lg=L.control({position:'bottomright'});lg.onAdd=function(){var e=L.DomUtil.create('div','legend');e.innerHTML='<span class="dot" style="background:'+G+'"></span>CURRENT (24h)<br><span class="dot" style="background:'+A+'"></span>OLDER';return e};lg.addTo(map);
+</script></body></html>
