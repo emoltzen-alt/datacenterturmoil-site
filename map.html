@@ -1,41 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Community Response — Map</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<style>html,body{margin:0;height:100%;background:#0f1419;color:#e6edf3;font:14px system-ui,sans-serif}#side{position:absolute;left:0;top:0;bottom:0;width:320px;overflow:auto;background:#161b22;z-index:1000;padding:10px;box-sizing:border-box}#map{position:absolute;left:320px;right:0;top:0;bottom:0}
+.row{padding:6px;border-bottom:1px solid #30363d;cursor:pointer}.row:hover{background:#21262d}h3{margin:10px 0 4px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+.b{padding:1px 6px;border-radius:8px;color:#000;font-size:11px}a{color:#0969da}.leg{background:#161b22;color:#e6edf3;padding:6px 10px;border-radius:6px}
+@media(max-width:700px){#side{width:100%;height:35%;bottom:auto}#map{left:0;top:35%}}</style></head><body>
+<div id="side"><b>Data Center Community Response</b><br><small>Updated 2026-10-15. No qualifying official meeting livestreams were verified for the past 24h.</small><div id="list"></div></div><div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+var D=[{"place": "Lowndes County, AL", "lat": 32.18, "lng": -86.58, "cur": true, "headline": "Lowndes commission approves $1.15B tax break for state's largest planned data center", "desc": "Commissioners approved a 20-year, $1.15 billion tax break and developer agreement despite resident pushback, moving it up from the Oct. 20 agenda date.", "source": "Alabama Reflector", "date": "2026-10-15", "url": "https://alabamareflector.com/2026/10/15/lowndes-commission-approves-1-15-billion-tax-break-for-a-data-center-despite-pushback/"}, {"place": "Fayette County (Lexington), KY", "lat": 38.04, "lng": -84.5, "cur": false, "headline": "Fayette residents push back on data center zoning plan", "desc": "Residents opposed hyperscale data centers and the planning commission's zoning recommendations; opponents asked for a two-year moratorium extension.", "source": "WKYT", "date": "2026-10-07", "url": "https://www.wkyt.com/2026/10/07/fayette-county-residents-push-back-data-center-zoning-plan/"}, {"place": "Beaufort County, NC", "lat": 35.55, "lng": -77.05, "cur": false, "headline": "Beaufort County commissioners hold hearing and vote on data center moratorium", "desc": "Hearing and vote on a one-year moratorium; residents cited noise, emissions and electricity costs.", "source": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium/"}, {"place": "Kalamazoo, MI", "lat": 42.29, "lng": -85.59, "cur": false, "headline": "Kalamazoo city commission to hold final vote on data center moratorium", "desc": "Final hearing and vote scheduled on a one-year moratorium.", "source": "WKZO", "date": "2026-10-05", "url": "https://wkzo.com/2026/10/05/976615/"}, {"place": "Casa Grande, AZ", "lat": 32.88, "lng": -111.76, "cur": false, "headline": "As Casa Grande commission approves massive data center, residents ask 'Why are we here?'", "desc": "Planning commission approved the project 6-1; all but one of 10 call-to-the-public speakers opposed it.", "source": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Hood County (Granbury), TX", "lat": 32.44, "lng": -97.79, "cur": false, "headline": "Hood County data center projects head to commissioners vote", "desc": "Commissioners pushed data center items to Oct. 13 so a public hearing could be properly advertised; outcome not confirmed.", "source": "NBC DFW", "date": "2026-10 (undated)", "url": "https://www.nbcdfw.com/news/local/hood-county-commissioners-set-to-discuss-proposed-data-center-projects-amid-ongoing-debate/4073892/"}, {"place": "Mattoon, IL", "lat": 39.48, "lng": -88.37, "cur": false, "headline": "Mattoon City Council unanimously approves 1-year data center moratorium", "desc": "Council unanimously approved a one-year pause on large-scale data centers.", "source": "Gray TV / WAND", "date": "2026-09-02", "url": "https://gray-wand-prod.gtv-cdn.com/2026/09/02/mattoon-city-council-unanimously-approves-1-year-data-center-moratorium/"}, {"place": "Pinal County (Eloy), AZ", "lat": 33.03, "lng": -111.39, "cur": false, "headline": "Pinal County blocks data center near Eloy", "desc": "Supervisors voted 4-1 against rezoning after neighbors raised water, air, noise and property-value concerns.", "source": "AZFamily", "date": "2026-08-27", "url": "https://www.azfamily.com/video/2026/08/27/pinal-county-blocks-data-center-near-eloy-what-happens-now/"}, {"place": "Calvert County, MD", "lat": 38.54, "lng": -76.58, "cur": false, "headline": "Calvert County approves 6-month data center moratorium after Amazon pullout", "desc": "Commissioners unanimously approved a six-month moratorium after hours of testimony.", "source": "WJLA", "date": "2026-08 (undated)", "url": "https://wjla.com/news/local/story/calvert-county-board-commissioners-hearing-vote-six-month-data-center-moratorium-amazon-abandons-build-cliffs-nuclear-power-plant-community-concerns-political-shift-maryland"}];
+var map=L.map('map').setView([39,-96],4);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var G='#2ea043',A='#d29922',list=document.getElementById('list');
+[[true,'Past 24 Hours (Current)'],[false,'Older / Background']].forEach(function(g){
+ var h=document.createElement('h3');h.textContent=g[1];list.appendChild(h);
+ D.filter(function(d){return d.cur===g[0]}).forEach(function(d){
+  var c=d.cur?G:A,m=L.circleMarker([d.lat,d.lng],{radius:9,color:c,fillColor:c,fillOpacity:.85,weight:2}).addTo(map);
+  var badge='<span class="b" style="background:'+c+'">'+(d.cur?'CURRENT':'OLDER')+'</span>';
+  m.bindTooltip('<b>'+esc(d.place)+'</b> '+badge+'<br>'+esc(d.headline)+'<br>'+esc(d.desc)+'<br><i>'+esc(d.source)+', '+esc(d.date)+'</i>',{sticky:true,maxWidth:280});
+  m.bindPopup('<b>'+esc(d.place)+'</b> '+badge+'<br>'+esc(d.headline)+'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.source)+' ('+esc(d.date)+')</a>');
+  var r=document.createElement('div');r.className='row';r.innerHTML='<span class="dot" style="background:'+c+'"></span><b>'+esc(d.place)+'</b><br><small>'+esc(d.headline)+'</small>';
+  r.onclick=function(){map.flyTo([d.lat,d.lng],7);m.openPopup()};list.appendChild(r)})});
+var lg=L.control({position:'bottomright'});lg.onAdd=function(){var x=L.DomUtil.create('div','leg');x.innerHTML='<span class="dot" style="background:'+G+'"></span>Current (24h)<br><span class="dot" style="background:'+A+'"></span>Older / background';return x};lg.addTo(map);
+</script></body></html>
