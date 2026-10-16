@@ -1,41 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Center Community Response — Map (last 24 hours)</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-  html,body{margin:0;height:100%;background:#0f1419}
-  #map{height:100%;width:100%}
-  .leaflet-popup-content{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .leaflet-popup-content b{font-size:15px}
-</style>
-</head>
-<body>
-<div id="map"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // STAND-IN PREVIEW. Your map scheduled task's output will replace this file.
-  // Markers = communities with data-center activity in the past 24 hours (June 30, 2026).
-  var sites = [
-    ["Springfield, MO", 37.2090, -93.2923, "Council adopted an 8–0, 120-day moratorium (June 29)."],
-    ["Frederick County, MD", 39.4143, -77.4105, "Maryland Supreme Court oral arguments on the referendum appeal (June 30)."],
-    ["Dickson City, PA", 41.4709, -75.6213, "Developer appealed the zoning denial to court (reported June 29)."],
-    ["Logan, UT", 41.7370, -111.8338, "Council vote on data center regulation (June 30)."],
-    ["Emporia, KS", 38.4039, -96.1817, "Planning Commission rezoning vote, tabled to today (June 30)."],
-    ["Kansas City, MO", 39.0997, -94.5786, "Staff review of a data center proposal (June 30)."],
-    ["East Rockhill Twp, PA", 40.4101, -75.3024, "Supervisors authorized a revised ordinance (reported June 28)."]
-  ];
-  var map = L.map('map').setView([39.5, -94.0], 4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-  }).addTo(map);
-  sites.forEach(function(s){
-    L.circleMarker([s[1], s[2]], {
-      radius: 9, color: '#2ea043', fillColor: '#2ea043', fillOpacity: 0.85, weight: 2
-    }).addTo(map).bindPopup('<b>'+s[0]+'</b><br>'+s[3]);
-  });
-</script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Center Turmoil — Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>html,body{margin:0;height:100%;background:#0f1218;color:#dde3ec;font:14px system-ui,sans-serif}#side{position:absolute;left:0;top:0;bottom:0;width:320px;overflow:auto;padding:12px;box-sizing:border-box}#map{position:absolute;left:320px;right:0;top:0;bottom:0}h3{margin:14px 0 6px}.r{padding:6px;border-bottom:1px solid #2a3140;cursor:pointer}.r:hover{background:#1b2130}.d{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.lg{position:absolute;right:12px;bottom:24px;z-index:1000;background:#0f1218cc;padding:8px 12px;border-radius:6px}.b{padding:1px 6px;border-radius:8px;color:#000;font-size:11px}a{color:#6cb6ff}@media(max-width:700px){#side{position:static;width:auto;height:35%}#map{left:0;top:35%}}</style></head><body>
+<div id="side"><h2 style="margin:0">Data Center Turmoil</h2><small>Updated 2026-10-16 · <a href="report.html">Report</a></small><p><small>Official meeting livestreams: none verified in this window.</small></p><div id="list"></div></div><div id="map"></div>
+<div class="lg"><div><span class="d" style="background:#2ecc71"></span>CURRENT (24h)</div><div><span class="d" style="background:#f5a623"></span>OLDER</div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+const DATA=[{"place": "McCormick County, SC", "lat": 33.91, "lng": -82.29, "cur": true, "head": "McCormick County hears residents on data center ordinances and three rezonings", "desc": "Packed Oct 15 hearing on proposed data center regulations and rezoning requests; law enforcement on site. No vote taken; council expected to revisit Oct 20.", "src": "WJBF / Yahoo News", "date": "2026-10-15", "url": "https://www.wjbf.com/csra-news/mccormick-co-data-center-ordinance-public-hearing-being-held-thursday-night/"}, {"place": "Botetourt County, VA", "lat": 37.55, "lng": -79.81, "cur": true, "head": "21 environmental groups ask Army Corps to reopen review of Google data center", "desc": "Groups want updated documents, 30+ days of public comment and a public hearing before a federal permit decision.", "src": "WSLS", "date": "2026-10-15", "url": "https://www.wsls.com/news/local/2026/10/15/letter-for-public-hearing-on-google-data-center/"}, {"place": "Kingston, GA", "lat": 34.24, "lng": -84.94, "cur": true, "head": "Kingston zoning board hears proposed data center annexation", "desc": "Unified Zoning Board hearing Oct 15 on annexing property for a planned data center; City Council hearing follows Oct 26. Outcome not confirmed.", "src": "Coosa Valley News", "date": "2026-10-15", "url": "https://coosavalleynews.com/2026/10/kingston-schedules-public-hearing-on-proposed-data-center-property-annexation/"}, {"place": "Guilford County, NC", "lat": 36.07, "lng": -79.79, "cur": false, "head": "Guilford commissioners hear public input on data centers", "desc": "Residents argued a 180-day moratorium is too short; others worried about lost projects. Exact date unconfirmed, treated as background.", "src": "ABC45", "date": "2026-10 (date unconfirmed)", "url": "https://abc45.com/news/local/guilford-county-commissioners-hear-public-input-on-proposed-data-centers"}, {"place": "Casa Grande, AZ", "lat": 32.88, "lng": -111.76, "cur": false, "head": "Casa Grande commission approves massive data center 6-1", "desc": "About 40 attended; audience groaned and protested the approval of the Grande Valley Data Center.", "src": "KJZZ", "date": "2026-10-02", "url": "https://www.kjzz.org/business/2026-10-02/as-casa-grande-commission-approves-massive-data-center-residents-ask-why-are-we-here"}, {"place": "Beaufort County, NC", "lat": 35.47, "lng": -76.86, "cur": false, "head": "Beaufort County commissioners hold hearing and vote on data center moratorium", "desc": "Public hearing and vote on a moratorium scheduled in early October.", "src": "WITN", "date": "2026-10-05", "url": "https://www.witn.com/2026/10/05/beaufort-county-commissioners-holding-public-hearing-vote-data-center-moratorium/"}, {"place": "Pinal County, AZ", "lat": 32.89, "lng": -111.52, "cur": false, "head": "Pinal County board rejects massive data center rezoning", "desc": "Neighbors cited water, air quality, noise, wildlife and property values.", "src": "KOLD", "date": "2026-08-27", "url": "https://www.kold.com/2026/08/27/pinal-county-board-rejects-massive-data-center-project/"}, {"place": "Calvert County, MD", "lat": 38.54, "lng": -76.58, "cur": false, "head": "Calvert commissioners unanimously pass 6-month moratorium", "desc": "Many attendees said six months is too short and urged a two-year pause.", "src": "Fox5 DC", "date": "2026 (date unconfirmed)", "url": "https://www.fox5dc.com/news/calvert-county-commissioners-unanimously-pass-6-month-data-center-moratorium"}, {"place": "Carlton County, MN", "lat": 46.67, "lng": -92.43, "cur": false, "head": "Carlton County holds hearing on data center moratorium", "desc": "About 50 attended, a dozen-plus spoke, mostly against data centers.", "src": "Northern News Now", "date": "2026-08-25", "url": "https://www.northernnewsnow.com/2026/08/25/carlton-county-holds-public-hearing-data-center-moratorium/"}, {"place": "Kansas City, MO", "lat": 39.1, "lng": -94.58, "cur": false, "head": "Kansas City plan commission denies downtown data center 6-0", "desc": "Residents vow to keep fighting; developer weighing next steps.", "src": "KCUR", "date": "2026-08-10", "url": "https://www.kcur.org/housing-development-section/2026-08-10/kansas-city-officials-denied-a-plan-for-downtown-data-center-some-residents-vow-to-keep-fighting"}, {"place": "Guadalupe County, TX", "lat": 29.57, "lng": -97.96, "cur": false, "head": "Residents sue county over data center agreements", "desc": "Suit alleges inadequate notice, private negotiations and a 'walking quorum' on a $500M tax abatement.", "src": "KSAT", "date": "2026-07-24", "url": "https://www.ksat.com/news/local/2026/07/24/data-centers-draw-backlash-lawsuit-in-guadalupe-county-as-residents-raise-transparency-concerns/"}, {"place": "Box Elder County, UT", "lat": 41.52, "lng": -112.02, "cur": false, "head": "Box Elder County and developer seek dismissal of residents' lawsuit", "desc": "Coalition wants a public vote on O'Leary Digital project; county says actions were administrative.", "src": "Deseret News", "date": "2026-08-05", "url": "https://www.deseret.com/business/2026/08/05/oleary-digital-box-elder-county-press-court-to-dismiss-data-center-foes-lawsuit/"}, {"place": "Tonawanda, NY", "lat": 43.02, "lng": -78.88, "cur": false, "head": "Tonawanda Town Board passes data center moratorium", "desc": "Unanimous vote amid opposition to a 300 MW proposal at former Tonawanda Coke site.", "src": "BTPM", "date": "2026-08-04", "url": "https://www.btpm.org/local/2026-08-04/tonawanda-town-board-passes-data-center-moratorium"}];
+const map=L.map('map').setView([38.5,-96],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const list=document.getElementById('list');
+function sec(t,cur){const h=document.createElement('h3');h.textContent=t;list.appendChild(h);DATA.filter(x=>x.cur===cur).forEach(x=>{
+const col=cur?'#2ecc71':'#f5a623';
+const m=L.circleMarker([x.lat,x.lng],{radius:9,color:'#fff',weight:1,fillColor:col,fillOpacity:.9}).addTo(map);
+const badge=`<span class="b" style="background:${col}">${cur?'CURRENT':'OLDER'}</span>`;
+m.bindTooltip(`<div style="max-width:260px"><b>${esc(x.place)}</b> ${badge}<br>${esc(x.head)}<br><small>${esc(x.desc)}</small><br><small>${esc(x.src)} · ${esc(x.date)}</small></div>`);
+m.bindPopup(`<b>${esc(x.head)}</b><br>${esc(x.place)}<br>${esc(x.desc)}<br><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.src)} — source</a>`);
+const r=document.createElement('div');r.className='r';r.innerHTML=`<span class="d" style="background:${col}"></span><b>${esc(x.place)}</b><br><small>${esc(x.head)}</small>`;
+r.onclick=()=>{map.flyTo([x.lat,x.lng],8);m.openPopup()};list.appendChild(r)})}
+sec('Past 24 Hours (Current)',true);sec('Older / Background',false);
+</script></body></html>
